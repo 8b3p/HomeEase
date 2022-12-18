@@ -1,13 +1,11 @@
-import { observer } from "mobx-react-lite";
-import Link from "next/link";
-import { PinpaperFilled } from "react-swm-icon-pack";
+import { Text } from "@fluentui/react-components";
 
 const Chores = () => {
   return (
-    <Link href='/payments'>
-      <PinpaperFilled size='100'></PinpaperFilled>
-    </Link>
+    <>
+      <Text size={1000}>I'm a Chore MF!</Text>
+    </>
   );
 };
 
-export default observer(Chores);
+export default Chores;

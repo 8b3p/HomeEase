@@ -47,6 +47,11 @@ export const sendHttp = async <
     if (response.ok) {
       const responseData = (await response.json()) as Res;
       return { res: responseData, error: null };
+    } else if (response.statusText) {
+      return {
+        error: { message: response.statusText, status: response.status },
+        res: null,
+      };
     } else if (response.status === 401) {
       return {
         error: { message: "Unauthorized", status: response.status },

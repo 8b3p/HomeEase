@@ -1,20 +1,26 @@
-import Navbar from "./Navbar";
-import styles from "./Layout.module.css";
-import { useThemeVM } from "../../context/Contexts";
+import Navbar from "components/layout/Navbar";
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { useThemeVM } from "@/context/Contexts";
+import { makeStyles } from "@fluentui/react-components";
 
 interface props {
   children: React.ReactNode;
 }
 
+const useStyles = makeStyles({
+  root: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+  },
+});
+
 const Layout = ({ children }: props) => {
-  const { themeColors, theme } = useThemeVM();
+  const classes = useStyles();
+
   return (
-    <div
-      style={theme ? { ...(themeColors[theme] as React.CSSProperties) } : {}}
-      className={styles.main}
-    >
+    <div className={classes.root}>
       <Navbar />
       {children}
     </div>

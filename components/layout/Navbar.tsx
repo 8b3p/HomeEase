@@ -1,66 +1,95 @@
+import { useThemeVM } from "context/Contexts";
+import {
+  Button,
+  Divider,
+  makeStyles,
+  SelectTabData,
+  Tab,
+  TabList,
+  Text,
+  tokens,
+} from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
-import { useAuthVM } from "../../context/Contexts";
-import styles from "./Navbar.module.css";
-import ThemeToggler from "./themeToggler";
+import { DarkTheme24Regular } from "@fluentui/react-icons";
 import { useRouter } from "next/router";
-import Link from "next/link";
+
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    minHeight: "4rem",
+    paddingInline: "1rem",
+  },
+  section: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  logo: {
+    marginRight: "1rem",
+  },
+  tabList: {
+    marginInline: "1rem",
+  },
+});
 
 const Navbar = () => {
-  const authCtx = useAuthVM();
+  const classes = useStyles();
+  const themeVM = useThemeVM();
   const router = useRouter();
 
-  const NotLoggedIn = (
-    <>
-      <Link
-        href='/login'
-        className={
-          router.pathname === "/login"
-            ? styles["nav-link"] + " " + styles["active"]
-            : styles["nav-link"]
-        }
-      >
-        Login
-      </Link>
-      <Link
-        href='/register'
-        className={
-          router.pathname === "/register"
-            ? styles["nav-link"] + " " + styles["active"]
-            : styles["nav-link"]
-        }
-      >
-        Register
-      </Link>{" "}
-    </>
-  );
-
-  const LoggedIn = (
-    <>
-      <span onClick={authCtx.onLogout} className={styles["nav-link"]}>
-        Logout
-      </span>
-      <span>{authCtx.loggedInUser && authCtx.loggedInUser.name}</span>
-    </>
-  );
-
   return (
-    <nav className={styles["navbar-container"]}>
-      <h1 className={styles["logo"]}>Home Payments</h1>
-      <div className={styles["nav-links"]}>
-        <Link
-          href='/'
-          className={
-            router.pathname === "/"
-              ? styles["nav-link"] + " " + styles["active"]
-              : styles["nav-link"]
-          }
+    <div className={classes.root}>
+      <div className={classes.section}>
+        <Text className={classes.logo} weight='semibold' size={700}>
+          Fluent UI
+        </Text>
+        <Divider vertical />
+        <TabList
+          selectedValue={router.pathname}
+          size='small'
+          className={classes.tabList}
+          onTabSelect={(e, data: SelectTabData) => {
+            router.push(data.value as any as string);
+          }}
         >
-          Home
-        </Link>
-        {!authCtx.isLoggedIn ? NotLoggedIn : LoggedIn}
-        <ThemeToggler />
+          <Tab value='/' key='home' aria-label='Home'>
+            Home
+          </Tab>
+          <Tab value='/payments' key='payments' aria-label='payments'>
+            Payments
+          </Tab>
+          <Tab value='/chores' key='chores' aria-label='chores'>
+            Chores
+          </Tab>
+        </TabList>
       </div>
-    </nav>
+      <div className={classes.section}>
+        <TabList
+          className={classes.tabList}
+          selectedValue={router.pathname}
+          size='small'
+          onTabSelect={(e, data: SelectTabData) => {
+            router.push(data.value as any as string);
+          }}
+        >
+          <Tab value='/auth' key='auth' aria-label='auth'>
+            Login
+          </Tab>
+        </TabList>
+
+        <Button
+          icon={<DarkTheme24Regular />}
+          appearance='transparent'
+          onClick={() => {
+            themeVM.toggleTheme();
+          }}
+        />
+      </div>
+    </div>
   );
 };
 

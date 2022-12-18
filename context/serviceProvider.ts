@@ -5,7 +5,7 @@ export default class ServiceProvider {
     this.services = new Map();
   }
 
-  public register(name: string, service: any) {
+  public register<T>(name: string, service: T) {
     this.services.set(name, service);
   }
 
@@ -13,4 +13,3 @@ export default class ServiceProvider {
     return this.services.get(name);
   }
 }
-
