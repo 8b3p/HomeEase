@@ -1,12 +1,4 @@
-import {
-  Button,
-  Input,
-  Link,
-  makeStyles,
-  shorthands,
-  Text,
-  tokens,
-} from "@fluentui/react-components";
+import { Button, Link, makeStyles, Text } from "@fluentui/react-components";
 import { InputField } from "@fluentui/react-components/unstable";
 import {
   PasswordRegular,
@@ -18,15 +10,28 @@ import React from "react";
 import Card from "@/components/UI/Card";
 
 interface props {
-  submit: <T extends { username: string; password: String; email?: string }>(
+  submit: <T extends { username: string; password: string; email?: string }>(
     Args: T
   ) => void;
+  resendAuthEmail?: (email: string) => void;
 }
 
 const useStyles = makeStyles({
-  container: {},
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+  },
   card: {
-    ...shorthands.margin("auto"),
+    width: "70% !important",
+    height: "70% !important",
+    minWidth: "230px",
+    minHeight: "300px",
+    maxWidth: "330px",
+    maxHeight: "400px",
   },
   formControl: {
     display: "flex",
@@ -36,9 +41,7 @@ const useStyles = makeStyles({
     justifyContent: "space-around",
     alignItems: "center",
     height: "100%",
-    maxWidth: "330px",
-    minHeight: "300px",
-    minWidth: "230px",
+    width: "100%",
     "> div": {
       display: "flex",
       flexDirection: "column",
@@ -66,7 +69,7 @@ const useStyles = makeStyles({
   },
 });
 
-const AuthForm = ({ submit }: props) => {
+const AuthForm = ({ submit, resendAuthEmail }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
   const [usernameInput, setUsernameInput] = React.useState<string | null>(null);
@@ -186,70 +189,72 @@ const AuthForm = ({ submit }: props) => {
   };
 
   return (
-    <Card className={classes.card}>
-      <form className={classes.formControl}>
-        <Text size={800}>{islogin ? "Login" : "Signup"}</Text>
-        <div>
-          <InputField
-            validationMessage={usernameError}
-            validationState={usernameError ? "error" : "success"}
-            appearance='underline'
-            placeholder='User Name'
-            contentBefore={<PersonRegular />}
-            type='text'
-            id='username'
-            onChange={e => {
-              setUsernameInput(e.target.value);
-            }}
-            onBlur={() => {
-              if (validate) validateUsername(usernameInput);
-            }}
-          />
-          {!islogin && (
+    <div className={classes.container}>
+      <Card className={classes.card}>
+        <form className={classes.formControl}>
+          <Text size={800}>{islogin ? "Login" : "Signup"}</Text>
+          <div>
             <InputField
-              validationMessage={emailError}
-              validationState={emailError ? "error" : "success"}
+              validationMessage={usernameError}
+              validationState={usernameError ? "error" : "success"}
               appearance='underline'
-              contentBefore={<MailRegular />}
-              placeholder='Email'
+              placeholder='User Name'
+              contentBefore={<PersonRegular />}
               type='text'
               id='username'
               onChange={e => {
-                setEmailInput(e.target.value);
+                setUsernameInput(e.target.value);
               }}
               onBlur={() => {
-                if (validate) validateEmail(emailInput);
+                if (validate) validateUsername(usernameInput);
               }}
             />
-          )}
-          <InputField
-            validationMessage={passwordError}
-            validationState={passwordError ? "error" : "success"}
-            appearance='underline'
-            placeholder='Password'
-            contentBefore={<PasswordRegular />}
-            type='password'
-            id='password'
-            onChange={e => {
-              setPasswordInput(e.target.value);
-            }}
-            onBlur={() => {
-              if (validate) validatePassword(passwordInput);
-            }}
-          />
-        </div>
-        <footer>
-          <Button appearance='primary' type='submit' onClick={submitHandler}>
-            {islogin ? "Login" : "Signup"}
-          </Button>
-          <Link as='a' href='#' onClick={switchAuthModeHandler}>
-            {islogin
-              ? "Dont have an account? Sign Up"
-              : "Already have an account? Login"}
-          </Link>
-        </footer>
-      </form>
-    </Card>
+            {!islogin && (
+              <InputField
+                validationMessage={emailError}
+                validationState={emailError ? "error" : "success"}
+                appearance='underline'
+                contentBefore={<MailRegular />}
+                placeholder='Email'
+                type='text'
+                id='username'
+                onChange={e => {
+                  setEmailInput(e.target.value);
+                }}
+                onBlur={() => {
+                  if (validate) validateEmail(emailInput);
+                }}
+              />
+            )}
+            <InputField
+              validationMessage={passwordError}
+              validationState={passwordError ? "error" : "success"}
+              appearance='underline'
+              placeholder='Password'
+              contentBefore={<PasswordRegular />}
+              type='password'
+              id='password'
+              onChange={e => {
+                setPasswordInput(e.target.value);
+              }}
+              onBlur={() => {
+                if (validate) validatePassword(passwordInput);
+              }}
+            />
+          </div>
+          <footer>
+            <Button appearance='primary' type='submit' onClick={submitHandler}>
+              {islogin ? "Login" : "Signup"}
+            </Button>
+            <Link as='a' href='#' onClick={switchAuthModeHandler}>
+              {islogin
+                ? "Dont have an account? Sign Up"
+                : "Already have an account? Login"}
+            </Link>
+          </footer>
+        </form>
+      </Card>
+    </div>
   );
 };
 

@@ -11,8 +11,9 @@ interface props {
 const useStyles = makeStyles({
   root: {
     minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
+  },
+  children: {
+    height: "calc(100vh - 4rem)",
   },
 });
 
@@ -22,7 +23,7 @@ const Layout = ({ children }: props) => {
   return (
     <div className={classes.root}>
       <Navbar />
-      {children}
+      <div className={classes.children}>{children}</div>
     </div>
   );
 };

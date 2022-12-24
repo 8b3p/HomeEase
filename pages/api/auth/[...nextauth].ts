@@ -19,13 +19,19 @@ export default NextrAuth({
         if (!credentials || !credentials.username || !credentials.password)
           throw new Error("No credentials supplied");
 
-        prisma.$connect();
-        const user = await prisma.user.findUnique({
-          where: {
-            name: credentials.username,
-          },
-        });
-        prisma.$disconnect();
+        let user;
+        try {
+          prisma.$connect();
+          user = await prisma.user.findUnique({
+            where: {
+              name: credentials.username,
+            },
+          });
+          prisma.$disconnect();
+        } catch (error: any) {
+          console.dir(error);
+          throw new Error(error.message);
+        }
 
         if (!user) {
           // If you return null then an error will be displayed advising the user to check their details.
