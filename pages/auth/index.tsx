@@ -1,5 +1,5 @@
 import AuthForm from "@/components/auth/AuthForm";
-import { isThereUser, sendRegisterRequest } from "@/utils/apiService";
+import { isThereUser } from "@/utils/apiService";
 import { makeStyles, shorthands } from "@fluentui/react-components";
 import { Alert } from "@fluentui/react-components/unstable";
 import { DismissRegular } from "@fluentui/react-icons";
@@ -43,9 +43,10 @@ function Auth() {
         username: Args.username,
         password: Args.password,
       });
-      if (res?.error) console.log(res.error);
-      console.dir(res);
-      setError("Something went wrong, please try again");
+      if (res?.error) {
+        console.log(res.error);
+        setError(res.error);
+      }
     } else {
       console.log("Register");
       // const res = await sendRegisterRequest(Args);
@@ -65,9 +66,9 @@ function Auth() {
         console.dir(res);
         console.error(res.error.errorMessage);
         setError("Something went wrong, please try again");
-      } else if (!res.userExists) {
+      } else if (res.userExists) {
         const res1 = await signIn("email", {
-          redirect: false, 
+          redirect: false,
           email: Args.email,
           callbackUrl: "/",
         });

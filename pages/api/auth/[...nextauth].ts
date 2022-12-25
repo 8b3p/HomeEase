@@ -21,13 +21,11 @@ export default NextrAuth({
 
         let user;
         try {
-          prisma.$connect();
           user = await prisma.user.findUnique({
             where: {
               name: credentials.username,
             },
           });
-          prisma.$disconnect();
         } catch (error: any) {
           console.dir(error);
           throw new Error(error.message);

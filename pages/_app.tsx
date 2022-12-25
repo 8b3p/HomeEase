@@ -13,6 +13,7 @@ import {
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { SessionProvider } from "next-auth/react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isMounted, setIsMounted] = useState(false);
@@ -31,9 +32,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <FluentProvider
           theme={themeVM.themeType === "dark" ? webDarkTheme : webLightTheme}
         >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <SessionProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </SessionProvider>
         </FluentProvider>
       </ThemeContextProvider>
     </AuthContextProvider>

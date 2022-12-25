@@ -1,5 +1,6 @@
 import { useThemeVM } from "context/Contexts";
 import {
+  Avatar,
   Button,
   Divider,
   makeStyles,
@@ -10,8 +11,10 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
-import { DarkTheme24Regular } from "@fluentui/react-icons";
+import { DarkTheme24Regular, DarkThemeRegular } from "@fluentui/react-icons";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import NavbarMenu from "./NavbarMenu";
 
 const useStyles = makeStyles({
   root: {
@@ -27,6 +30,8 @@ const useStyles = makeStyles({
     flexDirection: "row",
     justifyContent: "center",
     alignContent: "center",
+    rowGap: "1rem",
+    columnGap: "1rem",
   },
   logo: {
     marginRight: "1rem",
@@ -40,6 +45,7 @@ const Navbar = () => {
   const classes = useStyles();
   const themeVM = useThemeVM();
   const router = useRouter();
+  const session = useSession();
 
   return (
     <div className={classes.root}>
@@ -68,26 +74,14 @@ const Navbar = () => {
         </TabList>
       </div>
       <div className={classes.section}>
-        <TabList
-          className={classes.tabList}
-          selectedValue={router.pathname}
-          size='small'
-          onTabSelect={(e, data: SelectTabData) => {
-            router.push(data.value as any as string);
-          }}
-        >
-          <Tab value='/auth' key='auth' aria-label='auth'>
-            Login
-          </Tab>
-        </TabList>
-
         <Button
-          icon={<DarkTheme24Regular />}
-          appearance='transparent'
+          icon={<DarkThemeRegular />}
           onClick={() => {
             themeVM.toggleTheme();
           }}
+          appearance='transparent'
         />
+        <NavbarMenu />
       </div>
     </div>
   );
