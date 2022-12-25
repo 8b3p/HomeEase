@@ -74,7 +74,6 @@ const Navbar = () => {
         </TabList>
       </div>
       <div className={classes.section}>
-        <NavbarMenu />
         <Button
           icon={<DarkThemeRegular />}
           onClick={() => {
@@ -82,6 +81,7 @@ const Navbar = () => {
           }}
           appearance='transparent'
         />
+          <NavbarMenu />
       </div>
     </div>
   );

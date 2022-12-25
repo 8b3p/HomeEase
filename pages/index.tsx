@@ -33,18 +33,6 @@ const Home = ({ children }: props) => {
       <Text align='center' size={600} weight='semibold'>
         Welcome to the home page
       </Text>
-      <Menu>
-        <MenuTrigger disableButtonEnhancement>
-          <MenuButton>Example</MenuButton>
-        </MenuTrigger>
-
-        <MenuPopover>
-          <MenuList>
-            <MenuItem>Item a</MenuItem>
-            <MenuItem>Item b</MenuItem>
-          </MenuList>
-        </MenuPopover>
-      </Menu>
     </div>
   );
 };
