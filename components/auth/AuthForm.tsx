@@ -1,4 +1,10 @@
-import { Button, Link, makeStyles, Text } from "@fluentui/react-components";
+import {
+  Button,
+  Link,
+  makeStyles,
+  Text,
+  shorthands,
+} from "@fluentui/react-components";
 import { InputField } from "@fluentui/react-components/unstable";
 import {
   PasswordRegular,
@@ -10,7 +16,13 @@ import React from "react";
 import Card from "@/components/UI/Card";
 
 interface props {
-  submit: <T extends { username: string; password: string; email?: string }>(
+  submit: <
+    T extends {
+      password: string;
+      email: string;
+      username?: { firstname: string; lastname: string };
+    }
+  >(
     Args: T
   ) => void;
   resendAuthEmail?: (email: string) => void;
@@ -72,8 +84,14 @@ const useStyles = makeStyles({
 const AuthForm = ({ submit, resendAuthEmail }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
-  const [usernameInput, setUsernameInput] = React.useState<string | null>(null);
-  const [usernameError, setUsernameError] = React.useState<string | null>(null);
+  const [firstnameInput, setFirstnameInput] = React.useState<string | null>(
+    null
+  );
+  const [lastnameInput, setLastnameInput] = React.useState<string | null>(null);
+  const [firstnameError, setFirstnameError] = React.useState<string | null>(
+    null
+  );
+  const [lastnameError, setLastnameError] = React.useState<string | null>(null);
   const [passwordError, setPasswordError] = React.useState<string | null>(null);
   const [emailError, setEmailError] = React.useState<string | null>(null);
   const [validate, setValidate] = React.useState<boolean>(false);
@@ -84,25 +102,38 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
     setIsLogin(prevState => !prevState);
   };
 
-  const validateUsername = (value: string | null): null | string => {
+  const validateUsername = (
+    value: string | null,
+    whichName: "firstname" | "lastname"
+  ): null | string => {
     if (!value) {
-      setUsernameError("Username cannot be empty");
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot be empty")
+        : setLastnameError("Name cannot be empty");
       return null;
     }
     if (value.trim().length === 0) {
-      setUsernameError("Username cannot be empty");
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot be empty")
+        : setLastnameError("Name cannot be empty");
       return null;
     }
     if (value.trim().length < 4) {
-      setUsernameError("Username must be at least 6 characters long");
+      whichName === "firstname"
+        ? setFirstnameError("Name must be at least 4 characters long")
+        : setLastnameError("Name must be at least 4 characters long");
       return null;
     }
     //check for special characters
     if (value.match(/[!@#$%^&*]/)) {
-      setUsernameError("Username must not contain any special character");
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot contain special characters")
+        : setLastnameError("Name cannot contain special characters");
       return null;
     }
-    setUsernameError(null);
+    whichName === "firstname"
+      ? setFirstnameError(null)
+      : setLastnameError(null);
     return value.trim().toLowerCase();
   };
 
@@ -119,24 +150,9 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
       setPasswordError("Password must be at least 6 characters long");
       return null;
     }
-    //check for special characters
-    if (!value.match(/[!@#$%^&*]/)) {
-      setPasswordError("Password must contain at least one special character");
-      return null;
-    }
     //check if password contains at least one number
     if (!value.match(/\d/)) {
       setPasswordError("Password must contain at least one number");
-      return null;
-    }
-    //check if password contains at least one uppercase letter
-    if (!value.match(/[A-Z]/)) {
-      setPasswordError("Password must contain at least one uppercase letter");
-      return null;
-    }
-    //check if password contains at least one lowercase letter
-    if (!value.match(/[a-z]/)) {
-      setPasswordError("Password must contain at least one lowercase letter");
       return null;
     }
     setPasswordError(null);
@@ -163,27 +179,35 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    let username = validateUsername(usernameInput);
+    let email = validateEmail(emailInput);
     let password = validatePassword(passwordInput);
-    if (!username || !password) {
+    if (!email || !password) {
       setValidate(true);
       return;
     }
     if (islogin) {
-      submit<{ username: string; password: string }>({
-        username,
+      submit<{ email: string; password: string }>({
+        email,
         password,
       });
     } else {
-      let email = validateEmail(emailInput);
-      if (!email) {
+      let firstname = validateUsername(firstnameInput, "firstname");
+      let lastname = validateUsername(lastnameInput, "lastname");
+      if (!firstname || !lastname) {
         setValidate(true);
         return;
       }
-      submit<{ username: string; email: string; password: string }>({
-        username,
+      submit<{
+        email: string;
+        password: string;
+        username: { firstname: string; lastname: string };
+      }>({
         email,
         password,
+        username: {
+          firstname,
+          lastname,
+        },
       });
     }
   };
@@ -194,38 +218,55 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
         <form className={classes.formControl}>
           <Text size={800}>{islogin ? "Login" : "Signup"}</Text>
           <div>
+            {!islogin && (
+              <>
+                <InputField
+                  validationMessage={firstnameError}
+                  validationState={firstnameError ? "error" : "success"}
+                  appearance='underline'
+                  placeholder='First Name'
+                  contentBefore={<PersonRegular />}
+                  type='text'
+                  id='firstname'
+                  onChange={e => {
+                    setFirstnameInput(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (validate) validateUsername(firstnameInput, "firstname");
+                  }}
+                />
+                <InputField
+                  validationMessage={lastnameError}
+                  validationState={lastnameError ? "error" : "success"}
+                  appearance='underline'
+                  placeholder='Last Name'
+                  contentBefore={<PersonRegular />}
+                  type='text'
+                  id='lastname'
+                  onChange={e => {
+                    setLastnameInput(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (validate) validateUsername(lastnameInput, "lastname");
+                  }}
+                />
+              </>
+            )}
             <InputField
-              validationMessage={usernameError}
-              validationState={usernameError ? "error" : "success"}
+              validationMessage={emailError}
+              validationState={emailError ? "error" : "success"}
               appearance='underline'
-              placeholder='User Name'
-              contentBefore={<PersonRegular />}
+              contentBefore={<MailRegular />}
+              placeholder='Email'
               type='text'
               id='username'
               onChange={e => {
-                setUsernameInput(e.target.value);
+                setEmailInput(e.target.value);
               }}
               onBlur={() => {
-                if (validate) validateUsername(usernameInput);
+                if (validate) validateEmail(emailInput);
               }}
             />
-            {!islogin && (
-              <InputField
-                validationMessage={emailError}
-                validationState={emailError ? "error" : "success"}
-                appearance='underline'
-                contentBefore={<MailRegular />}
-                placeholder='Email'
-                type='text'
-                id='username'
-                onChange={e => {
-                  setEmailInput(e.target.value);
-                }}
-                onBlur={() => {
-                  if (validate) validateEmail(emailInput);
-                }}
-              />
-            )}
             <InputField
               validationMessage={passwordError}
               validationState={passwordError ? "error" : "success"}

@@ -18,7 +18,8 @@ export default async function handler(
       const { hashedPassword, salt } = hashPassword(req.body.password);
       const response = await prisma.user.create({
         data: {
-          name: req.body.username,
+          firstName: req.body.username?.firstname,
+          lastName: req.body.username?.lastname,
           email: req.body.email,
           password: hashedPassword,
           salt: salt,

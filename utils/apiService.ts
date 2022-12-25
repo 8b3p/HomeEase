@@ -2,9 +2,9 @@ import { safeUser } from "utils/safeUser";
 import { errorResponse } from "types/errorResponse";
 
 export async function sendRegisterRequest(Args: {
-  username: string;
+  username?: {firstname: string, lastname: string};
   password: string;
-  email?: string;
+  email: string;
 }): Promise<{ ok: boolean; error?: errorResponse }> {
   const resJson = await fetch("api/auth/register", {
     method: "POST",

@@ -72,11 +72,12 @@ model User {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
   email           String            @unique
   emailVerified   DateTime?         @map("email_verified")
-  name            String?            @unique
-  role            Role?              @default(Standard)
-  password        String?
+  firstName       String            @map("first_name")
+  lastName        String            @map("last_name")
+  role            Role              @default(Standard)
+  password        String
   houseId         String?           @map("house_id") @db.ObjectId
-  salt            String?
+  salt            String
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   payments        Payment[]

@@ -1,29 +1,34 @@
-import NextrAuth from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import prisma from "utils/PrismaClient";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { verifyPassword } from "@/utils/passwordCrypt";
 import { getSafeUser } from "@/utils/safeUser";
+import { User } from "@prisma/client";
 
-export default NextrAuth({
+export default NextAuth({
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     CredentialsProvider({
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied using prisma
-        if (!credentials || !credentials.username || !credentials.password)
+        if (!credentials || !credentials.email || !credentials.password)
           throw new Error("No credentials supplied");
-
+        console.log("credentials");
+        console.log(credentials);
         let user;
         try {
           user = await prisma.user.findUnique({
             where: {
-              name: credentials.username,
+              email: credentials.email,
             },
           });
         } catch (error: any) {
@@ -43,7 +48,7 @@ export default NextrAuth({
             salt: user.salt,
           });
           if (passwordVerified) {
-            return getSafeUser(user);
+            return getSafeUser(user) as User;
           } else throw new Error("Wrong password");
         }
       },
@@ -60,4 +65,14 @@ export default NextrAuth({
       from: process.env.EMAIL_FROM,
     }),
   ],
+  callbacks: {
+    // async signIn({ user, account, profile, email, credentials }) {
+    //   if (email?.verificationRequest) {
+    //     console.log("email verification request");
+    //   }
+    //   let User = user as User;
+    //   console.dir("loggin in " + User.firstName);
+    //   return true;
+    // },
+  },
 });
