@@ -1,3 +1,5 @@
+import { useThemeVM } from "@/context/Contexts";
+import themeVM from "@/context/themeVM";
 import {
   Button,
   Menu,
@@ -9,6 +11,15 @@ import {
   Text,
   makeStyles,
 } from "@fluentui/react-components";
+import {
+  Copy24Filled,
+  Copy24Regular,
+  DarkTheme24Filled,
+  DarkTheme24Regular,
+  bundleIcon,
+  iconFilledClassName,
+  iconRegularClassName,
+} from "@fluentui/react-icons";
 import { observer } from "mobx-react-lite";
 
 interface props {
@@ -23,16 +34,48 @@ const useStyles = makeStyles({
     justifyContent: "center",
     alignItems: "center",
   },
+  icon: {
+    ":hover": {
+      [`& > span .${iconFilledClassName}`]: {
+        display: "none",
+      },
+      [`& > span .${iconRegularClassName}`]: {
+        display: "inline",
+      },
+    },
+  },
 });
+
+const CopyIcon = bundleIcon(Copy24Filled, Copy24Regular);
 
 const Home = ({ children }: props) => {
   const classes = useStyles();
+  const themeVM = useThemeVM();
 
   return (
     <div className={classes.root}>
       <Text align='center' size={600} weight='semibold'>
         Welcome to the home page
       </Text>
+      <MenuList>
+        <MenuItem
+          icon={<DarkTheme24Regular />}
+          onClick={() => {
+            themeVM.toggleTheme();
+          }}
+        >
+          Toggle Theme
+        </MenuItem>
+        <MenuItem
+          icon={
+            <div className={classes.icon}>
+              <CopyIcon primaryFill='brand' />
+            </div>
+          }
+        >
+          Copy
+        </MenuItem>
+      </MenuList>
     </div>
   );
 };

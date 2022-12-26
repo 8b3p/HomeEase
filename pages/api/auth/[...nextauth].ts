@@ -66,13 +66,9 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    // async signIn({ user, account, profile, email, credentials }) {
-    //   if (email?.verificationRequest) {
-    //     console.log("email verification request");
-    //   }
-    //   let User = user as User;
-    //   console.dir("loggin in " + User.firstName);
-    //   return true;
-    // },
+    async session({ session, token, user }) {
+      session.user = user;
+      return session;
+    },
   },
 });

@@ -34,6 +34,8 @@ const NavbarMenu = () => {
   const classes = useStyles();
   const router = useRouter();
 
+  console.dir(session);
+
   return (
     <>
       {session.status === "authenticated" ? (
