@@ -2,6 +2,7 @@ html,
 body {
   height: 100%;
   padding: 0;
+  overflow-x: hidden;
   margin: 0;
 }
 
@@ -16,6 +17,7 @@ body {
 
 #__next {
   height: 100%;
+  overflow-x: hidden;
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -27,3 +29,15 @@ body {
     background: black;
   }
 } */
+
+.fadeout {
+  animation: fadeout 0.3s ease-in-out;
+}
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

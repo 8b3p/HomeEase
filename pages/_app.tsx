@@ -33,6 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           theme={themeVM.themeType === "dark" ? webDarkTheme : webLightTheme}
         >
           <SessionProvider>
+            <div id='alert' />
             <Layout>
               <Component {...pageProps} />
             </Layout>

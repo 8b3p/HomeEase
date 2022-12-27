@@ -18,9 +18,11 @@ import {
   Cut20Filled,
   DarkTheme24Filled,
   DarkTheme24Regular,
+  SignOut24Regular,
+  SignOutRegular,
 } from "@fluentui/react-icons";
 import { observer } from "mobx-react-lite";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
@@ -34,32 +36,40 @@ const NavbarMenu = () => {
   const classes = useStyles();
   const router = useRouter();
 
-  console.dir(session);
-
   return (
     <>
       {session.status === "authenticated" ? (
-        <Menu>
-          <MenuTrigger disableButtonEnhancement>
-            <Avatar
-              color='brand'
-              size={40}
-              name={session.data.user?.name || undefined}
-            />
-          </MenuTrigger>
-          <MenuPopover>
-            <MenuList>
-              <MenuItem
-                icon={<DarkTheme24Regular />}
-                onClick={() => {
-                  themeVM.toggleTheme;
-                }}
-              >
-                Toggle Theme
-              </MenuItem>
-            </MenuList>
-          </MenuPopover>
-        </Menu>
+        <>
+          <Button
+            icon={<SignOutRegular />}
+            size='large'
+            appearance='transparent'
+            onClick={() => {
+              signOut({ callbackUrl: "/", redirect: true });
+            }}
+          />
+          <Menu>
+            <MenuTrigger disableButtonEnhancement>
+              <Avatar
+                color='brand'
+                size={40}
+                name={session.data.user?.name || undefined}
+              />
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItem
+                  icon={<DarkTheme24Regular />}
+                  onClick={() => {
+                    themeVM.toggleTheme;
+                  }}
+                >
+                  Toggle Theme
+                </MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        </>
       ) : (
         <TabList
           className={classes.tabList}

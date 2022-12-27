@@ -9,6 +9,7 @@ import {
   TabList,
   Text,
   tokens,
+  Tooltip,
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
 import { DarkTheme24Regular, DarkThemeRegular } from "@fluentui/react-icons";
@@ -45,7 +46,6 @@ const Navbar = () => {
   const classes = useStyles();
   const themeVM = useThemeVM();
   const router = useRouter();
-  const session = useSession();
 
   return (
     <div className={classes.root}>
@@ -74,14 +74,17 @@ const Navbar = () => {
         </TabList>
       </div>
       <div className={classes.section}>
-        <Button
-          icon={<DarkThemeRegular />}
-          onClick={() => {
-            themeVM.toggleTheme();
-          }}
-          appearance='transparent'
-        />
-          <NavbarMenu />
+        <Tooltip content={<p>Change Theme</p>} relationship='inaccessible'>
+          <Button
+            icon={<DarkThemeRegular />}
+            size='large'
+            onClick={() => {
+              themeVM.toggleTheme();
+            }}
+            appearance='transparent'
+          />
+        </Tooltip>
+        <NavbarMenu />
       </div>
     </div>
   );

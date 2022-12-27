@@ -4,6 +4,7 @@ import {
   makeStyles,
   Text,
   shorthands,
+  Spinner,
 } from "@fluentui/react-components";
 import { InputField } from "@fluentui/react-components/unstable";
 import {
@@ -14,19 +15,6 @@ import {
 import { observer } from "mobx-react-lite";
 import React from "react";
 import Card from "@/components/UI/Card";
-
-interface props {
-  submit: <
-    T extends {
-      password: string;
-      email: string;
-      username?: { firstname: string; lastname: string };
-    }
-  >(
-    Args: T
-  ) => void;
-  resendAuthEmail?: (email: string) => void;
-}
 
 const useStyles = makeStyles({
   container: {
@@ -81,7 +69,21 @@ const useStyles = makeStyles({
   },
 });
 
-const AuthForm = ({ submit, resendAuthEmail }: props) => {
+interface props {
+  submit: <
+    T extends {
+      password: string;
+      email: string;
+      username?: { firstname: string; lastname: string };
+    }
+  >(
+    Args: T
+  ) => void;
+  resendAuthEmail?: (email: string) => void;
+  loading?: boolean;
+}
+
+const AuthForm = ({ submit, resendAuthEmail, loading }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
   const [firstnameInput, setFirstnameInput] = React.useState<string | null>(
@@ -169,7 +171,7 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
       return null;
     }
     //check if email is valid
-    if (!value.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
+    if (!value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       setEmailError("Email is not valid");
       return null;
     }
@@ -285,7 +287,13 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
           </div>
           <footer>
             <Button appearance='primary' type='submit' onClick={submitHandler}>
-              {islogin ? "Login" : "Signup"}
+              {loading ? (
+                <Spinner size='tiny' appearance='inverted' />
+              ) : islogin ? (
+                "Login"
+              ) : (
+                "Signup"
+              )}
             </Button>
             <Link as='a' href='#' onClick={switchAuthModeHandler}>
               {islogin

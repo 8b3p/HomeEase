@@ -57,25 +57,6 @@ const Home = ({ children }: props) => {
       <Text align='center' size={600} weight='semibold'>
         Welcome to the home page
       </Text>
-      <MenuList>
-        <MenuItem
-          icon={<DarkTheme24Regular />}
-          onClick={() => {
-            themeVM.toggleTheme();
-          }}
-        >
-          Toggle Theme
-        </MenuItem>
-        <MenuItem
-          icon={
-            <div className={classes.icon}>
-              <CopyIcon primaryFill='brand' />
-            </div>
-          }
-        >
-          Copy
-        </MenuItem>
-      </MenuList>
     </div>
   );
 };

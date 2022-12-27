@@ -18,12 +18,12 @@ export default NextAuth({
         email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
+      type: "credentials",
+      name: "Credentials",
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied using prisma
         if (!credentials || !credentials.email || !credentials.password)
           throw new Error("No credentials supplied");
-        console.log("credentials");
-        console.log(credentials);
         let user;
         try {
           user = await prisma.user.findUnique({
@@ -66,9 +66,35 @@ export default NextAuth({
     }),
   ],
   callbacks: {
+    signIn: async ({ user, account, profile }) => {
+      let User = user as User;
+      if (!User.emailVerified) return "Email not verified";
+      return true;
+    },
     async session({ session, token, user }) {
-      session.user = user;
+      //make first letter capital of firstname and lastname
+
+      session.user = {
+        ...user,
+        email: token.email,
+        name: `${token.firstName} ${token.lastName}`,
+      };
       return session;
+    },
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        const newUser = getSafeUser(user as User);
+        newUser.firstName =
+          newUser.firstName.charAt(0).toUpperCase() +
+          newUser.firstName.slice(1);
+        newUser.lastName =
+          newUser.lastName.charAt(0).toUpperCase() + newUser.lastName.slice(1);
+        return {
+          ...token,
+          ...newUser,
+        };
+      }
+      return token;
     },
   },
 });
