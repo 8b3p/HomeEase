@@ -1,6 +1,5 @@
 import { useThemeVM } from "context/Contexts";
 import {
-  Avatar,
   Button,
   Divider,
   makeStyles,
@@ -8,13 +7,11 @@ import {
   Tab,
   TabList,
   Text,
-  tokens,
   Tooltip,
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
-import { DarkTheme24Regular, DarkThemeRegular } from "@fluentui/react-icons";
+import { DarkThemeRegular } from "@fluentui/react-icons";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
 import NavbarMenu from "./NavbarMenu";
 
 const useStyles = makeStyles({

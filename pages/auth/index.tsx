@@ -3,9 +3,10 @@ import AuthForm from "@/components/auth/AuthForm";
 import { isThereUser, sendRegisterRequest } from "@/utils/apiService";
 import { makeStyles, shorthands } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
-import { signIn, useSession } from "next-auth/react";
+import { NextPageContext } from "next";
+import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 const useStyles = makeStyles({
   container: {
@@ -33,6 +34,7 @@ function Auth() {
   if (session.status === "authenticated") {
     router.push("/");
   }
+  
   const [loading, setLoading] = React.useState(false);
 
   const classes = useStyles();
@@ -101,6 +103,7 @@ function Auth() {
         return;
       }
       //*second: if the signin request is successful, show a success message
+      ShowAlert("You signed in successfully", "success");
     } catch (e) {
       console.error(e);
     }
@@ -142,13 +145,6 @@ function Auth() {
   //   setSuccess(undefined);
   // };
 
-  React.useEffect(() => {
-    if (session.status === "authenticated") {
-      console.log('session.status === "authenticated"');
-      ShowAlert("You have been signed in.", "success");
-    }
-  }, [session.status]);
-
   return (
     <div className={classes.container}>
       <AuthForm
@@ -158,6 +154,21 @@ function Auth() {
       />
     </div>
   );
+}
+
+export async function getServerSideProps(context: NextPageContext) {
+  const session = await getSession({ req: context.req });
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+      },
+    };
+  }
+  return {
+    props: {},
+  };
 }
 
 export default observer(Auth);

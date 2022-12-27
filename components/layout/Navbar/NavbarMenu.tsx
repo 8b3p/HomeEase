@@ -12,22 +12,13 @@ import {
   TabList,
   makeStyles,
 } from "@fluentui/react-components";
-import {
-  ClipboardPaste20Filled,
-  Copy20Filled,
-  Cut20Filled,
-  DarkTheme24Filled,
-  DarkTheme24Regular,
-  SignOut24Regular,
-  SignOutRegular,
-} from "@fluentui/react-icons";
+import { DarkTheme24Regular, SignOutRegular } from "@fluentui/react-icons";
 import { observer } from "mobx-react-lite";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   tabList: {
-    marginInline: "1rem",
   },
 });
 
@@ -44,8 +35,12 @@ const NavbarMenu = () => {
             icon={<SignOutRegular />}
             size='large'
             appearance='transparent'
-            onClick={() => {
-              signOut({ callbackUrl: "/", redirect: true });
+            onClick={async () => {
+              const data = await signOut({
+                callbackUrl: "/",
+                redirect: false,
+              });
+              router.push(data.url);
             }}
           />
           <Menu>

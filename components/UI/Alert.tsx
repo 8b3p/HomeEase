@@ -11,14 +11,15 @@ const useStyles = makeStyles({
     left: "100%",
     width: "70%",
     minWidth: "230px",
-    maxWidth: "330px",
+    maxWidth: "360px",
     "& > div": {
       position: "relative",
       left: "calc(-100% - 1rem)",
       paddingBottom: "0.3rem",
-      ...shorthands.padding("1rem, 0.5rem"),
+      ...shorthands.padding("1rem"),
     },
     "& > .loadingBar": {
+      ...shorthands.padding("0"),
       position: "absolute",
       top: "calc(100% - 0.3rem)",
       left: "calc(-100% - 1rem)",
