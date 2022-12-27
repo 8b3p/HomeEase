@@ -68,8 +68,9 @@ export default NextAuth({
   callbacks: {
     signIn: async ({ user, account, profile, email, credentials }) => {
       let User = user as User;
-      if (email?.verificationRequest) return true;
-      if (!User.emailVerified) throw new Error("Please verify your email and try again");
+      if (account?.type !== "credentials") return true;
+      if (!User.emailVerified)
+        throw new Error("Email not verified. click to send verification link");
       return true;
     },
     async session({ session, token, user }) {

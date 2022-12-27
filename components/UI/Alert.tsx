@@ -15,6 +15,7 @@ const useStyles = makeStyles({
     "& > div": {
       position: "relative",
       left: "calc(-100% - 1rem)",
+      maxWidth: "310px",
       paddingBottom: "0.3rem",
       ...shorthands.padding("1rem"),
     },
@@ -97,7 +98,7 @@ const MyAlert = ({ children, intent, Action }: props) => {
             },
           }}
         >
-          {children}
+          <div style={{ padding: "0.4rem" }}>{children}</div>
         </Alert>
       ) : (
         <Alert intent={intent}>{children}</Alert>
@@ -128,13 +129,19 @@ const removeAlert = () => {
 
 export const ShowAlert = (
   children: React.ReactNode,
-  intent: "success" | "error" | "warning" | "info"
+  intent: "success" | "error" | "warning" | "info",
+  Action?: {
+    Icon: JSX.Element;
+    onClick: () => void;
+  }
 ) => {
   removeAlert();
-  const Action = {
-    Icon: <DismissRegular />,
-    onClick: removeAlert,
-  };
+  const defaultAction = Action
+    ? Action
+    : {
+        Icon: <DismissRegular />,
+        onClick: removeAlert,
+      };
   let newAlert = document.createElement("div");
   newAlert.setAttribute("id", "alert" + lastAlert);
   let root: Root;
@@ -145,7 +152,7 @@ export const ShowAlert = (
     if (!root) return;
 
     root.render(
-      <MyAlert intent={intent} Action={Action}>
+      <MyAlert intent={intent} Action={defaultAction}>
         {children}
       </MyAlert>
     );

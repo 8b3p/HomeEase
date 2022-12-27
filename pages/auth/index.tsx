@@ -2,11 +2,12 @@ import { ShowAlert } from "@/components/UI/Alert";
 import AuthForm from "@/components/auth/AuthForm";
 import { isThereUser, sendRegisterRequest } from "@/utils/apiService";
 import { makeStyles, shorthands } from "@fluentui/react-components";
+import { SendRegular } from "@fluentui/react-icons";
 import { observer } from "mobx-react-lite";
 import { NextPageContext } from "next";
 import { getSession, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 
 const useStyles = makeStyles({
   container: {
@@ -34,7 +35,7 @@ function Auth() {
   if (session.status === "authenticated") {
     router.push("/");
   }
-  
+
   const [loading, setLoading] = React.useState(false);
 
   const classes = useStyles();
@@ -48,8 +49,7 @@ function Auth() {
     const res2 = await isThereUser(Args.email);
     // handle error
     if (res2.error) {
-      console.dir(res2);
-      console.error(res2.error.errorMessage);
+      console.error(res2);
       ShowAlert("Something went wrong, please try again", "error");
     } else if (!res2.userExists) {
       //*second: if not, send the register request
@@ -57,7 +57,7 @@ function Auth() {
       // handle error
       if (!res1.ok) {
         ShowAlert(res1.error?.errorMessage, "error");
-        console.dir(res1);
+        console.error(res1);
         return;
       }
 
@@ -69,7 +69,7 @@ function Auth() {
       });
       // handle error
       if (res?.error) {
-        console.dir(res.error);
+        console.error(res.error);
         ShowAlert(res.error, "error");
         return;
       }
@@ -94,11 +94,18 @@ function Auth() {
         email: Args.email,
         password: Args.password,
       });
-      console.log("after signin");
       // handle error
       if (res?.error) {
-        console.log(res.error);
-        console.dir(res);
+        if (
+          res.error === "Email not verified. click to send verification link"
+        ) {
+          ShowAlert(res.error, "error", {
+            onClick: () => resendAuthEmail(Args.email),
+            Icon: <SendRegular />,
+          });
+          return;
+        }
+        console.error(res);
         ShowAlert(res.error, "error");
         return;
       }
@@ -120,11 +127,9 @@ function Auth() {
     setLoading(true);
     if (!Args.username) {
       //!login
-      console.log("Login");
       await loginHandler(Args as { email: string; password: string });
     } else {
       //!register
-      console.log("Register");
       await signupHandler(
         Args as {
           password: string;
@@ -137,7 +142,12 @@ function Auth() {
   }
 
   const resendAuthEmail = async (email: string) => {
-    signIn("email", { redirect: false, email });
+    const res = await signIn("email", { redirect: false, email });
+    if (res?.error) {
+      ShowAlert(res.error, "error");
+      return;
+    }
+    ShowAlert("A sign in link has been sent to your email address.", "success");
   };
 
   // const resetMessages = () => {
