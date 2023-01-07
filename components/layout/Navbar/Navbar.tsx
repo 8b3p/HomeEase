@@ -22,6 +22,8 @@ const useStyles = makeStyles({
     alignItems: "center",
     minHeight: "4rem",
     paddingInline: "1rem",
+    maxWidth: '1500px',
+    marginInline: "auto",
   },
   section: {
     display: "flex",

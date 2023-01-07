@@ -7,7 +7,7 @@ import { Root, createRoot } from "react-dom/client";
 const useStyles = makeStyles({
   root: {
     position: "absolute",
-    top: "5rem",
+    bottom: "1rem",
     left: "100%",
     width: "70%",
     minWidth: "230px",
@@ -15,7 +15,6 @@ const useStyles = makeStyles({
     "& > div": {
       position: "relative",
       left: "calc(-100% - 1rem)",
-      maxWidth: "310px",
       paddingBottom: "0.3rem",
       ...shorthands.padding("1rem"),
     },
@@ -40,11 +39,11 @@ const useStyles = makeStyles({
     },
     animationName: {
       from: {
-        top: "3rem",
+        bottom: "-1rem",
         opacity: 0,
       },
       to: {
-        top: "5rem",
+        bottom: "1rem",
         opacity: 1,
       },
     },
@@ -53,11 +52,11 @@ const useStyles = makeStyles({
   fadeout: {
     animationName: {
       from: {
-        top: "5rem",
+        bottom: "1rem",
         opacity: 1,
       },
       to: {
-        top: "6rem",
+        bottom: "2rem",
         opacity: 0,
       },
     },
@@ -109,10 +108,10 @@ const MyAlert = ({ children, intent, Action }: props) => {
           intent === "error"
             ? { backgroundColor: "red" }
             : intent === "info"
-            ? { backgroundColor: "cyan" }
-            : intent === "warning"
-            ? { backgroundColor: "yellow" }
-            : { backgroundColor: "green" }
+              ? { backgroundColor: "cyan" }
+              : intent === "warning"
+                ? { backgroundColor: "yellow" }
+                : { backgroundColor: "green" }
         }
       />
     </div>
@@ -139,9 +138,9 @@ export const ShowAlert = (
   const defaultAction = Action
     ? Action
     : {
-        Icon: <DismissRegular />,
-        onClick: removeAlert,
-      };
+      Icon: <DismissRegular />,
+      onClick: removeAlert,
+    };
   let newAlert = document.createElement("div");
   newAlert.setAttribute("id", "alert" + lastAlert);
   let root: Root;

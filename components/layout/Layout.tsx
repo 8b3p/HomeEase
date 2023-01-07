@@ -6,6 +6,7 @@ import { makeStyles } from "@fluentui/react-components";
 
 interface props {
   children: React.ReactNode;
+  styles?: React.CSSProperties;
 }
 
 const useStyles = makeStyles({

@@ -27,20 +27,18 @@ function MyApp({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <AuthContextProvider>
-      <ThemeContextProvider>
-        <FluentProvider
-          theme={themeVM.themeType === "dark" ? webDarkTheme : webLightTheme}
-        >
-          <SessionProvider>
-            <div id='alert' />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </SessionProvider>
-        </FluentProvider>
-      </ThemeContextProvider>
-    </AuthContextProvider>
+    <ThemeContextProvider>
+      <FluentProvider
+        theme={themeVM.themeType === "dark" ? webDarkTheme : webLightTheme}
+      >
+        <SessionProvider>
+          <div id='alert' />
+          <Layout >
+            <Component {...pageProps} />
+          </Layout>
+        </SessionProvider>
+      </FluentProvider>
+    </ThemeContextProvider>
   );
 }
 

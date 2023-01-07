@@ -1,35 +1,19 @@
-import { useThemeVM } from "@/context/Contexts";
-import themeVM from "@/context/themeVM";
 import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  MenuPopover,
-  MenuTrigger,
-  Text,
   makeStyles,
+  Text,
 } from "@fluentui/react-components";
 import {
-  Copy24Filled,
-  Copy24Regular,
-  DarkTheme24Filled,
-  DarkTheme24Regular,
-  bundleIcon,
   iconFilledClassName,
   iconRegularClassName,
 } from "@fluentui/react-icons";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
-
-interface props {
-  children: React.ReactNode;
-}
 
 const useStyles = makeStyles({
   root: {
     display: "flex",
-    height: "calc(100% - 4rem)",
+    // height: "calc(100% - 4rem)",
+    height: "100vh",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
@@ -46,11 +30,10 @@ const useStyles = makeStyles({
   },
 });
 
-const CopyIcon = bundleIcon(Copy24Filled, Copy24Regular);
 
-const Home = ({ children }: props) => {
+const Home = () => {
+  const [error, setError] = useState(false);
   const classes = useStyles();
-  const themeVM = useThemeVM();
 
   return (
     <div className={classes.root}>

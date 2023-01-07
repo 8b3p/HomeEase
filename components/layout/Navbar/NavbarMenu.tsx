@@ -37,7 +37,6 @@ const NavbarMenu = () => {
             appearance='transparent'
             onClick={async () => {
               const data = await signOut({
-                callbackUrl: "/",
                 redirect: false,
               });
               router.push(data.url);
@@ -70,7 +69,7 @@ const NavbarMenu = () => {
           className={classes.tabList}
           selectedValue={router.pathname}
           size='small'
-          onTabSelect={(e, data: SelectTabData) => {
+          onTabSelect={(_e, data: SelectTabData) => {
             router.push(data.value as any as string);
           }}
         >
