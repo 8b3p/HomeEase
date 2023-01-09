@@ -51,7 +51,7 @@ const Navbar = () => {
     <div className={classes.root}>
       <div className={classes.section}>
         <Text className={classes.logo} weight='semibold' size={700}>
-          Fluent UI
+          Omair
         </Text>
         <Divider vertical />
         <TabList

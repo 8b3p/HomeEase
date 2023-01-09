@@ -25,7 +25,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   if (!isMounted) {
     return null;
   }
-
   return (
     <ThemeContextProvider>
       <FluentProvider

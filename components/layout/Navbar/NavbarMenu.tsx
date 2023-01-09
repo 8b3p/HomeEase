@@ -56,7 +56,7 @@ const NavbarMenu = () => {
                 <MenuItem
                   icon={<DarkTheme24Regular />}
                   onClick={() => {
-                    themeVM.toggleTheme;
+                    themeVM.toggleTheme();
                   }}
                 >
                   Toggle Theme
