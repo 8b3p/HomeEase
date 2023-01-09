@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     columnGap: "1rem",
   },
   logo: {
-    marginRight: "1rem",
+    marginInline: "1rem",
   },
   tabList: {
     marginInline: "1rem",
