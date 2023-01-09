@@ -74,16 +74,6 @@ const Navbar = () => {
         </TabList>
       </div>
       <div className={classes.section}>
-        <Tooltip content={<p>Change Theme</p>} relationship='inaccessible'>
-          <Button
-            icon={<DarkThemeRegular />}
-            size='large'
-            onClick={() => {
-              themeVM.toggleTheme();
-            }}
-            appearance='transparent'
-          />
-        </Tooltip>
         <NavbarMenu />
       </div>
     </div>
