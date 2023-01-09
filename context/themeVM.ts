@@ -17,10 +17,12 @@ export default class ThemeVM {
       const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
       this.themeType = darkThemeMq.matches ? "dark" : "light";
     }
+    document.documentElement.setAttribute("data-theme", this.themeType);
   }
 
   toggleTheme = () => {
     this.themeType = this.themeType === "light" ? "dark" : "light";
     localStorage.setItem(ThemeVM.themeTokenName, this.themeType);
+    document.documentElement.setAttribute("data-theme", this.themeType);
   };
 }

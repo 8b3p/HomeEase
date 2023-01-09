@@ -37,6 +37,7 @@ const NavbarMenu = () => {
             appearance='transparent'
             onClick={async () => {
               const data = await signOut({
+                callbackUrl: "/",
                 redirect: false,
               });
               router.push(data.url);

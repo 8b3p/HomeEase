@@ -7,6 +7,7 @@ import {
   Tab,
   TabList,
   Text,
+  tokens,
   Tooltip,
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
@@ -22,8 +23,8 @@ const useStyles = makeStyles({
     alignItems: "center",
     minHeight: "4rem",
     paddingInline: "1rem",
-    maxWidth: '1500px',
     marginInline: "auto",
+    backgroundColor: tokens.colorNeutralBackground1,
   },
   section: {
     display: "flex",

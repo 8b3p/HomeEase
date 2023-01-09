@@ -1,12 +1,12 @@
 import {
   makeStyles,
   Text,
+  tokens,
 } from "@fluentui/react-components";
 import {
   iconFilledClassName,
   iconRegularClassName,
 } from "@fluentui/react-icons";
-import { useState } from "react";
 import { observer } from "mobx-react-lite";
 
 const useStyles = makeStyles({
@@ -32,7 +32,6 @@ const useStyles = makeStyles({
 
 
 const Home = () => {
-  const [error, setError] = useState(false);
   const classes = useStyles();
 
   return (

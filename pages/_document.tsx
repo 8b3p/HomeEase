@@ -1,18 +1,22 @@
-import { tokens } from '@fluentui/react-components'
 import { Html, Head, Main, NextScript } from 'next/document'
+import React from 'react'
 
 
-export default function Document() {
+const Document = () => {
+
   return (
     <Html lang="en">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="stylesheet" href="/styles/globals.css" />
       </Head>
-      <body style={{ backgroundColor: tokens.colorNeutralBackground1 }}>
+      <body>
         <Main />
         <NextScript />
       </body>
-    </Html>
+    </Html >
   )
 }
+
+
+export default Document;

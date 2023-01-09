@@ -2,7 +2,6 @@ import "styles/globals.css";
 import type { AppProps } from "next/app";
 import Layout from "components/layout/Layout";
 import {
-  AuthContextProvider,
   ThemeContextProvider,
   themeVM,
 } from "context/Contexts";
@@ -21,6 +20,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
 
   if (!isMounted) {
     return null;

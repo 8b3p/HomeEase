@@ -1,9 +1,25 @@
+:root{
+  --main-background-color: #fafafa;
+}
+
 html,
 body {
   height: 100%;
   padding: 0;
   overflow-x: hidden;
   margin: 0;
+  background-color: var(--main-background-color);
+}
+
+[data-theme="dark"] {
+  --main-background-color: #292929;
+}
+[data-theme="light"] {
+  --main-background-color: #fff;
+}
+
+#container {
+  background-color: var(--main-background-color);
 }
 
 /* a {
@@ -48,7 +64,7 @@ body {
   width: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--main-background-color);
 }
 ::-webkit-scrollbar-thumb {
   background: #555555;

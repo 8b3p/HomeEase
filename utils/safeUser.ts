@@ -1,9 +1,9 @@
 import { User } from "@prisma/client";
 
-export type safeUser = Omit<User, "password" | "salt">;
+export type safeUser = Omit<User, "password" | "salt" | "updatedAt">;
 
 export function getSafeUser(user: User) {
-  const { password, salt, createdAt, updatedAt, houseId, id, ...safeUser } =
+  const { password, salt, updatedAt, ...safeUser } =
     user;
   return safeUser;
 }
