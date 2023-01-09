@@ -9,6 +9,7 @@ const Document = () => {
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="stylesheet" href="/styles/globals.css" />
+        <meta name="viewport" content="width=device-width,minimum-scale=1" />
       </Head>
       <body>
         <Main />
