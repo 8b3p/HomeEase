@@ -30,18 +30,6 @@ const NavbarMenu = () => {
     <>
       {session.status === "authenticated" ? (
         <>
-          <Button
-            icon={<SignOutRegular />}
-            size='large'
-            appearance='transparent'
-            onClick={async () => {
-              const data = await signOut({
-                callbackUrl: "/",
-                redirect: false,
-              });
-              router.push(data.url);
-            }}
-          />
           <Menu>
             <MenuTrigger disableButtonEnhancement>
               <Avatar
