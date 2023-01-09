@@ -12,14 +12,13 @@ import {
   TabList,
   makeStyles,
 } from "@fluentui/react-components";
-import { DarkTheme24Regular, SignOutRegular } from "@fluentui/react-icons";
+import { DarkThemeRegular, SignOutRegular } from "@fluentui/react-icons";
 import { observer } from "mobx-react-lite";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
-  tabList: {
-  },
+  tabList: {},
 });
 
 const NavbarMenu = () => {
@@ -54,12 +53,24 @@ const NavbarMenu = () => {
             <MenuPopover>
               <MenuList>
                 <MenuItem
-                  icon={<DarkTheme24Regular />}
+                  icon={<DarkThemeRegular />}
                   onClick={() => {
                     themeVM.toggleTheme();
                   }}
                 >
                   Toggle Theme
+                </MenuItem>
+                <MenuItem
+                    icon={<SignOutRegular />}
+                    onClick={async () => {
+                      const data = await signOut({
+                        callbackUrl: "/",
+                        redirect: false,
+                      });
+                      router.push(data.url);
+                    }}
+                >
+                  Signout
                 </MenuItem>
               </MenuList>
             </MenuPopover>
@@ -74,6 +85,14 @@ const NavbarMenu = () => {
             router.push(data.value as any as string);
           }}
         >
+          <Button
+            icon={<DarkThemeRegular />}
+            size='large'
+            onClick={() => {
+              themeVM.toggleTheme();
+            }}
+            appearance='transparent'
+          />
           <Tab value='/auth' key='auth' aria-label='auth'>
             Login
           </Tab>

@@ -1,7 +1,6 @@
 import Navbar from "@/components/layout/Navbar/Navbar";
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { useThemeVM } from "@/context/Contexts";
 import { makeStyles } from "@fluentui/react-components";
 
 interface props {

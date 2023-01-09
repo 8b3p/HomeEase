@@ -1,6 +1,5 @@
 import { useThemeVM } from "context/Contexts";
 import {
-  Button,
   Divider,
   makeStyles,
   SelectTabData,
@@ -8,10 +7,8 @@ import {
   TabList,
   Text,
   tokens,
-  Tooltip,
 } from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
-import { DarkThemeRegular } from "@fluentui/react-icons";
 import { useRouter } from "next/router";
 import NavbarMenu from "./NavbarMenu";
 
