@@ -1,25 +1,24 @@
-import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
-
-const useStyles = makeStyles({
-  root: {
-    backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.border(`1px solid ${tokens.colorSubtleBackgroundHover}`),
-    ...shorthands.borderRadius("0.5rem"),
-    ...shorthands.padding("1rem"),
-    width: "fit-content",
-    height: "fit-content",
-    boxShadow: `0 0 10px 2px ${tokens.colorNeutralShadowAmbient}, 0 0 0 1px ${tokens.colorSubtleBackgroundHover}`,
-  },
-});
+import { Box } from "@mui/material";
+import { styled } from '@mui/material/styles'
 
 interface props {
   children: React.ReactNode;
   className?: string;
 }
+const StyledBox = styled(Box)(({ theme }) => {
+  console.dir(theme.palette.background.paper)
+  console.dir(theme.palette.background.default)
+  return ({
+    padding: "1rem",
+    borderRadius: "0.5rem",
+    width: "fit-content",
+    height: "fit-content",
+    boxShadow: `0 0 10px 2px ${theme.palette.background.paper} 0 0 0 1px ${theme.palette.background.default}`,
+  })
+})
 
-const Card = ({ children, className, ...props }: props) => {
-  const classes = useStyles();
-  return <div className={classes.root + " " + className}>{children}</div>;
+const Card = ({ children, className }: props) => {
+  return <StyledBox className={className}>{children}</StyledBox>;
 };
 
 export default Card;

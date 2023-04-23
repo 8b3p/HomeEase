@@ -1,79 +1,52 @@
+import { DarkMode, LightMode } from "@mui/icons-material";
+import { IconButton, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useThemeVM } from "context/Contexts";
-import {
-  Divider,
-  makeStyles,
-  SelectTabData,
-  Tab,
-  TabList,
-  Text,
-  tokens,
-} from "@fluentui/react-components";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import NavbarMenu from "./NavbarMenu";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    minHeight: "4rem",
-    paddingInline: "1rem",
-    marginInline: "auto",
-    backgroundColor: tokens.colorNeutralBackground1,
-  },
-  section: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignContent: "center",
-    rowGap: "1rem",
-    columnGap: "1rem",
-  },
-  logo: {
-    marginInline: "1rem",
-  },
-  tabList: {
-    marginInline: "1rem",
-  },
-});
 
 const Navbar = () => {
-  const classes = useStyles();
   const themeVM = useThemeVM();
   const router = useRouter();
 
   return (
-    <div className={classes.root}>
-      <div className={classes.section}>
-        <Text className={classes.logo} weight='semibold' size={700}>
-          Omair
-        </Text>
-        <Divider vertical />
-        <TabList
+    <Stack direction="row" justifyContent="space-between" alignItems='center' spacing={2} sx={{ minHeight: "4rem", paddingInline: "1rem" }}>
+      <Stack direction="row" justifyContent="center" alignItems='center' >
+        <Typography variant="h5" sx={{ marginRight: '1rem' }}>
+          Fluent UI
+        </Typography>
+        <Tabs value={router.pathname} onChange={(_, value: string) => {
+          router.push(value);
+        }}
+        >
+          <Tab value="/chores" label="Chores" sx={{ textTransform: 'none' }} disableRipple />
+          <Tab value="/payments" label="Payments" sx={{ textTransform: 'none' }} disableRipple />
+        </Tabs>
+      </Stack>
+      <Stack direction="row" justifyContent="center" alignItems='center' >
+        <Tabs value={router.pathname} aria-label="disabled tabs example" onChange={(_, value: string) => {
+          router.push(value);
+        }}
+        >
+          <Tab value="/auth" label="Login" sx={{ textTransform: 'none' }} />
+        </Tabs>
+        {/*<TabList
+          className={classes.tabList}
           selectedValue={router.pathname}
           size='small'
-          className={classes.tabList}
           onTabSelect={(e, data: SelectTabData) => {
             router.push(data.value as any as string);
           }}
         >
-          <Tab value='/' key='home' aria-label='Home'>
-            Home
+          <Tab value='/auth' key='auth' aria-label='auth'>
+            Login
           </Tab>
-          <Tab value='/payments' key='payments' aria-label='payments'>
-            Payments
-          </Tab>
-          <Tab value='/chores' key='chores' aria-label='chores'>
-            Chores
-          </Tab>
-        </TabList>
-      </div>
-      <div className={classes.section}>
-        <NavbarMenu />
-      </div>
-    </div>
+        </TabList>*/}
+
+        <IconButton onClick={() => { themeVM.toggleTheme(); }}>
+          {themeVM.themeType === 'dark' ? <LightMode /> : <DarkMode />}
+        </IconButton>
+      </Stack>
+    </Stack>
   );
 };
 

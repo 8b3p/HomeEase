@@ -1,52 +1,21 @@
-import {
-  makeStyles,
-  Text,
-  tokens,
-} from "@fluentui/react-components";
-import {
-  iconFilledClassName,
-  iconRegularClassName,
-} from "@fluentui/react-icons";
+// pages/index.tsx
+import type { NextPage } from "next";
+
+import { Button, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
+import { useThemeVM } from "@/context/Contexts";
 
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    // height: "calc(100% - 4rem)",
-    height: "100vh",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  icon: {
-    ":hover": {
-      [`& > span .${iconFilledClassName}`]: {
-        display: "none",
-      },
-      [`& > span .${iconRegularClassName}`]: {
-        display: "inline",
-      },
-    },
-  },
-});
-
-
-const Home = () => {
-  const classes = useStyles();
+const Home: NextPage = () => {
+  const themeVM = useThemeVM();
 
   return (
-    <div className={classes.root}>
-      <Text align='center' size={600} weight='semibold'>
-        Welcome to the home page
-      </Text>
+    <div>
+      <Typography variant="h2" textAlign="center">
+        Current theme is {themeVM.themeType}
+      </Typography>
     </div>
   );
 };
 
-export const getServerSideProps = async () => {
-  return {
-    props: {},
-  };
-};
-
 export default observer(Home);
+
