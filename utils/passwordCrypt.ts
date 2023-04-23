@@ -28,7 +28,5 @@ export const verifyPassword = ({
 }): boolean => {
   // Verify password with salt
   const newHashedPassword = hashPassword(password, salt).hashedPassword;
-  console.log("NEW HASHED", newHashedPassword);
-  console.log("OLD HASHED", hashedPassword);
   return newHashedPassword === hashedPassword;
 };

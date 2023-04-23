@@ -1,31 +1,40 @@
-import NextrAuth from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import prisma from "utils/PrismaClient";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { verifyPassword } from "@/utils/passwordCrypt";
 import { getSafeUser } from "@/utils/safeUser";
+import { User } from "@prisma/client";
 
-export default NextrAuth({
+export default NextAuth({
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     CredentialsProvider({
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
+      type: "credentials",
+      name: "Credentials",
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied using prisma
-        if (!credentials || !credentials.username || !credentials.password)
+        if (!credentials || !credentials.email || !credentials.password)
           throw new Error("No credentials supplied");
-
-        prisma.$connect();
-        const user = await prisma.user.findUnique({
-          where: {
-            name: credentials.username,
-          },
-        });
-        prisma.$disconnect();
+        let user;
+        try {
+          user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email,
+            },
+          });
+        } catch (error: any) {
+          console.dir(error);
+          throw new Error(error.message);
+        }
 
         if (!user) {
           // If you return null then an error will be displayed advising the user to check their details.
@@ -39,7 +48,7 @@ export default NextrAuth({
             salt: user.salt,
           });
           if (passwordVerified) {
-            return getSafeUser(user);
+            return getSafeUser(user) as User;
           } else throw new Error("Wrong password");
         }
       },
@@ -56,4 +65,38 @@ export default NextrAuth({
       from: process.env.EMAIL_FROM,
     }),
   ],
+  callbacks: {
+    signIn: async ({ user, account, profile, email, credentials }) => {
+      let User = user as User;
+      if (account?.type !== "credentials") return true;
+      if (!User.emailVerified)
+        throw new Error("Email not verified. click to send verification link");
+      return true;
+    },
+    async session({ session, token, user }) {
+      //make first letter capital of firstname and lastname
+
+      session.user = {
+        ...user,
+        email: token.email,
+        name: `${token.firstName} ${token.lastName}`,
+      };
+      return session;
+    },
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        const newUser = getSafeUser(user as User);
+        newUser.firstName =
+          newUser.firstName.charAt(0).toUpperCase() +
+          newUser.firstName.slice(1);
+        newUser.lastName =
+          newUser.lastName.charAt(0).toUpperCase() + newUser.lastName.slice(1);
+        return {
+          ...token,
+          ...newUser,
+        };
+      }
+      return token;
+    },
+  },
 });

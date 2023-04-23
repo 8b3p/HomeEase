@@ -9,14 +9,15 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
 });
-const Payments = () => {
+
+const Chores = () => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <Text size={600}>I'm a Payment</Text>
+      <Text size={600}>I'm a Chore</Text>
     </div>
   );
 };
 
-export default Payments;
+export default Chores;
