@@ -1,4 +1,4 @@
-import Navbar from "components/layout/Navbar";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Box } from "@mui/material";
