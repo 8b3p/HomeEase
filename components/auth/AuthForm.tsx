@@ -1,14 +1,26 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import Card from "@/components/UI/Card";
-import { Button, Link, Stack, TextField, Typography } from "@mui/material";
 import { styled } from '@mui/material/styles'
+import { Login } from "@mui/icons-material";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import { LoadingButton } from "@mui/lab";
 
 interface props {
-  submit: <T extends { username: string; password: string; email?: string }>(
+  submit: <
+    T extends {
+      password: string;
+      email: string;
+      username?: { firstname: string; lastname: string };
+    }
+  >(
     Args: T
   ) => void;
   resendAuthEmail?: (email: string) => void;
+  loading?: boolean;
 }
 
 const StyledCard = styled(Card)(() => ({
@@ -51,15 +63,16 @@ const StyledForm = styled("form")(({ }) => ({
   },
   "> footer > button": {
     marginBottom: "0.5rem",
-    width: "20%",
   },
 }))
 
-const AuthForm = ({ submit, resendAuthEmail }: props) => {
+const AuthForm = ({ submit, resendAuthEmail, loading }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
-  const [usernameInput, setUsernameInput] = React.useState<string | null>(null);
-  const [usernameError, setUsernameError] = React.useState<string | null>(null);
+  const [firstnameInput, setFirstnameInput] = React.useState<string | null>(null);
+  const [lastnameInput, setLastnameInput] = React.useState<string | null>(null);
+  const [firstnameError, setFirstnameError] = React.useState<string | null>(null);
+  const [lastnameError, setLastnameError] = React.useState<string | null>(null);
   const [passwordError, setPasswordError] = React.useState<string | null>(null);
   const [emailError, setEmailError] = React.useState<string | null>(null);
   const [validate, setValidate] = React.useState<boolean>(false);
@@ -69,20 +82,38 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
     setIsLogin(prevState => !prevState);
   };
 
-  const validateUsername = (value: string | null): null | string => {
+  const validateUsername = (
+    value: string | null,
+    whichName: "firstname" | "lastname"
+  ): null | string => {
     if (!value) {
-      setUsernameError("Username cannot be empty");
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot be empty")
+        : setLastnameError("Name cannot be empty");
       return null;
     }
     if (value.trim().length === 0) {
-      setUsernameError("Username cannot be empty");
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot be empty")
+        : setLastnameError("Name cannot be empty");
       return null;
     }
     if (value.trim().length < 4) {
-      setUsernameError("Username must be at least 6 characters long");
+      whichName === "firstname"
+        ? setFirstnameError("Name must be at least 4 characters long")
+        : setLastnameError("Name must be at least 4 characters long");
       return null;
     }
-    setUsernameError(null);
+    //check for special characters
+    if (value.match(/[!@#$%^&*]/)) {
+      whichName === "firstname"
+        ? setFirstnameError("Name cannot contain special characters")
+        : setLastnameError("Name cannot contain special characters");
+      return null;
+    }
+    whichName === "firstname"
+      ? setFirstnameError(null)
+      : setLastnameError(null);
     return value.trim().toLowerCase();
   };
 
@@ -138,27 +169,35 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    let username = validateUsername(usernameInput);
+    let email = validateEmail(emailInput);
     let password = validatePassword(passwordInput);
-    if (!username || !password) {
+    if (!email || !password) {
       setValidate(true);
       return;
     }
     if (islogin) {
-      submit<{ username: string; password: string }>({
-        username,
+      submit<{ email: string; password: string }>({
+        email,
         password,
       });
     } else {
-      let email = validateEmail(emailInput);
-      if (!email) {
+      let firstname = validateUsername(firstnameInput, "firstname");
+      let lastname = validateUsername(lastnameInput, "lastname");
+      if (!firstname || !lastname) {
         setValidate(true);
         return;
       }
-      submit<{ username: string; email: string; password: string }>({
-        username,
+      submit<{
+        email: string;
+        password: string;
+        username: { firstname: string; lastname: string };
+      }>({
         email,
         password,
+        username: {
+          firstname,
+          lastname,
+        },
       });
     }
   };
@@ -169,34 +208,49 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
         <StyledForm>
           <Typography variant="h3">{islogin ? "Login" : "Signup"}</Typography>
           <div>
+            {!islogin && (
+              <>
+                <TextField
+                  error={firstnameError ? true : false}
+                  helperText={firstnameError}
+                  label='First Name'
+                  type='text'
+                  id='firstname'
+                  onChange={e => {
+                    setFirstnameInput(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (validate) validateUsername(firstnameInput, "firstname");
+                  }}
+                />
+                <TextField
+                  error={lastnameError ? true : false}
+                  helperText={lastnameError}
+                  label='Last Name'
+                  type='text'
+                  id='lastname'
+                  onChange={e => {
+                    setLastnameInput(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (validate) validateUsername(lastnameInput, "lastname");
+                  }}
+                />
+              </>
+            )}
             <TextField
-              error={usernameError ? true : false}
-              helperText={usernameError}
-              label='User Name'
+              error={emailError ? true : false}
+              helperText={emailError}
+              label='Email'
               type='text'
               id='username'
               onChange={e => {
-                setUsernameInput(e.target.value);
+                setEmailInput(e.target.value);
               }}
               onBlur={() => {
-                if (validate) validateUsername(usernameInput);
+                if (validate) validateEmail(emailInput);
               }}
             />
-            {!islogin && (
-              <TextField
-                error={emailError ? true : false}
-                helperText={emailError}
-                label='Email'
-                type='text'
-                id='username'
-                onChange={e => {
-                  setEmailInput(e.target.value);
-                }}
-                onBlur={() => {
-                  if (validate) validateEmail(emailInput);
-                }}
-              />
-            )}
             <TextField
               error={passwordError ? true : false}
               helperText={passwordError}
@@ -212,9 +266,31 @@ const AuthForm = ({ submit, resendAuthEmail }: props) => {
             />
           </div>
           <footer>
-            <Button type='submit' variant="outlined" onClick={submitHandler}>
-              {islogin ? "Login" : "Signup"}
-            </Button>
+            {islogin ? (
+              <LoadingButton
+                size="small"
+                onClick={submitHandler}
+                endIcon={<Login />}
+                loading={loading}
+                loadingPosition="end"
+                variant="contained"
+                sx={{ textTransform: "none" }}
+              >
+                <span>Log In</span>
+              </LoadingButton>
+            ) : (
+              <LoadingButton
+                size="small"
+                onClick={submitHandler}
+                endIcon={<Login />}
+                loading={loading}
+                loadingPosition="end"
+                variant="contained"
+                sx={{ textTransform: "none" }}
+              >
+                <span>Sign Up</span>
+              </LoadingButton>
+            )}
             <Link href='#' sx={{ textDecoration: "none" }} onClick={switchAuthModeHandler}>
               {islogin
                 ? "Dont have an account? Sign Up"

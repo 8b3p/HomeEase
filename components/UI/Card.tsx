@@ -6,8 +6,6 @@ interface props {
   className?: string;
 }
 const StyledBox = styled(Box)(({ theme }) => {
-  console.dir(theme.palette.background.paper)
-  console.dir(theme.palette.background.default)
   return ({
     padding: "1rem",
     borderRadius: "0.5rem",
