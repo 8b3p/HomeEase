@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import darkTheme from "@/styles/theme/darkTheme";
 import Layout from "@/components/layout/Layout";
 import { SessionProvider } from "next-auth/react";
+import { Analytics } from "@vercel/analytics/react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -36,6 +37,7 @@ const MyApp = (props: MyAppProps) => {
               <CssBaseline />
               <Layout>
                 <Component {...pageProps} />
+                <Analytics />
               </Layout>
             </ThemeProvider>
           </CacheProvider>
