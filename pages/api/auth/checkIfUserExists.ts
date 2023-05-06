@@ -1,10 +1,11 @@
 import { errorResponse } from "@/types/errorResponse";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "utils/PrismaClient";
+import middleware from "utils/middleware";
 
 export type checkIfUserExistsResponse = boolean | errorResponse;
 
-export default async function handler(
+export default middleware(async function handler(
   req: NextApiRequest,
   res: NextApiResponse<checkIfUserExistsResponse>
 ) {
@@ -22,4 +23,4 @@ export default async function handler(
   } else {
     res.status(405).json({ error: null, errorMessage: "Method not allowed" });
   }
-}
+})
