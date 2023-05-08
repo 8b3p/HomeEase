@@ -1,11 +1,11 @@
 import { errorResponse } from "@/types/errorResponse";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "utils/PrismaClient";
-import middleware from "utils/middleware";
+import { corsMW } from "utils/middleware";
 
 export type checkIfUserExistsResponse = boolean | errorResponse;
 
-export default middleware(async function handler(
+export default corsMW(async function handler(
   req: NextApiRequest,
   res: NextApiResponse<checkIfUserExistsResponse>
 ) {

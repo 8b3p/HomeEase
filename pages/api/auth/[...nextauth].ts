@@ -75,11 +75,11 @@ export default NextAuth({
     },
     async session({ session, token, user }) {
       //make first letter capital of firstname and lastname
-
       session.user = {
         ...user,
         email: token.email,
         name: `${token.firstName} ${token.lastName}`,
+        id: <string>token.id,
       };
       return session;
     },
