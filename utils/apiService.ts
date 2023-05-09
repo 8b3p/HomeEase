@@ -1,4 +1,85 @@
+import { signIn } from "next-auth/react";
 import { errorResponse } from "types/errorResponse";
+
+interface registerArgs {
+  password: string;
+  email: string;
+  username: { firstname: string; lastname: string };
+}
+
+interface loginArgs {
+  password: string;
+  email: string;
+}
+
+interface authResponse {
+  ok: boolean;
+  error?: {
+    errorMessage: string;
+    unverifiedEmail?: boolean;
+  };
+}
+
+export async function onRegister({ username, email, password }: registerArgs): Promise<authResponse> {
+  //*first: check if the user already exists
+  const res2 = await isThereUser(email);
+  if (res2.error) {
+    console.error(res2);
+    return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
+    // handle error
+  } else if (!res2.userExists) {
+    //*second: if not, send the register request
+    const res1 = await sendRegisterRequest({ username, email, password });
+    // handle error
+    if (!res1.ok) {
+      console.dir(res1.error)
+      return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
+    }
+    //*third: if the register request is successful, send the email verification request
+    const res = await signIn("email", {
+      redirect: false,
+      email: email,
+      callbackUrl: "/",
+    });
+    // handle error
+    if (res?.error) {
+      console.error(res.error);
+      return { ok: false, error: { errorMessage: res.error } }
+    }
+    //*fourth: if the email verification request is successful, show a success message
+    return { ok: true }
+  } else {
+    //*if the user already exists, show an error message
+    console.error("user already exist");
+    return { ok: false, error: { errorMessage: "User already exists" } }
+  }
+};
+
+export async function onLogin({ email, password }: loginArgs): Promise<authResponse> {
+  //*first: send the signin request with credentials
+  try {
+    let res = await signIn("credentials", {
+      redirect: false,
+      email: email,
+      password: password,
+    });
+    // handle error
+    if (res?.error) {
+      if (
+        res.error === "Email not verified. click to send verification link"
+      ) {
+        return { ok: false, error: { errorMessage: res.error, unverifiedEmail: true } }
+      }
+      console.error(res);
+      return { ok: false, error: { errorMessage: res.error } }
+    }
+    //*second: if the signin request is successful, show a success message
+    return { ok: true }
+  } catch (e) {
+    console.error(e);
+    return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
+  }
+};
 
 export async function sendRegisterRequest(Args: {
   username?: { firstname: string, lastname: string };

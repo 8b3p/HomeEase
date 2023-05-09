@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/Navbar/Navbar";
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 interface props {
   children: React.ReactNode;
@@ -9,12 +9,10 @@ interface props {
 
 const Layout = ({ children }: props) => {
   return (
-    <Box sx={{
-      minHeight: '100vh'
-    }}>
+    <Stack height="100%" >
       <Navbar />
-      <Box sx={{ height: 'calc(100vh - 4rem)' }}>{children}</Box>
-    </Box>
+      <Box sx={{ height: '100%' }}>{children}</Box>
+    </Stack>
   );
 };
 

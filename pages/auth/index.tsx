@@ -1,5 +1,5 @@
 import AuthForm from "@/components/auth/AuthForm";
-import { isThereUser, sendRegisterRequest } from "@/utils/apiService";
+import { onLogin, onRegister } from "@/utils/apiService";
 import { Alert, Box, Snackbar } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { signIn, useSession } from "next-auth/react";
@@ -22,83 +22,36 @@ function Auth() {
     email: string;
     username: { firstname: string; lastname: string };
   }) {
-    //*first: check if the user already exists
-    const res2 = await isThereUser(Args.email);
-    // handle error
-    if (res2.error) {
-      console.error(res2);
-      setError("Something went wrong, please try again");
-    } else if (!res2.userExists) {
-      //*second: if not, send the register request
-      const res1 = await sendRegisterRequest(Args);
-      // handle error
-      if (!res1.ok) {
-        setError(res1.error?.errorMessage)
-        console.error(res1);
-        return;
-      }
-
-      //*third: if the register request is successful, send the email verification request
-      const res = await signIn("email", {
-        redirect: false,
-        email: Args.email,
-        callbackUrl: "/",
-      });
-      // handle error
-      if (res?.error) {
-        console.error(res.error);
-        setError(res.error)
-        return;
-      }
-
-      //*fourth: if the email verification request is successful, show a success message
-      setSuccess('A sign in link has been sent to your email address.')
-    } else {
-      //*if the user already exists, show an error message
-      console.error("user already exist");
-      setError('User already exists')
+    const res = await onRegister(Args);
+    if (!res.ok) {
+      setError(res.error?.errorMessage)
+      console.error(res);
+      return;
     }
+    setSuccess('A sign in link has been sent to your email address.')
   }
 
   async function loginHandler(Args: { email: string; password: string }) {
     //*first: send the signin request with credentials
-    try {
-      let res = await signIn("credentials", {
-        redirect: false,
-        email: Args.email,
-        password: Args.password,
-      });
-      // handle error
-      if (res?.error) {
-        if (
-          res.error === "Email not verified. click to send verification link"
-        ) {
-          // ShowAlert(res.error, "error", {
-          //   onClick: () => resendAuthEmail(Args.email),
-          //   Icon: <SendRegular />,
-          // });
-          // TODO : add resend email verification link
-          return;
-        }
-        console.error(res);
-        setError(res.error)
-        return;
+    const res = await onLogin(Args);
+    if (!res.ok) {
+      if (res.error?.unverifiedEmail) {
+        // ShowAlert(res.error, "error", {
+        //   onClick: () => resendAuthEmail(Args.email),
+        //   Icon: <SendRegular />,
+        // });
+        // TODO : add resend email verification link
       }
-      //*second: if the signin request is successful, show a success message
-      setSuccess('You signed in successfully')
-    } catch (e) {
-      console.error(e);
+      setError(res.error?.errorMessage)
     }
+    setSuccess('You signed in successfully')
   }
 
-  async function submitHandler<
-    T extends {
-      password: string;
-      email: string;
-      username?: { firstname: string; lastname: string };
-    }
-  >(Args: T) {
-    // resetMessages();
+  async function submitHandler<T extends {
+    password: string;
+    email: string;
+    username?: { firstname: string; lastname: string };
+  }>(Args: T) {
     setLoading(true);
     if (!Args.username) {
       //!login

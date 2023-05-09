@@ -9,7 +9,11 @@ export default class ThemeVM {
 
   constructor() {
     makeAutoObservable(this);
-    if (typeof window === "undefined") return;
+  }
+
+  // not working
+  public hydrate = () => {
+    if (this.isServer) return;
     this.themeType =
       (localStorage.getItem(ThemeVM.themeTokenName) as ThemeType) || null;
 
@@ -20,7 +24,7 @@ export default class ThemeVM {
     document.documentElement.setAttribute("data-theme", this.themeType);
   }
 
-  toggleTheme = () => {
+  public toggleTheme = () => {
     this.themeType = this.themeType === "light" ? "dark" : "light";
     localStorage.setItem(ThemeVM.themeTokenName, this.themeType);
     document.documentElement.setAttribute("data-theme", this.themeType);

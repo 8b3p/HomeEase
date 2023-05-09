@@ -1,32 +1,36 @@
 import { useContext, createContext } from "react";
-import { AuthVM } from "context/authVM";
 import ThemeVM from "context/themeVM";
+import AppVM, { HydrationData } from "context/appVM";
+import { enableStaticRendering } from "mobx-react-lite";
 
-// ====================== AUTH CONTEXT ======================
-
-export const AuthContext = createContext<AuthVM | null>(null);
-
-export const authVM = new AuthVM();
-export const AuthContextProvider = ({ children }: any) => {
-  return <AuthContext.Provider value={authVM}>{children}</AuthContext.Provider>;
-};
-
-export const useAuthVM = () => {
-  const authVM = useContext(AuthContext);
-  if (!authVM) {
-    throw new Error("useAuthVM must be used within an AuthContextProvider");
-  }
-  return authVM;
-};
+enableStaticRendering(typeof window === "undefined")
 
 // ====================== THEME CONTEXT ======================
 
 export const ThemeContext = createContext<ThemeVM | null>(null);
 
-export const themeVM = new ThemeVM();
-export const ThemeContextProvider = ({ children }: any) => {
+let clientThemeVM: ThemeVM;
+
+const initThemeVM = () => {
+  // check if we already declare vm (client vm), otherwise create one
+  const vm = clientThemeVM ?? new ThemeVM();
+  // hydrate to vm if receive initial data
+
+  // Create a vm on every server request
+  if (typeof window === "undefined") return vm
+  // Otherwise it's client, remember this vm and return 
+  if (!clientThemeVM) clientThemeVM = vm;
+  return vm
+}
+
+// Hook for using vm
+export function useInitThemeVM() {
+  return initThemeVM()
+}
+
+export const ThemeContextProvider = ({ children, value }: { value: ThemeVM, children: JSX.Element }) => {
   return (
-    <ThemeContext.Provider value={themeVM}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 
@@ -36,4 +40,42 @@ export const useThemeVM = () => {
     throw new Error("useThemeVM must be used within an ThemeContextProvider");
   }
   return themeVM;
+};
+
+// ====================== APP CONTEXT ======================
+
+export const AppContext = createContext<AppVM | null>(null);
+
+let clientAppVM: AppVM;
+
+const initAppVM = (initData: HydrationData) => {
+  // check if we already declare vm (client vm), otherwise create one
+  const vm = clientAppVM ?? new AppVM();
+  // hydrate to vm if receive initial data
+  vm.hydrate(initData);
+
+  // Create a vm on every server request
+  if (typeof window === "undefined") return vm
+  // Otherwise it's client, remember this vm and return 
+  if (!clientAppVM) clientAppVM = vm;
+  return vm
+}
+//
+// Hook for using vm
+export function useInitAppVM(initData: HydrationData) {
+  return initAppVM(initData)
+}
+
+export const AppContextProvider = ({ children, value }: { value: AppVM, children: JSX.Element }) => {
+  return (
+    <AppContext.Provider value={value}>{children}</AppContext.Provider>
+  );
+};
+
+export const useAppVM = () => {
+  const appVM = useContext(AppContext);
+  if (!appVM) {
+    throw new Error("useAppVM must be used within an AppContextProvider");
+  }
+  return appVM;
 };

@@ -1,4 +1,4 @@
-// pages/_document.tsx
+
 import Document, { Html, Head, Main, NextScript, DocumentProps, DocumentContext, } from "next/document";
 import { AppType } from "next/app";
 import { MyAppProps } from "./_app";
@@ -19,6 +19,7 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
         {emotionStyleTags}
       </Head>
       <body>
+        <div id="alert-root"></div>
         <Main />
         <NextScript />
       </body>

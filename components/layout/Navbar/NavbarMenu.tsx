@@ -1,50 +1,33 @@
-import { themeVM } from "@/context/Contexts";
-import { DarkMode, LightMode, Logout } from "@mui/icons-material";
+import { useThemeVM, useAppVM } from "@/context/Contexts";
+import { stringToColor } from "@/utils/stringToColor";
+import { DarkMode, House, LightMode, Logout } from "@mui/icons-material";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Tooltip from "@mui/material/Tooltip";
 import { observer } from "mobx-react-lite";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 
-function stringToColor(string: string) {
-  let hash = 0;
-  let i;
-
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = '#';
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
-}
 
 function stringAvatar(name: string) {
+  console.log(name)
   return {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    children: `${name.split(' ')[0][0].toUpperCase()}${name.split(' ')[1][0].toUpperCase()}`,
   };
 }
 
 
 const NavbarMenu = () => {
-  const session = useSession();
+  const appVM = useAppVM();
+  const themeVM = useThemeVM();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -57,14 +40,14 @@ const NavbarMenu = () => {
 
   return (
     <>
-      {session.status === "authenticated" ? (
+      {appVM.user ? (
         <>
           <IconButton
             onClick={handleClick}
             size="small"
             sx={{ ml: 2 }}
           >
-            <Avatar variant="rounded"{...stringAvatar(session.data.user?.name || '')} />
+            <Avatar variant="rounded"{...stringAvatar(appVM.fullName || '')} />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -101,6 +84,12 @@ const NavbarMenu = () => {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
+            <MenuItem onClick={() => { router.push('/house') }}>
+              <ListItemIcon>
+                <House fontSize="small" />
+              </ListItemIcon>
+              Manage House
+            </MenuItem>
             <MenuItem onClick={() => { themeVM.toggleTheme() }}>
               <ListItemIcon>
                 {themeVM.themeType === 'dark' ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}

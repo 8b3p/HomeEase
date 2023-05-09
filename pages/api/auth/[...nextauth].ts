@@ -39,7 +39,7 @@ export default NextAuth({
         if (!user) {
           // If you return null then an error will be displayed advising the user to check their details.
           // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-          throw new Error("No user found");
+          throw new Error("Wrong email or password");
         } else {
           // Any object returned will be saved in `user` property of the JWT
           let passwordVerified = verifyPassword({
@@ -49,7 +49,8 @@ export default NextAuth({
           });
           if (passwordVerified) {
             return getSafeUser(user) as User;
-          } else throw new Error("Wrong password");
+          } else throw new Error("Wrong email or password");
+          ;
         }
       },
     }),

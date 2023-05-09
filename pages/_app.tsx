@@ -6,27 +6,41 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
 import lightTheme from "@/styles/theme/lightTheme";
-import { AuthContextProvider, ThemeContextProvider, themeVM } from "@/context/Contexts";
+import { AppContextProvider, ThemeContextProvider, useInitAppVM, useInitThemeVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
 import darkTheme from "@/styles/theme/darkTheme";
 import Layout from "@/components/layout/Layout";
 import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
+import { NextPageContext } from "next";
+import { IndexProps } from '@/pages/index'
+import { Session } from "next-auth";
+import '@/styles/globals.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
+interface myNextPageContext extends NextPageContext {
+  session?: Session | null
+}
+
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
+  pageProps: IndexProps & myNextPageContext
+
 }
 
 const MyApp = (props: MyAppProps) => {
   // If there's no emotionCache rendered by the server, use the clientSideEmotionCache
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const { initialState } = pageProps;
+
+  const themeVM = useInitThemeVM();
+  const appVM = useInitAppVM(initialState)
 
   return (
-    <AuthContextProvider>
-      <ThemeContextProvider>
+    <AppContextProvider value={appVM}>
+      <ThemeContextProvider value={themeVM}>
         <SessionProvider session={pageProps.session}>
           <CacheProvider value={emotionCache}>
             <Head>
@@ -43,7 +57,7 @@ const MyApp = (props: MyAppProps) => {
           </CacheProvider>
         </SessionProvider>
       </ThemeContextProvider>
-    </AuthContextProvider>
+    </AppContextProvider>
   );
 }
 

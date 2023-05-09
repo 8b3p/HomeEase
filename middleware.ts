@@ -10,12 +10,10 @@ import isValidObjectId from './utils/isValidObjectId';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const session = await getSession({ req: request as any })
-  console.log(session)
   if (request.nextUrl.pathname.includes('/api/houses/')) {
     // isPartOfHouse
     // get /api/houses/[houseId]
     const houseId = request.nextUrl.pathname.split('/')[3]
-    console.log(houseId)
     if (!isValidObjectId(houseId)) return NextResponse.json({ error: "Invalid house id" }, { status: 400 })
     // const house = await prisma.house.findUnique({
     //   where: {
@@ -33,7 +31,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   if (request.nextUrl.pathname.includes('/api')) {
-    console.log('hey1')
     return NextResponse.next();
   }
 }
