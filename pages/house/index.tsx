@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
@@ -34,6 +34,7 @@ const House = () => {
         const data = await res.json()
         if (!res.ok) {
           appVM.showAlert(data.error, "error");
+          return;
         }
         appVM.house = data.house
         router.push(`/house/${appVM.house?.id}`);
