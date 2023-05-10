@@ -18,7 +18,7 @@ const handler = async (
     // handle put request
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' })
-    const updatedHouse = await prisma.house.update({ where: { id: house.id }, data: { name } })
+    const updatedHouse = await prisma.house.update({ where: { id: house?.id }, data: { name } })
     res.status(200).json({ house: updatedHouse })
   }
 }

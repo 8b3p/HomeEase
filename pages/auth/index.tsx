@@ -1,4 +1,5 @@
 import AuthForm from "@/components/auth/AuthForm";
+import { useAppVM } from "@/context/Contexts";
 import { onLogin, onRegister } from "@/utils/apiService";
 import { Alert, Box, Snackbar } from "@mui/material";
 import { observer } from "mobx-react-lite";
@@ -12,6 +13,7 @@ function Auth() {
   const [success, setSuccess] = React.useState<string | undefined>();
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
+  const appVM = useAppVM();
   const session = useSession();
   if (session.status === "authenticated") {
     router.push("/");
@@ -24,8 +26,7 @@ function Auth() {
   }) {
     const res = await onRegister(Args);
     if (!res.ok) {
-      setError(res.error?.errorMessage)
-      console.error(res);
+      appVM.showAlert(res.error?.errorMessage || "", "error")
       return;
     }
     setSuccess('A sign in link has been sent to your email address.')
@@ -41,10 +42,11 @@ function Auth() {
         //   Icon: <SendRegular />,
         // });
         // TODO : add resend email verification link
+        appVM.showAlert(res.error.errorMessage, "error")
       }
-      setError(res.error?.errorMessage)
+      appVM.showAlert(res.error?.errorMessage || "", "error")
     }
-    setSuccess('You signed in successfully')
+    appVM.showAlert("Login successful", "success")
   }
 
   async function submitHandler<T extends {
@@ -72,27 +74,14 @@ function Auth() {
   const resendAuthEmail = async (email: string) => {
     const res = await signIn("email", { redirect: false, email });
     if (res?.error) {
-      setError(res.error);
+      appVM.showAlert(res.error, "error")
       return;
     }
     setSuccess("A sign in link has been sent to your email address.")
   };
 
-  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setError(undefined);
-    setSuccess(undefined);
-  };
-
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
-      <Snackbar open={success || error ? true : false} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={error ? "error" : "success"} sx={{ width: '100%' }}>
-          {error ? error : success}
-        </Alert>
-      </Snackbar>
       <AuthForm submit={submitHandler} resendAuthEmail={resendAuthEmail} loading={loading} />
     </Box>
   );

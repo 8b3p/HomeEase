@@ -1,16 +1,19 @@
-import { Alert, AlertProps, Snackbar } from '@mui/material';
+import { Alert, AlertProps, Snackbar, Stack } from '@mui/material';
 import React from 'react';
 
-interface props {
-  message: string;
-  type: AlertProps['severity'];
-}
 
-const GlobalAlert = () => {
+const GlobalAlert = ({ message, severity }: { message: string, severity: AlertProps['severity'] }) => {
+  const [open, setOpen] = React.useState(true);
+
+  const handleClose = (_event: Event | React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setOpen(false);
+  };
+
   return (
-    <Snackbar open={success || error ? true : false} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity={error ? "error" : "success"} sx={{ width: '100%' }}>
-        {error ? error : success}
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+        {message}
       </Alert>
     </Snackbar>
   )

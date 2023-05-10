@@ -62,8 +62,9 @@ const initAppVM = (initData: HydrationData) => {
 }
 //
 // Hook for using vm
-export function useInitAppVM(initData: HydrationData) {
-  return initAppVM(initData)
+export function useInitAppVM(initData: HydrationData, isClient?: boolean) {
+  if (!isClient) return initAppVM(initData)
+  return clientAppVM
 }
 
 export const AppContextProvider = ({ children, value }: { value: AppVM, children: JSX.Element }) => {

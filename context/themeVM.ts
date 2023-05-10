@@ -4,7 +4,7 @@ export type ThemeType = "light" | "dark";
 
 export default class ThemeVM {
   static themeTokenName = "theme";
-  public themeType: ThemeType = "dark";
+  public themeType: ThemeType = "light";
   public isServer = typeof window === "undefined";
 
   constructor() {

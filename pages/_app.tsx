@@ -1,6 +1,6 @@
 // pages/_app.tsx
 import Head from "next/head";
-import { AppProps } from "next/app";
+import { AppContext, AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider, EmotionCache } from "@emotion/react";
@@ -10,38 +10,51 @@ import { AppContextProvider, ThemeContextProvider, useInitAppVM, useInitThemeVM 
 import { observer } from "mobx-react-lite";
 import darkTheme from "@/styles/theme/darkTheme";
 import Layout from "@/components/layout/Layout";
-import { SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
-import { NextPageContext } from "next";
-import { IndexProps } from '@/pages/index'
-import { Session } from "next-auth";
 import '@/styles/globals.css'
+import { House } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-interface myNextPageContext extends NextPageContext {
-  session?: Session | null
+interface props {
+  isClient?: boolean
+  initialState: {
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      house: House | null;
+    } | null
+  }
 }
 
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
-  pageProps: IndexProps & myNextPageContext
-
+  props: props
 }
 
-const MyApp = (props: MyAppProps) => {
+const MyApp = (appProps: MyAppProps) => {
   // If there's no emotionCache rendered by the server, use the clientSideEmotionCache
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const { initialState } = pageProps;
+  const [hasMounted, setHasMounted] = useState(false)
+  const { Component, emotionCache = clientSideEmotionCache, pageProps, props } = appProps;
+  const initialState = props?.initialState
 
   const themeVM = useInitThemeVM();
-  const appVM = useInitAppVM(initialState)
+  const appVM = useInitAppVM(initialState, props?.isClient)
+
+  useEffect(() => {
+    if (!hasMounted) themeVM.hydrate();
+    setHasMounted(true)
+  }, [hasMounted, themeVM])
 
   return (
     <AppContextProvider value={appVM}>
       <ThemeContextProvider value={themeVM}>
-        <SessionProvider session={pageProps.session}>
+        <SessionProvider session={pageProps?.session}>
           <CacheProvider value={emotionCache}>
             <Head>
               <meta name="viewport" content="initial-scale=1, width=device-width" />
@@ -59,6 +72,24 @@ const MyApp = (props: MyAppProps) => {
       </ThemeContextProvider>
     </AppContextProvider>
   );
+}
+
+MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> => {
+  const session = await getSession(ctx);
+  if (!ctx.req) return { props: { isClient: true, initialState: { user: null } } }
+  const res = await fetch(
+    `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
+    method: "GET",
+    headers: { "cookie": ctx.req?.headers.cookie as string }
+  })
+  const data = await res.json();
+  return {
+    props: {
+      initialState: {
+        user: res.ok ? data.user : null
+      }
+    }
+  }
 }
 
 export default observer(MyApp);

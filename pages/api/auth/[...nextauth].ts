@@ -32,8 +32,7 @@ export default NextAuth({
             },
           });
         } catch (error: any) {
-          console.dir(error);
-          throw new Error(error.message);
+          throw new Error("In [...nextauth].ts line 35\n" + error.message);
         }
 
         if (!user) {

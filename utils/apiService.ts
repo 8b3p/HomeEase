@@ -24,7 +24,6 @@ export async function onRegister({ username, email, password }: registerArgs): P
   //*first: check if the user already exists
   const res2 = await isThereUser(email);
   if (res2.error) {
-    console.error(res2);
     return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
     // handle error
   } else if (!res2.userExists) {
@@ -32,7 +31,6 @@ export async function onRegister({ username, email, password }: registerArgs): P
     const res1 = await sendRegisterRequest({ username, email, password });
     // handle error
     if (!res1.ok) {
-      console.dir(res1.error)
       return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
     }
     //*third: if the register request is successful, send the email verification request
@@ -43,14 +41,12 @@ export async function onRegister({ username, email, password }: registerArgs): P
     });
     // handle error
     if (res?.error) {
-      console.error(res.error);
       return { ok: false, error: { errorMessage: res.error } }
     }
     //*fourth: if the email verification request is successful, show a success message
     return { ok: true }
   } else {
     //*if the user already exists, show an error message
-    console.error("user already exist");
     return { ok: false, error: { errorMessage: "User already exists" } }
   }
 };
@@ -70,13 +66,11 @@ export async function onLogin({ email, password }: loginArgs): Promise<authRespo
       ) {
         return { ok: false, error: { errorMessage: res.error, unverifiedEmail: true } }
       }
-      console.error(res);
       return { ok: false, error: { errorMessage: res.error } }
     }
     //*second: if the signin request is successful, show a success message
     return { ok: true }
   } catch (e) {
-    console.error(e);
     return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
   }
 };
@@ -115,6 +109,5 @@ export async function isThereUser(
     return { error: res };
   }
   const res = (await resJson.json()) as boolean;
-  console.dir(res);
   return { userExists: res };
 }

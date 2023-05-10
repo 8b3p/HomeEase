@@ -11,12 +11,12 @@ import { Session } from "next-auth";
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  session: Session,
+  _session: Session,
   house: (House & { users: User[]; }) | null,
 ) => {
   if (req.method === "GET") {
     // Process a POST request
-    const users = house.map((user) => {
+    const users = house?.users.map((user) => {
       return {
         id: user.id,
         email: user.email,

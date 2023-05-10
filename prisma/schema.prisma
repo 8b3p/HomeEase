@@ -93,6 +93,7 @@ model House {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
   name            String
   createdAt       DateTime          @default(now()) @map("created_at")
+  invitationCode  String            @unique @map("invitation_code")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   ChoreAssignment ChoreAssignment[]
   users           User[]

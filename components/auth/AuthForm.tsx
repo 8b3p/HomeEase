@@ -23,7 +23,7 @@ interface props {
   loading?: boolean;
 }
 
-const StyledCard = styled(Card)(() => ({
+export const StyledCard = styled(Card)(() => ({
   width: "70% !important",
   height: "70% !important",
   minWidth: "230px",
@@ -32,7 +32,7 @@ const StyledCard = styled(Card)(() => ({
   maxHeight: "400px",
 }))
 
-const StyledForm = styled("form")(({ }) => ({
+export const StyledForm = styled("form")(({ }) => ({
   alignSelf: "center",
   display: "flex",
   rowGap: "1rem",
