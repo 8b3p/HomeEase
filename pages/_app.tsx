@@ -86,25 +86,36 @@ MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> =
       }
     }
   }
-  const res = await fetch(
-    `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
-    method: "GET",
-    headers: { "cookie": ctx.req?.headers.cookie as string }
-  })
-  if (!res.ok) {
+  try {
+    const res = await fetch(
+      `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
+      method: "GET",
+      headers: { "cookie": ctx.req?.headers.cookie as string }
+    })
+    if (!res.ok) {
+      return {
+        props: {
+          initialState: {
+            user: null
+          }
+        }
+      }
+    }
+    const data = await res.json();
+    return {
+      props: {
+        initialState: {
+          user: data.user
+        }
+      }
+    }
+
+  } catch (e: any) {
     return {
       props: {
         initialState: {
           user: null
         }
-      }
-    }
-  }
-  const data = await res.json();
-  return {
-    props: {
-      initialState: {
-        user: data.user
       }
     }
   }
