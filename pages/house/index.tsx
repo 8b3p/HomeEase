@@ -28,8 +28,10 @@ const House = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "accept": "application/json"
           },
           body: JSON.stringify({ name: newName }),
+          credentials: "include",
         })
         const data = await res.json()
         if (!res.ok) {

@@ -15,6 +15,7 @@ import { Analytics } from "@vercel/analytics/react";
 import '@/styles/globals.css'
 import { House } from "@prisma/client";
 import { useEffect, useState } from "react";
+import { getBaseUrl } from "@/utils/apiService";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -46,7 +47,6 @@ const MyApp = (appProps: MyAppProps) => {
   const themeVM = useInitThemeVM();
   const appVM = useInitAppVM(initialState, props?.isClient)
 
-  console.log(initialState)
 
   useEffect(() => {
     if (!hasMounted) themeVM.hydrate();
@@ -88,35 +88,30 @@ MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> =
       }
     }
   }
-  try {
-    const res = await fetch(
-      `http${process.env.NODE_ENV === "development" ? '' : ''}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
-      method: "GET",
-      headers: { "cookie": ctx.req?.headers.cookie as string }
-    })
-    if (!res.ok) {
-      return {
-        props: {
-          initialState: {
-            user: null
-          }
-        }
-      }
-    }
-    const data = await res.json();
-    return {
-      props: {
-        initialState: {
-          user: data.user
-        }
-      }
-    }
-  } catch (e: any) {
-    console.log(e)
+  console.log(getBaseUrl(ctx.req))
+  const res = await fetch(
+    `${getBaseUrl(ctx.req)}/api/users/${session?.user.id}/house`, {
+    method: "GET",
+    headers: { "cookie": ctx.req?.headers.cookie as string }
+  })
+  if (!res.ok) {
     return {
       props: {
         initialState: {
           user: null
+        }
+      }
+    }
+  }
+  const data = await res.json();
+  const user = data.user
+  const house = user.House;
+  return {
+    props: {
+      initialState: {
+        user: {
+          ...user,
+          house
         }
       }
     }

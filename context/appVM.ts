@@ -17,7 +17,7 @@ export interface HydrationData {
 
 export default class AppVM {
   public isServer = typeof window === "undefined";
-  public house: House | null = null;
+  public house: Partial<House> | null = null;
   public user: Partial<User> | null = null;
   private alertTimer: NodeJS.Timeout | null = null;
   private alertRoot: ReactDOM.Root | null = null;

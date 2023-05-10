@@ -1,3 +1,4 @@
+import { IncomingMessage } from "http";
 import { signIn } from "next-auth/react";
 import { errorResponse } from "types/errorResponse";
 
@@ -18,6 +19,16 @@ interface authResponse {
     errorMessage: string;
     unverifiedEmail?: boolean;
   };
+}
+
+export function getBaseUrl(req: IncomingMessage | IncomingMessage & {
+  cookies: Partial<{
+    [key: string]: string;
+  }>;
+}) {
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  return `${protocol}://${host}`;
 }
 
 export async function onRegister({ username, email, password }: registerArgs): Promise<authResponse> {

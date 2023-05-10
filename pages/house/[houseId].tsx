@@ -1,16 +1,33 @@
 import { useAppVM } from "@/context/Contexts";
+import { getBaseUrl } from "@/utils/apiService";
 import { Stack, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import { useEffect } from "react";
 
-const House = () => {
+interface props {
+  house: {
+    id: string;
+    name: string;
+    invitationCode: string;
+    users: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      houseId: string;
+    }[]
+  } | null
+}
+
+const House = ({ house }: props) => {
   const appVM = useAppVM();
 
   return (
     <Stack height='100%' alignItems='center' justifyContent="center">
       {appVM.house ? (
-        <Typography variant="h1">{appVM.house.name}</Typography>
+        <Typography variant="h1">{appVM.house.name} {house?.users.map((user) => (user.firstName + ' ' + user.lastName))}</Typography>
       ) : (
         <Typography variant="h4">You are not part of a house</Typography>
 
@@ -26,34 +43,17 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (!session) {
     ctx.res.writeHead(302, { Location: '/' }).end();
   }
-
   const res = await fetch(
-    `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req.headers.host}/api/house/${houseId}`, {
+    `${getBaseUrl(ctx.req)}/api/houses/${houseId}`, {
     method: "GET",
     headers: { "cookie": ctx.req.headers.cookie as string }
   })
+  const data = await res.json();
+  console.log(data.house)
   if (!res.ok) {
-    if (res.status === 401) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false
-        }
-      }
-    } else if (res.status === 404) {
-      return {
-        redirect: {
-          destination: '/404',
-          permanent: false
-        }
-      }
-    }
-    console.log('pages/house/[houseId] ', res.status, res.statusText)
     return { props: { house: null } };
   }
-  const data = res.json()
-
-  return { props: {} };
+  return { props: { house: data.house } };
 }
 
 export default observer(House);
