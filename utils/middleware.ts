@@ -26,7 +26,6 @@ export function corsMW(handler: any) {
 // middleware to check if user is authenticated
 export function authMW(handler: any) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log('headers', req.headers)
     const session = await getSession({ req });
     if (!session) {
       return res.status(401).json({ error: "Not authorized" });

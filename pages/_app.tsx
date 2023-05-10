@@ -77,6 +77,15 @@ const MyApp = (appProps: MyAppProps) => {
 MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> => {
   const session = await getSession(ctx);
   if (!ctx.req) return { props: { isClient: true, initialState: { user: null } } }
+  if (!session) {
+    return {
+      props: {
+        initialState: {
+          user: null
+        }
+      }
+    }
+  }
   const res = await fetch(
     `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
     method: "GET",
