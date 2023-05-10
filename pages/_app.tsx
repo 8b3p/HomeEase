@@ -12,10 +12,13 @@ import darkTheme from "@/styles/theme/darkTheme";
 import Layout from "@/components/layout/Layout";
 import { getSession, SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
-import '@/styles/globals.css'
 import { House } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { getBaseUrl } from "@/utils/apiService";
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import '@/styles/globals.css'
+import { useRouter } from "next/router";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -41,6 +44,7 @@ export interface MyAppProps extends AppProps {
 const MyApp = (appProps: MyAppProps) => {
   // If there's no emotionCache rendered by the server, use the clientSideEmotionCache
   const [hasMounted, setHasMounted] = useState(false)
+  const router = useRouter();
   const { Component, emotionCache = clientSideEmotionCache, pageProps, props } = appProps;
   const initialState = props?.initialState
 
@@ -52,6 +56,18 @@ const MyApp = (appProps: MyAppProps) => {
     if (!hasMounted) themeVM.hydrate();
     setHasMounted(true)
   }, [hasMounted, themeVM])
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => {
+      NProgress.start()
+    })
+    router.events.on('routeChangeComplete', () => {
+      NProgress.done()
+    })
+    router.events.on('routeChangeError', () => {
+      NProgress.done()
+    })
+  }, [router])
 
   return (
     <AppContextProvider value={appVM}>
