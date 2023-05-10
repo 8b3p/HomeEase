@@ -31,8 +31,10 @@ const House = () => {
           },
           body: JSON.stringify({ name: newName }),
         })
-        if (!res.ok) throw new Error(res.statusText)
         const data = await res.json()
+        if (!res.ok) {
+          appVM.showAlert(data.error, "error");
+        }
         appVM.house = data.house
         router.push(`/house/${appVM.house?.id}`);
       } catch (e: any) {

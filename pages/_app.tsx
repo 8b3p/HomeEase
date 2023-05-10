@@ -46,6 +46,8 @@ const MyApp = (appProps: MyAppProps) => {
   const themeVM = useInitThemeVM();
   const appVM = useInitAppVM(initialState, props?.isClient)
 
+  console.log(initialState)
+
   useEffect(() => {
     if (!hasMounted) themeVM.hydrate();
     setHasMounted(true)
@@ -88,7 +90,7 @@ MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> =
   }
   try {
     const res = await fetch(
-      `http${process.env.NODE_ENV === "development" ? '' : 's'}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
+      `http${process.env.NODE_ENV === "development" ? '' : ''}://${ctx.req?.headers.host}/api/users/${session?.user.id}/house`, {
       method: "GET",
       headers: { "cookie": ctx.req?.headers.cookie as string }
     })
@@ -109,8 +111,8 @@ MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> =
         }
       }
     }
-
   } catch (e: any) {
+    console.log(e)
     return {
       props: {
         initialState: {

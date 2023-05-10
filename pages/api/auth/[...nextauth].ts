@@ -38,6 +38,7 @@ export default NextAuth({
         if (!user) {
           // If you return null then an error will be displayed advising the user to check their details.
           // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+          // wrong email
           throw new Error("Wrong email or password");
         } else {
           // Any object returned will be saved in `user` property of the JWT
@@ -48,6 +49,7 @@ export default NextAuth({
           });
           if (passwordVerified) {
             return getSafeUser(user) as User;
+            // wrong password
           } else throw new Error("Wrong email or password");
           ;
         }
@@ -74,13 +76,14 @@ export default NextAuth({
       return true;
     },
     async session({ session, token, user }) {
-      //make first letter capital of firstname and lastname
-      session.user = {
-        ...user,
-        email: token.email,
-        name: `${token.firstName} ${token.lastName}`,
-        id: <string>token.id,
-      };
+      if (session.user && token) {
+        session.user = {
+          ...user,
+          email: token.email,
+          name: `${token.firstName} ${token.lastName}`,
+          id: <string>token.id,
+        };
+      }
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
