@@ -115,7 +115,12 @@ const NavbarMenu = ({ isMobile }: { isMobile: boolean }) => {
               </ListItemIcon>
               Change Theme
             </MenuItem>
-            <MenuItem onClick={() => { signOut() }}>
+            <MenuItem onClick={() => {
+              signOut({
+                redirect: true,
+                callbackUrl: '/'
+              })
+            }}>
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>

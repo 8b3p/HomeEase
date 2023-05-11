@@ -16,11 +16,15 @@ const handler = async (
     // handle delete request
     const { userId } = req.query;
     const { id: houseId } = house;
+    if (house.users.length === 1) {
+      await prisma.house.delete({ where: { id: houseId } });
+      return res.status(200).json({ message: 'User removed from house' })
+    }
     await prisma.house.update({
       where: { id: houseId },
       data: {
         users: { disconnect: { id: userId as string, }, },
-      },
+      }
     })
     res.status(200).json({ message: 'User removed from house' })
   } else {

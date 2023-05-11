@@ -3,7 +3,8 @@ import { useAppVM } from "@/context/Contexts";
 import { onLogin, onRegister } from "@/utils/apiService";
 import { Box } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import { signIn, useSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -12,10 +13,6 @@ function Auth() {
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const appVM = useAppVM();
-  const session = useSession();
-  if (session.status === "authenticated") {
-    router.push(router.query.redirectUrl ? router.query.redirectUrl as string : '/');
-  }
 
   async function signupHandler(Args: {
     password: string;
@@ -41,7 +38,7 @@ function Auth() {
       appVM.showAlert(res.error?.errorMessage || "", "error")
       return;
     }
-    console.log(res)
+    router.push('/')
     appVM.showAlert("Login successful", "success")
   }
 
@@ -82,5 +79,15 @@ function Auth() {
     </Box>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getSession(ctx);
+
+  if (session) {
+    ctx.res.writeHead(302, { Location: '/' }).end();
+  }
+
+  return { props: {} };
+};
 
 export default observer(Auth);

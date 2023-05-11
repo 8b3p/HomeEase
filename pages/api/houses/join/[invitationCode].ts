@@ -6,7 +6,6 @@ import { Session } from 'next-auth'
 const handler = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
   if (req.method === 'POST') {
     const { invitationCode } = req.query
-    console.log(req.query);
     const house = await prisma.house.findUnique({
       where: { invitationCode: invitationCode as string },
       include: {
@@ -15,14 +14,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: Sessi
     })
 
     if (!house)
-      return res.status(404).json({ message: 'The invitation code is invalid' })
+      return res.status(404).json({ error: 'The invitation code is invalid' })
 
     if (house.users.find(user => user.id === session.user.id)) {
-      return res.status(400).json({ message: 'You are already in this house' })
+      return res.status(400).json({ error: 'You are already in this house' })
     }
 
-
-    await prisma.house.update({
+    const newHouse = await prisma.house.update({
       where: { id: house.id },
       data: {
         users: {
@@ -31,9 +29,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: Sessi
           },
         },
       },
+      select: {
+        id: true,
+        name: true,
+        invitationCode: true,
+        users: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            houseId: true,
+          },
+        },
+      }
     })
 
-    res.status(200).json({ message: 'User joined house successfully' })
+    res.status(200).json({ house: newHouse, message: 'User joined house successfully' })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
   }
