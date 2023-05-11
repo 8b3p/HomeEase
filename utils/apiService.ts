@@ -109,7 +109,7 @@ export async function sendRegisterRequest(Args: {
 export async function isThereUser(
   email: string
 ): Promise<{ userExists?: boolean; error?: errorResponse }> {
-  const resJson = await fetch("api/auth/checkIfUserExists", {
+  const resJson = await fetch("api/auth/checkifuserexists", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
