@@ -13,6 +13,7 @@ import { useMediaQuery } from "@mui/material";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { LoadingButton } from '@mui/lab';
 
 const House = () => {
   const appVM = useAppVM();
@@ -20,9 +21,11 @@ const House = () => {
   const [newName, setNewName] = useState<string>("");
   const [inputError, setInputError] = useState<string>("");
   const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const [creating, setCreating] = useState(false);
 
   const createHouse = async () => {
     if (validateHouseName(newName)) {
+      setCreating(true);
       try {
         const res = await fetch("/api/houses", {
           method: "POST",
@@ -36,6 +39,7 @@ const House = () => {
         const data = await res.json()
         if (!res.ok) {
           appVM.showAlert(data.error, "error");
+          setCreating(false);
           return;
         }
         appVM.house = data.house
@@ -43,6 +47,7 @@ const House = () => {
       } catch (e: any) {
         appVM.showAlert(e.message, "error");
       }
+      setCreating(false);
     }
   }
 
@@ -101,7 +106,7 @@ const House = () => {
             if (inputError) validateHouseName(newName);
           }}
         />
-        <Button variant='contained' onClick={() => { createHouse() }}> <Add /> </Button>
+        <LoadingButton loading={creating} variant='contained' onClick={() => { createHouse() }} ><Add /></LoadingButton>
       </Stack>
     </Stack>
   );
@@ -111,7 +116,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx)
 
   if (!session) {
-    ctx.res.writeHead(302, { Location: '/auth' }).end();
+    ctx.res
+      .writeHead(302, {
+        Location: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
+      })
+      .end();
   }
 
   return { props: {} }

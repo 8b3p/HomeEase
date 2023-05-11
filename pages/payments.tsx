@@ -14,7 +14,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx)
 
   if (!session) {
-    ctx.res.writeHead(302, { Location: '/' }).end();
+    ctx.res
+      .writeHead(302, {
+        Location: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
+      })
+      .end();
   }
 
   return { props: {} }

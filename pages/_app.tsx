@@ -104,7 +104,6 @@ MyApp.getInitialProps = async ({ ctx }: AppContext): Promise<{ props: props }> =
       }
     }
   }
-  console.log(getBaseUrl(ctx.req))
   const res = await fetch(
     `${getBaseUrl(ctx.req)}/api/users/${session?.user.id}/house`, {
     method: "GET",

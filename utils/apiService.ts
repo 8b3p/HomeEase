@@ -11,6 +11,7 @@ interface registerArgs {
 interface loginArgs {
   password: string;
   email: string;
+  redirectUrl?: string;
 }
 
 interface authResponse {
@@ -62,7 +63,7 @@ export async function onRegister({ username, email, password }: registerArgs): P
   }
 };
 
-export async function onLogin({ email, password }: loginArgs): Promise<authResponse> {
+export async function onLogin({ email, password, redirectUrl }: loginArgs): Promise<authResponse> {
   //*first: send the signin request with credentials
   try {
     let res = await signIn("credentials", {

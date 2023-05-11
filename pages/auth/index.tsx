@@ -14,7 +14,7 @@ function Auth() {
   const appVM = useAppVM();
   const session = useSession();
   if (session.status === "authenticated") {
-    router.push("/");
+    router.push(router.query.redirectUrl ? router.query.redirectUrl as string : '/');
   }
 
   async function signupHandler(Args: {
@@ -32,7 +32,7 @@ function Auth() {
 
   async function loginHandler(Args: { email: string; password: string }) {
     //*first: send the signin request with credentials
-    const res = await onLogin(Args);
+    const res = await onLogin({ ...Args });
     if (!res.ok) {
       if (res.error?.unverifiedEmail) {
         appVM.showAlert(res.error.errorMessage, "error")
