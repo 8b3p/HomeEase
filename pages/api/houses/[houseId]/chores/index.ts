@@ -2,7 +2,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { authMW, isPartOfHouse } from '@/utils/middleware';
 import prisma from '@/utils/PrismaClient';
 import { Session } from "next-auth";
-import { House, User } from "@prisma/client";
+import { ChoreType, House, User } from "@prisma/client";
+
+export interface ChorePostBody {
+  title: string;
+  description: string;
+  type: ChoreType;
+}
 
 const handler = async (
   req: NextApiRequest,

@@ -18,9 +18,10 @@ enum ChoreType {
   Other
 }
 
-enum AssignmentStatus {
+enum Status {
   Pending
   Completed
+  Cancelled
 }
 
 enum Role {
@@ -69,72 +70,83 @@ model Account {
 }
 
 model User {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
-  email           String            @unique
-  emailVerified   DateTime?         @map("email_verified")
-  firstName       String            @map("first_name")
-  lastName        String            @map("last_name")
-  role            Role              @default(Standard)
-  password        String
-  houseId         String?           @map("house_id") @db.ObjectId
-  salt            String
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  payments        Payment[]
-  ChoreAssignment ChoreAssignment[]
-  accounts        Account[]
-  sessions        Session[]
-  House           House?            @relation(fields: [houseId], references: [id])
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
+  email              String            @unique
+  emailVerified      DateTime?         @map("email_verified")
+  firstName          String            @map("first_name")
+  lastName           String            @map("last_name")
+  role               Role              @default(Standard)
+  password           String
+  houseId            String?           @map("house_id") @db.ObjectId
+  salt               String
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  paymentAsPayer     Payment[]         @relation(name: "payer")
+  paymentAsRecipient Payment[]         @relation(name: "recipient")
+  choreAssignments   ChoreAssignment[]
+  accounts           Account[]
+  sessions           Session[]
+  House              House?            @relation(fields: [houseId], references: [id])
 
   @@map("users")
 }
 
 model House {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
-  name            String
-  createdAt       DateTime          @default(now()) @map("created_at")
-  invitationCode  String            @unique @map("invitation_code")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  ChoreAssignment ChoreAssignment[]
-  users           User[]
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
+  name             String
+  createdAt        DateTime          @default(now()) @map("created_at")
+  invitationCode   String            @unique @map("invitation_code")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  choreAssignments ChoreAssignment[]
+  users            User[]
+  chores           Chore[]
+  payments         Payment[]
 
   @@map("houses")
 }
 
 model Chore {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
-  title           String
-  description     String
-  type            ChoreType
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  ChoreAssignment ChoreAssignment[]
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
+  title            String
+  description      String
+  type             ChoreType
+  owner            String?           @db.ObjectId
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  choreAssignments ChoreAssignment[]
+  Owner            House?            @relation(fields: [owner], references: [id])
 
   @@map("chores")
 }
 
 model ChoreAssignment {
-  id        String           @id @default(auto()) @map("_id") @db.ObjectId
-  chore     Chore            @relation(fields: [choreId], references: [id])
-  choreId   String           @map("chore_id") @db.ObjectId
-  user      User             @relation(fields: [userId], references: [id])
-  userId    String           @map("user_id") @db.ObjectId
-  status    AssignmentStatus
-  createdAt DateTime         @default(now()) @map("created_at")
-  updatedAt DateTime         @updatedAt @map("updated_at")
-  House     House?           @relation(fields: [houseId], references: [id])
-  houseId   String?          @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  Chore     Chore    @relation(fields: [choreId], references: [id])
+  choreId   String   @map("chore_id") @db.ObjectId
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id") @db.ObjectId
+  status    Status
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  House     House?   @relation(fields: [houseId], references: [id])
+  houseId   String?  @db.ObjectId
 
   @@map("choreassignments")
 }
 
 model Payment {
-  id String @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
-
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @map("userId") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
+  amount      Float
+  dueDate     DateTime? @map("due_date")
+  status      Status
+  createdAt   DateTime  @default(now()) @map("createdAt")
+  updatedAt   DateTime  @updatedAt @map("updatedAt")
+  houseId     String    @map("houseId") @db.ObjectId
+  House       House     @relation(fields: [houseId], references: [id])
+  Recipient   User      @relation(name: "recipient", fields: [recipientId], references: [id])
+  recipientId String    @map("recipientId") @db.ObjectId
+  Payer       User      @relation(name: "payer", fields: [payerId], references: [id])
+  payerId     String    @map("payerId") @db.ObjectId
 
   @@map("payments")
 }
