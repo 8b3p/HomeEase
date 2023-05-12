@@ -43,7 +43,7 @@ export async function onRegister({ username, email, password }: registerArgs): P
     const res1 = await sendRegisterRequest({ username, email, password });
     // handle error
     if (!res1.ok) {
-      return { ok: false, error: { errorMessage: "Something went wrong, please try again" } }
+      return { ok: false, error: { errorMessage: res1.error?.errorMessage || "Something went wrong, please try again" } }
     }
     //*third: if the register request is successful, send the email verification request
     const res = await signIn("email", {
@@ -51,9 +51,10 @@ export async function onRegister({ username, email, password }: registerArgs): P
       email: email,
       callbackUrl: "/",
     });
+    console.log(res)
     // handle error
-    if (res?.error) {
-      return { ok: false, error: { errorMessage: res.error } }
+    if (res && !res.ok) {
+      return { ok: false, error: { errorMessage: res.error || '' } }
     }
     //*fourth: if the email verification request is successful, show a success message
     return { ok: true }

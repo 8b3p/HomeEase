@@ -1,6 +1,7 @@
 import AuthForm from "@/components/auth/AuthForm";
 import { useAppVM } from "@/context/Contexts";
 import { onLogin, onRegister } from "@/utils/apiService";
+import { Send } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
@@ -32,7 +33,10 @@ function Auth() {
     const res = await onLogin({ ...Args });
     if (!res.ok) {
       if (res.error?.unverifiedEmail) {
-        appVM.showAlert(res.error.errorMessage, "error")
+        appVM.showAlert(res.error.errorMessage, "warning", {
+          icon: <Send color="warning" />,
+          action: () => { resendAuthEmail(Args.email) }
+        })
         return;
       }
       appVM.showAlert(res.error?.errorMessage || "", "error")

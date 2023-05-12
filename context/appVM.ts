@@ -35,11 +35,14 @@ export default class AppVM {
   public createHouse = async (name: string) => {
   }
 
-  public showAlert = (message: string, type: AlertProps['severity']) => {
+  public showAlert = (message: string, type: AlertProps['severity'], action?: {
+    icon: JSX.Element,
+    action: () => void
+  }) => {
     if (this.alertTimer) { clearTimeout(this.alertTimer); this.alertRoot?.unmount() }
     const target = document.getElementById('alert-root');
     if (target) {
-      const Alert = React.createElement(GlobalAlert, { message, severity: type });
+      const Alert = React.createElement(GlobalAlert, { message, severity: type, action });
       this.alertRoot = ReactDOM.createRoot(target);
       this.alertRoot.render(Alert);
       this.alertTimer = setTimeout(() => { this.alertRoot?.unmount() }, 7000);

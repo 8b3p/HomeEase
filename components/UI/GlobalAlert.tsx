@@ -1,8 +1,13 @@
-import { Alert, AlertProps, Snackbar, Stack } from '@mui/material';
+import { Alert, AlertProps, Button, Snackbar, Stack } from '@mui/material';
 import React from 'react';
 
 
-const GlobalAlert = ({ message, severity }: { message: string, severity: AlertProps['severity'] }) => {
+const GlobalAlert = ({ message, severity, action }: {
+  message: string, severity: AlertProps['severity'], action?: {
+    icon: JSX.Element,
+    action: () => void
+  }
+}) => {
   const [open, setOpen] = React.useState(true);
 
   const handleClose = (_event: Event | React.SyntheticEvent, reason?: string) => {
@@ -12,7 +17,7 @@ const GlobalAlert = ({ message, severity }: { message: string, severity: AlertPr
 
   return (
     <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+      <Alert action={action ? (<Button onClick={action.action}>{action.icon}</Button>) : undefined} onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
         {message}
       </Alert>
     </Snackbar>

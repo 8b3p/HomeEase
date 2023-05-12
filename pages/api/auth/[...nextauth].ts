@@ -57,12 +57,15 @@ export default NextAuth({
     }),
     EmailProvider({
       server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
+        service: 'gmail',
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
+          type: 'OAuth2',
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
+          clientSecret: process.env.OAUTH_CLIENT_SECRET,
+          clientId: process.env.OAUTH_CLIENTID,
+          refreshToken: process.env.OAUTH_REFRESH_TOKEN
+        }
       },
       from: process.env.EMAIL_FROM,
     }),
