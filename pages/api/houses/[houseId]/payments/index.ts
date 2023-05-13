@@ -9,7 +9,8 @@ export interface PaymentPostBody {
   amount: number;
   dueDate?: Date;
   status: Status;
-  userId: string
+  payerId: string,
+  recipientId: string
 }
 
 const handler = async (
@@ -26,8 +27,8 @@ const handler = async (
     })
     res.status(200).json({ payments })
   } else if (req.method === "POST") {
-    const { amount, dueDate, status, userId } = req.body as PaymentPostBody
-    if (!isValidObjectId(userId)) return res.status(400).json({ message: 'Invalid user id' })
+    const { amount, dueDate, status, payerId, recipientId } = req.body as PaymentPostBody
+    if (!isValidObjectId(payerId) || !isValidObjectId(recipientId)) return res.status(400).json({ message: 'Invalid user id' })
 
     const payment = await prisma.payment.create({
       data: {
@@ -39,9 +40,14 @@ const handler = async (
             id: house.id
           }
         },
-        User: {
+        Recipient: {
           connect: {
-            id: userId
+            id: recipientId
+          }
+        },
+        Payer: {
+          connect: {
+            id: payerId
           }
         }
       }

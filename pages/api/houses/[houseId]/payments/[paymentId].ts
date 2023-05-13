@@ -34,7 +34,7 @@ const handler = async (
   }
 
   // if (choreAssignment.userId !== session.user.id) return res.status(403).json({ message: 'Only assignee can edit their chore assignments' })
-  if (payment.userId !== session.user.id) return res.status(403).json({ message: 'Only payers can edit their own payments' })
+  if (payment.payerId !== session.user.id || payment.recipientId !== session.user.id) return res.status(403).json({ message: 'Only payers and recipients can edit their payments' })
 
   if (req.method === "DELETE") {
     //set status to cancelled

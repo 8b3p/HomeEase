@@ -26,13 +26,13 @@ interface props {
 export const StyledCard = styled(Card)(() => ({
   width: "70% !important",
   height: "70% !important",
-  minWidth: "230px",
-  minHeight: "300px",
-  maxWidth: "330px",
-  maxHeight: "400px",
+  minWidth: "330px",
+  minHeight: "400px",
+  maxWidth: "370px",
+  maxHeight: "440px",
 }))
 
-export const StyledForm = styled("form")(({ }) => ({
+export const StyledForm = styled("form")(() => ({
   alignSelf: "center",
   display: "flex",
   rowGap: "1rem",
