@@ -110,11 +110,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       choreAssignments: serializableChoreAssignment,
       users: houseUsers,
       session: session,
-      initialState: {
-        user: {
-          ...session.user,
-        },
-      },
     },
   };
   return { props: {} };

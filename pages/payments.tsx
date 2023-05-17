@@ -23,11 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: {
-      initialState: {
-        user: session.user,
-      }
-    }
+    props: { }
   }
 }
 

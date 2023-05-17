@@ -10,7 +10,7 @@ import { Button, LinearProgress } from "@mui/material";
 import { Stack } from "@mui/system";
 
 interface props {
-  house?: { name: string };
+  house?: { id: string; name: string };
   isPartOfHouse?: boolean;
 }
 
@@ -55,11 +55,8 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
       return;
     }
     if (isPartOfHouse) {
-      appVM.showAlert(
-        `You are already part of "${house?.name}" house`,
-        "error"
-      );
-      router.push(`/house/${appVM.house?.id}`);
+      appVM.showAlert(`You are already part of "${house.name}" house`, "error");
+      router.push(`/house/${house.id}`);
       return;
     }
     setLoading(false);
@@ -108,6 +105,7 @@ export const getServerSideProps: GetServerSideProps<props> = async ctx => {
       invitationCode,
     },
     select: {
+      id: true,
       name: true,
       users: true,
     },

@@ -15,7 +15,7 @@ import { useMediaQuery } from "@mui/material";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { LoadingButton } from '@mui/lab';
+import { LoadingButton } from "@mui/lab";
 import { Session } from "next-auth";
 
 interface props {
@@ -36,21 +36,21 @@ const House = ({ session }: props) => {
       router.push(`/house/${appVM.house.id}`);
     }
     const checkHouse = async () => {
-      const res = await fetch(`/api/users/${session.user.id}/house`)
-      const data = await res.json()
-      console.log(data)
+      const res = await fetch(`/api/users/${session.user.id}/house`);
+      const data = await res.json();
+      console.log(data);
       if (!res.ok) {
         appVM.showAlert(data.error, "error");
         return;
       }
       if (data.user.House) {
-        appVM.house = data.user.House
+        appVM.house = data.user.House;
         return router.push(`/house/${data.user.House.id}`);
       }
-      setLoading(false)
-    }
-    checkHouse()
-  }, [appVM, router, session.user.id])
+      setLoading(false);
+    };
+    checkHouse();
+  }, [appVM, router, session.user.id]);
 
   const createHouse = async () => {
     if (validateHouseName(newName)) {
@@ -60,25 +60,25 @@ const House = ({ session }: props) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "accept": "application/json"
+            accept: "application/json",
           },
           body: JSON.stringify({ name: newName }),
           credentials: "include",
-        })
-        const data = await res.json()
+        });
+        const data = await res.json();
         if (!res.ok) {
           appVM.showAlert(data.error, "error");
           setCreating(false);
           return;
         }
-        appVM.house = data.house
+        appVM.house = data.house;
         router.push(`/house/${appVM.house?.id}`);
       } catch (e: any) {
         appVM.showAlert(e.message, "error");
       }
       setCreating(false);
     }
-  }
+  };
 
   const validateHouseName = (name: string) => {
     if (name.length < 3) {
@@ -103,7 +103,9 @@ const House = ({ session }: props) => {
         <CircularProgress />
       ) : (
         <>
-          <Typography variant={isSmallScreen ? 'h5' : 'h4'}>You are not part of a house</Typography>
+          <Typography variant={isSmallScreen ? "h5" : "h4"}>
+            You are not part of a house
+          </Typography>
           <Stack
             direction={"row"}
             width={"100%"}
@@ -112,12 +114,12 @@ const House = ({ session }: props) => {
             gap={2}
           >
             <Divider
-              sx={{ width: "100%", maxWidth: isSmallScreen ? '50px' : "100px" }}
+              sx={{ width: "100%", maxWidth: isSmallScreen ? "50px" : "100px" }}
               orientation='horizontal'
             />
             <Typography variant='h6'>Create a house</Typography>
             <Divider
-              sx={{ width: "100%", maxWidth: isSmallScreen ? '50px' : "100px" }}
+              sx={{ width: "100%", maxWidth: isSmallScreen ? "50px" : "100px" }}
               orientation='horizontal'
             />
           </Stack>
@@ -139,34 +141,41 @@ const House = ({ session }: props) => {
                 if (inputError) validateHouseName(newName);
               }}
             />
-            <LoadingButton loading={creating} variant='contained' onClick={() => { createHouse() }} ><Add /></LoadingButton>
+            <LoadingButton
+              loading={creating}
+              variant='contained'
+              onClick={() => {
+                createHouse();
+              }}
+            >
+              <Add />
+            </LoadingButton>
           </Stack>
         </>
       )}
-    </Stack >
+    </Stack>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getSession(ctx)
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getSession(ctx);
 
   if (!session) {
     return {
       props: {},
       redirect: {
-        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
-      }
-    }
+        destination: `/auth?redirectUrl=${encodeURIComponent(
+          ctx.req.url || "/"
+        )}`,
+      },
+    };
   }
 
   return {
     props: {
       session: session,
-      initialState: {
-        user: session.user,
-      }
-    }
-  }
-}
+    },
+  };
+};
 
 export default observer(House);

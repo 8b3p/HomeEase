@@ -77,7 +77,7 @@ const House = ({ house, baseUrl, session }: props) => {
           <LoadingButton color="error" loading={leaving} onClick={leaveHouseHandler}>Leave House</LoadingButton>
         </Stack>
       ) : (
-        <Typography variant="h4">You are not part of a house</Typography>
+        <Typography variant="h4">You are not part of this house</Typography>
 
       )}
     </Stack>
@@ -109,7 +109,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {
       session: session,
       house: data.house,
-      initialState: session.user,
       baseUrl: getBaseUrl(ctx.req)
     }
   };
