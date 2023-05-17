@@ -5,6 +5,7 @@ import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
+import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -23,6 +24,7 @@ interface props {
     }[]
   } | null
   baseUrl: string
+  session: Session;
 }
 
 function copyToClipboard(text: string) {
@@ -34,7 +36,7 @@ function copyToClipboard(text: string) {
   document.body.removeChild(tempTextArea);
 }
 
-const House = ({ house, baseUrl }: props) => {
+const House = ({ house, baseUrl, session }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
@@ -42,7 +44,7 @@ const House = ({ house, baseUrl }: props) => {
 
   const leaveHouseHandler = async () => {
     setLeaving(true);
-    const res = await fetch(`/api/houses/${appVM.house?.id}/users/${appVM.user?.id}`, {
+    const res = await fetch(`/api/houses/${house?.id}/users/${session.user.id}`, {
       method: "DELETE",
     })
     const data = await res.json();
