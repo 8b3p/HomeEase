@@ -14,14 +14,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx)
 
   if (!session) {
-    ctx.res
-      .writeHead(302, {
-        Location: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
-      })
-      .end();
+    return {
+      props: {},
+      redirect: {
+        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
+      }
+    }
   }
 
-  return { props: {} }
+  return {
+    props: {
+      initialState: {
+        user: session.user,
+      }
+    }
+  }
 }
 
 export default Payments;

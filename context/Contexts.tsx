@@ -48,23 +48,19 @@ export const AppContext = createContext<AppVM | null>(null);
 
 let clientAppVM: AppVM;
 
-const initAppVM = (initData: HydrationData) => {
+export const initAppVM = (initData?: HydrationData) => {
   // check if we already declare vm (client vm), otherwise create one
   const vm = clientAppVM ?? new AppVM();
   // hydrate to vm if receive initial data
-  vm.hydrate(initData);
+  if (initData) {
+    vm.hydrate(initData);
+  }
 
   // Create a vm on every server request
   if (typeof window === "undefined") return vm
   // Otherwise it's client, remember this vm and return 
   if (!clientAppVM) clientAppVM = vm;
   return vm
-}
-//
-// Hook for using vm
-export function useInitAppVM(initData: HydrationData, isClient?: boolean) {
-  if (!isClient) return initAppVM(initData)
-  return clientAppVM
 }
 
 export const AppContextProvider = ({ children, value }: { value: AppVM, children: JSX.Element }) => {

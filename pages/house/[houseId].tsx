@@ -87,11 +87,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx)
 
   if (!session) {
-    ctx.res
-      .writeHead(302, {
-        Location: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
-      })
-      .end();
+    return {
+      props: {},
+      redirect: {
+        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`
+      }
+    }
   }
   const res = await fetch(
     `${getBaseUrl(ctx.req)}/api/houses/${houseId}`, {
@@ -102,7 +103,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (!res.ok) {
     return { props: { house: null } };
   }
-  return { props: { house: data.house, baseUrl: getBaseUrl(ctx.req) } };
+  return {
+    props: {
+      session: session,
+      house: data.house,
+      initialState: session.user,
+      baseUrl: getBaseUrl(ctx.req)
+    }
+  };
 }
 
 export default observer(House);

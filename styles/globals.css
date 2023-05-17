@@ -10,6 +10,15 @@ body {
   margin: 0;
 }
 
+#background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  width: 100vw;
+  height: 100vh;
+}
+
 /* Hide the spinner */
 #nprogress .spinner {
   display: none;
@@ -19,7 +28,6 @@ body {
   height: 100vh;
   overflow-x: hidden;
 }
-
 
 /* customize the scrollbar */
 ::-webkit-scrollbar {

@@ -1,106 +1,127 @@
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import prisma from '@/utils/PrismaClient'
-import { getSession } from 'next-auth/react'
-import { GetServerSideProps } from 'next'
-import { useAppVM } from '@/context/Contexts'
-import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { Button, LinearProgress } from '@mui/material'
-import { Stack } from '@mui/system'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import prisma from "@/utils/PrismaClient";
+import { getSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { useAppVM } from "@/context/Contexts";
+import { observer } from "mobx-react-lite";
+import React from "react";
+import { Button, LinearProgress } from "@mui/material";
+import { Stack } from "@mui/system";
 
 interface props {
-  house: { name: string } | null;
+  house?: { name: string };
   isPartOfHouse?: boolean;
 }
 
 const InvitationPage = ({ house, isPartOfHouse }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
-  const [hasMounted, setHasMounted] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [hasMounted, setHasMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const invitationCode = router.query.invitationCode as string;
 
   const joinHouse = async () => {
     // Call API route to join user to house using invitation code
     setLoading(true);
     const response = await fetch(`/api/houses/join/${invitationCode}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    })
+    });
     const data = await response.json();
     if (!response.ok) {
       // Handle error
-      appVM.showAlert(data.error, 'error')
-      router.push('/house');
-      return
+      appVM.showAlert(data.error, "error");
+      router.push("/house");
+      return;
     }
     // User successfully joined house
-    const { users, ...house } = data.house
-    appVM.house = house
-    appVM.showAlert(`You have joined "${data.house.name}" house`, 'success')
-    router.push(`/house/${appVM.house?.id}`)
-  }
+    const { users, ...house } = data.house;
+    appVM.house = house;
+    appVM.showAlert(`You have joined "${data.house.name}" house`, "success");
+    router.push(`/house/${appVM.house?.id}`);
+  };
 
   useEffect(() => {
     if (!hasMounted) {
-      setHasMounted(true)
-      return
+      setHasMounted(true);
+      return;
     }
     if (!house) {
-      appVM.showAlert('Invalid invitaion link', 'error')
-      router.push('/')
-      return
+      appVM.showAlert("Invalid invitaion link", "error");
+      router.push("/");
+      return;
     }
     if (isPartOfHouse) {
-      appVM.showAlert(`You are already part of "${house?.name}" house`, 'error')
-      router.push(`/house/${appVM.house?.id}`)
-      return
+      appVM.showAlert(
+        `You are already part of "${house?.name}" house`,
+        "error"
+      );
+      router.push(`/house/${appVM.house?.id}`);
+      return;
     }
-    setLoading(false)
-  }, [house, appVM, router, isPartOfHouse, hasMounted])
+    setLoading(false);
+  }, [house, appVM, router, isPartOfHouse, hasMounted]);
 
   return (
-    <Stack height='100%' alignItems='center' justifyContent="center">
+    <Stack height='100%' alignItems='center' justifyContent='center'>
       {loading ? (
-        <LinearProgress sx={{
-          width: '60%',
-          minWidth: '200px'
-        }} />
+        <LinearProgress
+          sx={{
+            width: "60%",
+            minWidth: "200px",
+          }}
+        />
       ) : (
-        <Button variant="outlined" onClick={joinHouse} size="large" sx={{ fontSize: '1.5rem' }}>Join &quot;{house?.name}&quot; ?</Button>
+        <Button
+          variant='outlined'
+          onClick={joinHouse}
+          size='large'
+          sx={{ fontSize: "1.5rem" }}
+        >
+          Join &quot;{house?.name}&quot; ?
+        </Button>
       )}
     </Stack>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<props> = async ctx => {
   const session = await getSession(ctx);
   const invitationCode = ctx.query.invitationCode as string;
 
   if (!session) {
-    ctx.res.writeHead(302, { Location: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || '/')}` }).end();
+    return {
+      props: {},
+      redirect: {
+        destination: `/auth?redirectUrl=${encodeURIComponent(
+          ctx.req.url || "/"
+        )}`,
+      },
+    };
   }
 
   const house = await prisma.house.findUnique({
     where: {
-      invitationCode
+      invitationCode,
     },
     select: {
       name: true,
-      users: true
-    }
-  })
+      users: true,
+    },
+  });
 
   if (house) {
-    const { users, ...safeHouse } = house
-    const isPartOfHouse = house?.users.some(user => user.id === session?.user?.id)
+    const { users, ...safeHouse } = house;
+    const isPartOfHouse = house?.users.some(
+      user => user.id === session?.user?.id
+    );
     return { props: { house: safeHouse, isPartOfHouse } };
   }
 
-  return { props: { house } };
+  return { props: {} };
 };
 
-export default observer(InvitationPage)
+export default observer(InvitationPage);

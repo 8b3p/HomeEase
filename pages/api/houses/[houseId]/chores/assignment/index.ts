@@ -4,9 +4,10 @@ import prisma from '@/utils/PrismaClient';
 import { Session } from "next-auth";
 import { House, User } from "@prisma/client";
 
-export interface ChorePostBody {
+export interface ChoreAssignPostBody {
   choreId: string;
   userId: string;
+  dueDate: Date;
 }
 
 const handler = async (
@@ -23,7 +24,7 @@ const handler = async (
     })
     res.status(200).json({ choreAssignments })
   } else if (req.method === "POST") {
-    const { choreId, userId } = req.body as ChorePostBody;
+    const { choreId, userId, dueDate } = req.body as ChoreAssignPostBody;
     const chore = await prisma.chore.findMany({
       where: {
         AND: [
@@ -44,6 +45,7 @@ const handler = async (
         Chore: { connect: { id: choreId, } },
         User: { connect: { id: userId, } },
         House: { connect: { id: house.id, } },
+        dueDate,
         status: "Pending"
       }
     })

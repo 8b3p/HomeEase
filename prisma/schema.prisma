@@ -79,8 +79,8 @@ model User {
   password           String
   houseId            String?           @map("house_id") @db.ObjectId
   salt               String
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
+  createdAt          DateTime          @default(now()) @map("createdAt")
+  updatedAt          DateTime          @updatedAt @map("updatedAt")
   paymentAsPayer     Payment[]         @relation(name: "payer")
   paymentAsRecipient Payment[]         @relation(name: "recipient")
   choreAssignments   ChoreAssignment[]
@@ -94,9 +94,9 @@ model User {
 model House {
   id               String            @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
   name             String
-  createdAt        DateTime          @default(now()) @map("created_at")
+  createdAt        DateTime          @default(now()) @map("createdAt")
   invitationCode   String            @unique @map("invitation_code")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
+  updatedAt        DateTime          @updatedAt @map("updatedAt")
   choreAssignments ChoreAssignment[]
   users            User[]
   chores           Chore[]
@@ -111,8 +111,8 @@ model Chore {
   description      String
   type             ChoreType
   owner            String?           @db.ObjectId
-  createdAt        DateTime          @default(now()) @map("created_at")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
+  createdAt        DateTime          @default(now()) @map("createdAt")
+  updatedAt        DateTime          @updatedAt @map("updatedAt")
   choreAssignments ChoreAssignment[]
   Owner            House?            @relation(fields: [owner], references: [id])
 
@@ -126,8 +126,9 @@ model ChoreAssignment {
   User      User     @relation(fields: [userId], references: [id])
   userId    String   @map("user_id") @db.ObjectId
   status    Status
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+  dueDate   DateTime @map("due_date")
   House     House?   @relation(fields: [houseId], references: [id])
   houseId   String?  @db.ObjectId
 

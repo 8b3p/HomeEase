@@ -1,19 +1,28 @@
 // pages/index.tsx
 import type { NextPage } from "next";
-
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { useThemeVM } from "@/context/Contexts";
+// import { useEffect, useState } from "react";
+// import { stopAnimation, startAnimation } from '@/styles/three'
 
 const Home: NextPage = () => {
   const themeVM = useThemeVM();
+  // const [hasMounted, setHasMounted] = useState(false);
+  //
+  // useEffect(() => {
+  //   if (hasMounted) {
+  //     startAnimation(themeVM.themeType === "light" ? 0xffffff : 0x000000);
+  //   }
+  //   setHasMounted(true);
+  // }, [hasMounted, themeVM.themeType]);
 
   return (
-    <div>
-      <Typography variant="h2" textAlign="center">
-        Current theme is {themeVM.themeType}
+    <Stack height="100%" justifyContent="center" alignItems="center">
+      <Typography variant="h1" textAlign="center">
+        Welcome to HomeEase
       </Typography>
-    </div>
+    </Stack>
   );
 };
 
