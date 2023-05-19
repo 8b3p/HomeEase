@@ -10,21 +10,31 @@ const Payments = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getSession(ctx)
-
+export const getServerSideProps: GetServerSideProps = async ctx => {
+  const session = await getSession(ctx);
   if (!session) {
     return {
       props: {},
       redirect: {
-        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.req.url || "/")}`,
-      }
-    }
+        destination: `/auth?redirectUrl=${encodeURIComponent(
+          ctx.req.url || "/"
+        )}`,
+      },
+    };
   }
-
+  if (!session?.user?.houseId) {
+    return {
+      props: {},
+      redirect: {
+        destination: `/house`,
+      },
+    };
+  }
   return {
-    props: { }
-  }
-}
+    props: {
+      session: session,
+    },
+  };
+};
 
 export default Payments;

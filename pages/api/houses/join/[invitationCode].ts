@@ -14,10 +14,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: Sessi
     })
 
     if (!house)
-      return res.status(404).json({ error: 'The invitation code is invalid' })
+      return res.status(404).json({ message: 'The invitation code is invalid' })
 
     if (house.users.find(user => user.id === session.user.id)) {
-      return res.status(400).json({ error: 'You are already in this house' })
+      return res.status(400).json({ message: 'You are already in this house' })
     }
 
     const newHouse = await prisma.house.update({

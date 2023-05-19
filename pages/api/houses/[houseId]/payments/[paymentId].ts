@@ -6,7 +6,9 @@ import { Status, House, User } from "@prisma/client";
 import isValidObjectId from "@/utils/isValidObjectId";
 
 export interface PaymentIdPutBody {
-  status: Status;
+  amount?: number;
+  dueDate?: Date;
+  status?: Status;
 }
 
 const handler = async (
@@ -33,23 +35,22 @@ const handler = async (
     return res.status(200).json({ payment })
   }
 
-  // if (choreAssignment.userId !== session.user.id) return res.status(403).json({ message: 'Only assignee can edit their chore assignments' })
   if (payment.payerId !== session.user.id || payment.recipientId !== session.user.id) return res.status(403).json({ message: 'Only payers and recipients can edit their payments' })
 
   if (req.method === "DELETE") {
     //set status to cancelled
-    const deletedPayment = await prisma.payment.update({
+    await prisma.payment.update({
       where: { id: paymentId },
       data: { status: Status.Cancelled }
     });
-    return res.status(200).json({ payment: deletedPayment })
+    return res.status(200).json({message: "Payment cancelled successfully"})
   } else
     if (req.method === "PATCH" || req.method === "PUT") {
       //update it
-      const { status } = req.body as PaymentIdPutBody;
+      const { status, amount, dueDate } = req.body as PaymentIdPutBody;
       const updatedPayment = await prisma.payment.update({
         where: { id: paymentId },
-        data: { status }
+        data: { status, amount, dueDate }
       });
       return res.status(200).json({ payment: updatedPayment })
     } else {

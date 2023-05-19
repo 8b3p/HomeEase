@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from '@/utils/PrismaClient';
 import { authMW } from '@/utils/middleware';
 import { Session } from "next-auth";
-import { safeUser } from "@/utils/safeUser";
 
 const handler = async (
   req: NextApiRequest,

@@ -10,11 +10,13 @@ import {
   MenuItem,
   FormHelperText,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import { Chore, User } from "@prisma/client";
 import { ChoreAssignPostBody } from "@/pages/api/houses/[houseId]/chores/assignment";
 import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/router";
 
 interface props {
   users: Partial<User>[];
@@ -31,6 +33,8 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
   const [dueDate, setDueDate] = useState<string>('');
   const [dueDateError, setDueDateError] = useState('');
   const [isAssignPanelOpen, setAssignPanelOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (isAssignPanelOpen) {
@@ -77,6 +81,7 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
   }
 
   const handleAssignChore = async () => {
+    setIsLoading(true);
     if (!validateInputs()) return;
     // Perform chore assignment logic here
 
@@ -103,7 +108,9 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
     } catch (e: any) {
       appVM.showAlert(e.message, 'error')
     }
-    toggleAssignPanel();
+    setIsLoading(false);
+    setAssignPanelOpen(false);
+    router.push('/chores')
   };
 
 
@@ -116,55 +123,60 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
       {/* Assign Chore Panel */}
       <Drawer anchor="right" open={isAssignPanelOpen}>
         <Stack justifyContent="space-between" alignItems="stretch" width={375} padding={3} height="100%">
-          <Stack spacing={2}>
-            <Typography variant="h5">Assign Chore</Typography>
-            <FormControl error={userIdError !== ''}>
-              <InputLabel id="user-select-id">User</InputLabel>
-              <Select
-                labelId="user-select-id"
-                label="User"
-                value={userId}
-                onChange={(e) => { setUserId(e.target.value); if (userIdError) validateInputs() }}
+          {isLoading ? (
+            <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
+              <CircularProgress />
+            </Stack>) : (
+            <Stack spacing={2}>
+              <Typography variant="h5">Assign Chore</Typography>
+              <FormControl error={userIdError !== ''}>
+                <InputLabel id="user-select-id">User</InputLabel>
+                <Select
+                  labelId="user-select-id"
+                  label="User"
+                  value={userId}
+                  onChange={(e) => { setUserId(e.target.value); if (userIdError) validateInputs() }}
+                  fullWidth
+                >
+                  {users.map((user) => {
+                    return <MenuItem key={user.id} value={user.id}>{user.firstName} {user.lastName}</MenuItem>
+                  })}
+                </Select>
+                {userIdError !== '' && <FormHelperText error>{userIdError}</FormHelperText>}
+              </FormControl>
+              <FormControl error={choreIdError !== ''}>
+                <InputLabel id="chore-select-id">Chore</InputLabel>
+                <Select
+                  labelId="chore-select-id"
+                  label="Chore"
+                  value={choreId}
+                  onChange={(e) => { setChoreId(e.target.value); if (choreIdError) validateInputs() }}
+                  fullWidth
+                >
+                  {chores.map((chore) => {
+                    return <MenuItem key={chore.id} value={chore.id}>{chore.title}</MenuItem>
+                  })}
+                </Select>
+                {choreIdError !== '' && <FormHelperText error>{choreIdError}</FormHelperText>}
+              </FormControl>
+              <TextField
+                label="Due Date"
+                type="date"
+                inputProps={{ min: new Date().toISOString().split('T')[0] }}
+                InputLabelProps={{ shrink: true }}
+                value={dueDate}
+                onChange={(e) => { setDueDate(e.target.value || '') }}
+                error={dueDateError !== ''}
+                helperText={dueDateError}
                 fullWidth
-              >
-                {users.map((user) => {
-                  return <MenuItem key={user.id} value={user.id}>{user.firstName} {user.lastName}</MenuItem>
-                })}
-              </Select>
-              {userIdError !== '' && <FormHelperText error>{userIdError}</FormHelperText>}
-            </FormControl>
-            <FormControl error={choreIdError !== ''}>
-              <InputLabel id="chore-select-id">Chore</InputLabel>
-              <Select
-                labelId="chore-select-id"
-                label="Chore"
-                value={choreId}
-                onChange={(e) => { setChoreId(e.target.value); if (choreIdError) validateInputs() }}
-                fullWidth
-              >
-                {chores.map((chore) => {
-                  return <MenuItem key={chore.id} value={chore.id}>{chore.title}</MenuItem>
-                })}
-              </Select>
-              {choreIdError !== '' && <FormHelperText error>{choreIdError}</FormHelperText>}
-            </FormControl>
-            <TextField
-              label="Due Date"
-              type="date"
-              inputProps={{ min: new Date().toISOString().split('T')[0] }}
-              InputLabelProps={{ shrink: true }}
-              value={dueDate}
-              onChange={(e) => { setDueDate(e.target.value || '') }}
-              error={dueDateError !== ''}
-              helperText={dueDateError}
-              fullWidth
-            />
-          </Stack>
+              />
+            </Stack>
+          )}
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={handleAssignChore} fullWidth>
+            <Button variant="contained" onClick={handleAssignChore} fullWidth disabled={isLoading} >
               Assign
             </Button>
-            <Button variant="outlined" onClick={toggleAssignPanel} fullWidth>
+            <Button variant="outlined" onClick={toggleAssignPanel} fullWidth disabled={isLoading}>
               Cancel
             </Button>
           </Stack>

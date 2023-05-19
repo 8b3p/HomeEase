@@ -30,7 +30,7 @@ export function authMW(handler: any) {
     const { method, ...rest } = req
     const session = await getSession({ req: { method: 'GET', headers: req.headers } });
     if (!session) {
-      return res.status(401).json({ error: "Not a authorized" });
+      return res.status(401).json({ message: "Not a authorized" });
     }
     return handler(req, res, session);
   };
@@ -44,7 +44,7 @@ export function isPartOfHouse(handler: any) {
   ) => {
     const houseId = <string>req.query.houseId;
     if (!isValidObjectId(houseId))
-      return res.status(400).json({ error: "Invalid house id" });
+      return res.status(400).json({ message: "Invalid house id" });
     const house = await prisma.house.findUnique({
       where: {
         id: houseId,
@@ -65,11 +65,11 @@ export function isPartOfHouse(handler: any) {
       }
     });
     if (house === null)
-      return res.status(404).json({ error: "House not found" });
+      return res.status(404).json({ message: "House not found" });
     if (!house.users.find(user => user.id === session.user.id)) {
       return res
         .status(403)
-        .json({ error: "You are not a member of this house" });
+        .json({ message: "You are not a member of this house" });
     }
     return handler(req, res, session, house);
   };

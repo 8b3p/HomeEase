@@ -19,7 +19,7 @@ const handler = async (
         House: true
       }
     })
-    if (user?.House) return res.status(409).json({ error: "User already belongs to a house" });
+    if (user?.House) return res.status(409).json({ message: "User already belongs to a house" });
     //create a house and add the user to it
     // create a random invitaionCode 
     const invitationCode = Math.random().toString(36).substring(7);

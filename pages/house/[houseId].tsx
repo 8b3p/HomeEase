@@ -49,7 +49,7 @@ const House = ({ house, baseUrl, session }: props) => {
     })
     const data = await res.json();
     if (!res.ok) {
-      appVM.showAlert(data.error, 'error')
+      appVM.showAlert(data.message, 'error')
       setLeaving(false);
       return;
 

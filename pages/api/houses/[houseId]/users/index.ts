@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from '@/utils/PrismaClient'
 import { safeUser } from "@/utils/safeUser";
-import isValidObjectId from "@/utils/isValidObjectId";
 import { authMW, isPartOfHouse } from "@/utils/middleware";
 import { House, User } from "@prisma/client";
 import { Session } from "next-auth";
@@ -31,7 +29,7 @@ const handler = async (
     // Handle any other HTTP method
     res
       .status(405)
-      .json({ error: undefined, errorMessage: "Method not allowed" });
+      .json({ message: "Method not allowed" });
   }
 }
 

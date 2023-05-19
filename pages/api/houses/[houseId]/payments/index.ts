@@ -27,14 +27,14 @@ const handler = async (
     })
     res.status(200).json({ payments })
   } else if (req.method === "POST") {
-    const { amount, dueDate, status, payerId, recipientId } = req.body as PaymentPostBody
+    const { amount, dueDate, payerId, recipientId } = req.body as PaymentPostBody
     if (!isValidObjectId(payerId) || !isValidObjectId(recipientId)) return res.status(400).json({ message: 'Invalid user id' })
 
     const payment = await prisma.payment.create({
       data: {
         amount: amount,
         dueDate: dueDate,
-        status: status,
+        status: Status.Pending,
         House: {
           connect: {
             id: house.id

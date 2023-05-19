@@ -33,7 +33,7 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
     const data = await response.json();
     if (!response.ok) {
       // Handle error
-      appVM.showAlert(data.error, "error");
+      appVM.showAlert(data.message, "error");
       router.push("/house");
       return;
     }

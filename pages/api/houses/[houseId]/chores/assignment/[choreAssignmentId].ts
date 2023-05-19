@@ -38,7 +38,7 @@ const handler = async (
         status: Status.Cancelled
       }
     })
-    return res.status(200).json({ choreAssignment: deletedChore })
+    return res.status(200).json({message: "Cancelled chore assignment successfully"})
   } else
     if (req.method === "PATCH" || req.method === "PUT") {
       const { status } = req.body as ChoreAssignmentIdPutBody;

@@ -10,11 +10,14 @@ import {
   FormControl,
   FormHelperText,
   InputLabel,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import { ChoreType } from "@prisma/client";
 import { useAppVM } from "@/context/Contexts";
 import { ChorePostBody } from '@/pages/api/houses/[houseId]/chores'
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/router";
 
 interface props {
   houseId: string;
@@ -29,6 +32,8 @@ const CreateChoreForm = ({ houseId }: props) => {
   const [type, setType] = useState('None')
   const [typeError, setTypeError] = useState('')
   const [isCreatePanelOpen, setCreatePanelOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (isCreatePanelOpen) {
@@ -80,6 +85,7 @@ const CreateChoreForm = ({ houseId }: props) => {
 
   const handleCreateChore = async () => {
     // Perform new chore creation logic here
+    setIsLoading(true)
     if (!validateInputs()) return
 
     const choreType: ChoreType = type as ChoreType;
@@ -100,13 +106,18 @@ const CreateChoreForm = ({ houseId }: props) => {
         body: JSON.stringify(body),
       })
       const data = await res.json();
+      if (!res.ok) {
+        appVM.showAlert(data.message, 'error')
+      }
 
       console.log("Chore created:", data);
       // Reset the form fields and close the create panel
     } catch (e: any) {
       appVM.showAlert(e.message, 'error')
     }
+    setIsLoading(false)
     toggleCreatePanel();
+    router.push('/chores')
   };
 
   return (
@@ -118,48 +129,54 @@ const CreateChoreForm = ({ houseId }: props) => {
       {/* Create Chore Panel */}
       <Drawer anchor="right" open={isCreatePanelOpen}>
         <Stack justifyContent="space-between" alignItems="stretch" width={375} padding={3} height="100%">
-          <Stack spacing={2}>
-            <Typography variant="h5">Create Chore</Typography>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => { setTitle(e.target.value); if (titleError) validateInputs() }}
-              error={titleError !== ''}
-              helperText={titleError}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              multiline
-              label="Description"
-              value={description}
-              onChange={(e) => { setDescription(e.target.value); if (descriptionError) validateInputs() }}
-              error={descriptionError !== ''}
-              helperText={descriptionError}
-              fullWidth
-              margin="normal"
-            />
-            <FormControl error={typeError !== ''}>
-              <InputLabel id="select-id">Type</InputLabel>
-              <Select
-                labelId="select-id"
-                label="Type"
-                value={type}
-                onChange={(e) => { setType(e.target.value); if (typeError) validateInputs() }}
+          {isLoading ? (
+            <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
+              <CircularProgress />
+            </Stack>) : (
+            <Stack spacing={2}>
+              <Typography variant="h5">Create Chore</Typography>
+              <TextField
+                label="Title"
+                value={title}
+                onChange={(e) => { setTitle(e.target.value); if (titleError) validateInputs() }}
+                error={titleError !== ''}
+                helperText={titleError}
                 fullWidth
-              >
-                {[<MenuItem key="None" value="None">None</MenuItem>, ...Object.values(ChoreType).map((type) => {
-                  return <MenuItem key={type} value={type}>{type}</MenuItem>
-                })]}
-              </Select>
-              {typeError !== '' && <FormHelperText error>{typeError}</FormHelperText>}
-            </FormControl>
-          </Stack>
+                margin="normal"
+              />
+              <TextField
+                multiline
+                label="Description"
+                value={description}
+                onChange={(e) => { setDescription(e.target.value); if (descriptionError) validateInputs() }}
+                error={descriptionError !== ''}
+                helperText={descriptionError}
+                fullWidth
+                margin="normal"
+              />
+              <FormControl error={typeError !== ''}>
+                <InputLabel id="select-id">Type</InputLabel>
+                <Select
+                  labelId="select-id"
+                  label="Type"
+                  value={type}
+                  onChange={(e) => { setType(e.target.value); if (typeError) validateInputs() }}
+                  fullWidth
+                >
+                  {[<MenuItem key="None" value="None">None</MenuItem>, ...Object.values(ChoreType).map((type) => {
+                    return <MenuItem key={type} value={type}>{type}</MenuItem>
+                  })]}
+                </Select>
+                {typeError !== '' && <FormHelperText error>{typeError}</FormHelperText>}
+              </FormControl>
+            </Stack>
+
+          )}
           <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={handleCreateChore} fullWidth>
+            <Button variant="contained" onClick={handleCreateChore} fullWidth disabled={isLoading}>
               Create
             </Button>
-            <Button variant="outlined" onClick={toggleCreatePanel} fullWidth>
+            <Button variant="outlined" onClick={toggleCreatePanel} fullWidth disabled={isLoading}>
               Cancel
             </Button>
           </Stack>

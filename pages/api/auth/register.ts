@@ -5,7 +5,7 @@ import prisma from "@/utils/PrismaClient";
 import { safeUser, getSafeUser } from "@/utils/safeUser";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export type registerResponse = safeUser | errorResponse;
+export type registerResponse = safeUser | { message: string };
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,13 +29,13 @@ export default async function handler(
       res.status(201).json(getSafeUser(response));
     } catch (e: any) {
       if (e.code === "P2002")
-        res.status(409).json({ error: e, errorMessage: "User already exists" });
-      else res.status(500).json({ error: e, errorMessage: e.message });
+        res.status(409).json({ message: "User already exists" });
+      else res.status(500).json({ message: e.message });
     }
   } else {
     // Handle any other HTTP method
     res
       .status(405)
-      .json({ error: undefined, errorMessage: "Method not allowed" });
+      .json({ message: "Method not allowed" });
   }
 }

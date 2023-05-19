@@ -40,7 +40,7 @@ const House = ({ session }: props) => {
       const data = await res.json();
       console.log(data);
       if (!res.ok) {
-        appVM.showAlert(data.error, "error");
+        appVM.showAlert(data.message, "error");
         return;
       }
       if (data.user.House) {
@@ -67,7 +67,7 @@ const House = ({ session }: props) => {
         });
         const data = await res.json();
         if (!res.ok) {
-          appVM.showAlert(data.error, "error");
+          appVM.showAlert(data.message, "error");
           setCreating(false);
           return;
         }
