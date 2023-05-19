@@ -43,7 +43,7 @@ const handler = async (
       where: { id: paymentId },
       data: { status: Status.Cancelled }
     });
-    return res.status(200).json({message: "Payment cancelled successfully"})
+    return res.status(200).json({ message: "Payment cancelled successfully" })
   } else
     if (req.method === "PATCH" || req.method === "PUT") {
       //update it

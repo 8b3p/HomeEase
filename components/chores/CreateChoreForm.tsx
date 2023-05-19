@@ -11,7 +11,6 @@ import {
   FormHelperText,
   InputLabel,
   CircularProgress,
-  Box,
 } from "@mui/material";
 import { ChoreType } from "@prisma/client";
 import { useAppVM } from "@/context/Contexts";

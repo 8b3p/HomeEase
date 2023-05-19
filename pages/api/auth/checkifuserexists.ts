@@ -1,4 +1,3 @@
-import { errorResponse } from "@/types/errorResponse";
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "utils/PrismaClient";
 import { corsMW } from "utils/middleware";

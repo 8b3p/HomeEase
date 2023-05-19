@@ -1,5 +1,4 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { errorResponse } from "@/types/errorResponse";
 import { hashPassword } from "@/utils/passwordCrypt";
 import prisma from "@/utils/PrismaClient";
 import { safeUser, getSafeUser } from "@/utils/safeUser";

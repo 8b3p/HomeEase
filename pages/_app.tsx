@@ -1,6 +1,6 @@
 // pages/_app.tsx
 import Head from "next/head";
-import { AppContext, AppProps } from "next/app";
+import { AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider, EmotionCache } from "@emotion/react";
@@ -15,11 +15,10 @@ import {
 import { observer } from "mobx-react-lite";
 import darkTheme from "@/styles/theme/darkTheme";
 import Layout from "@/components/layout/Layout";
-import { getSession, SessionProvider } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
 import { House } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { getBaseUrl } from "@/utils/apiService";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import "@/styles/globals.css";

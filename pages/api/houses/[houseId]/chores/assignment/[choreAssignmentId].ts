@@ -30,7 +30,7 @@ const handler = async (
   if (choreAssignment.userId !== session.user.id) return res.status(403).json({ message: 'Only assignees can edit their own chore assignments' })
 
   if (req.method === "DELETE") {
-    const deletedChore = await prisma.choreAssignment.update({
+    await prisma.choreAssignment.update({
       where: {
         id: choreAssignmentId
       },
@@ -38,7 +38,7 @@ const handler = async (
         status: Status.Cancelled
       }
     })
-    return res.status(200).json({message: "Cancelled chore assignment successfully"})
+    return res.status(200).json({ message: "Cancelled chore assignment successfully" })
   } else
     if (req.method === "PATCH" || req.method === "PUT") {
       const { status } = req.body as ChoreAssignmentIdPutBody;

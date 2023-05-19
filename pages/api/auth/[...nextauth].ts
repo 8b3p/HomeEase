@@ -71,7 +71,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    signIn: async ({ user, account, profile, email, credentials }) => {
+    signIn: async ({ user, account }) => {
       let User = user as User;
       if (account?.type !== "credentials") return true;
       if (!User.emailVerified)
@@ -98,7 +98,7 @@ export default NextAuth({
       }
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) {
       if (user) {
         const newUser = getSafeUser(user as User);
         newUser.firstName =

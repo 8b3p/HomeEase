@@ -2,12 +2,12 @@
 import type { NextPage } from "next";
 import { Stack, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import { useThemeVM } from "@/context/Contexts";
+// import { useThemeVM } from "@/context/Contexts";
 // import { useEffect, useState } from "react";
 // import { stopAnimation, startAnimation } from '@/styles/three'
 
 const Home: NextPage = () => {
-  const themeVM = useThemeVM();
+  // const themeVM = useThemeVM();
   // const [hasMounted, setHasMounted] = useState(false);
   //
   // useEffect(() => {
