@@ -1,11 +1,15 @@
-import { Divider, Stack, Typography } from "@mui/material";
+import { Divider, IconButton, Stack, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import prisma from "@/utils/PrismaClient";
-import { Chore, ChoreAssignment, User } from "@prisma/client";
+import { Chore, ChoreAssignment, Status, User } from "@prisma/client";
 import CreateChoreForm from "@/components/chores/CreateChoreForm";
 import AssignChoreForm from "@/components/chores/AssignChoreForm";
 import { Session } from "next-auth";
+import { Check } from "@mui/icons-material";
+import { useRouter } from "next/router";
+import { ChoreAssignmentIdPutBody } from "./api/houses/[houseId]/chores/assignment/[choreAssignmentId]";
+import { useAppVM } from "@/context/Contexts";
 
 interface Props {
   chores: Chore[];
@@ -15,6 +19,36 @@ interface Props {
 }
 
 const Chores = ({ chores, choreAssignments, users, session }: Props) => {
+  const router = useRouter();
+  const appVM = useAppVM();
+
+  const markChoreDone = async (id: string) => {
+    const body: ChoreAssignmentIdPutBody = {
+      status: Status.Completed
+    }
+
+    try {
+      // Make a POST request to the API endpoint to create the chore
+      const res = await fetch(`/api/houses/${session.user.houseId}/chores/assignment/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json();
+      if (!res.ok) {
+        appVM.showAlert(data.message, 'error')
+      }
+
+      appVM.showAlert('Assignment Completed', "success")
+      // Reset the form fields and close the create panel
+    } catch (e: any) {
+      appVM.showAlert(e.message, 'error')
+    }
+    router.push('/chores')
+  };
+
   return (
     <Stack
       justifyContent='center'
@@ -30,23 +64,76 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
       <CreateChoreForm houseId={session.user.houseId || ""} />
 
       <Typography variant='h5'>Chore Assignments</Typography>
-      {choreAssignments.map(assignment => (
+      <Stack
+        divider={<Divider flexItem orientation='vertical' />}
+        direction="row"
+        spacing={2}
+      >
         <Stack
-          key={assignment.id}
-          direction='row'
-          divider={<Divider flexItem orientation='vertical' />}
-          spacing={2}
+          direction="column"
+          divider={<Divider flexItem orientation='horizontal' />}
+          alignItems="center"
+          spacing={1}
         >
-          <Typography variant='body1'>
-            {users.find(user => user.id === assignment.userId)?.firstName}{" "}
-            {users.find(user => user.id === assignment.userId)?.lastName}
-          </Typography>
-          <Typography variant='body1'>
-            {chores.find(chore => chore.id === assignment.choreId)?.title}
-          </Typography>
+          <Typography variant="h4">Pending</Typography>
+          {choreAssignments.map(assignment => {
+            if (assignment.status === "Pending") {
+              return (
+                <Stack
+                  key={assignment.id}
+                  direction='row'
+                  divider={<Divider flexItem orientation='vertical' />}
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Typography variant='body1'>
+                    {users.find(user => user.id === assignment.userId)?.firstName}{" "}
+                    {users.find(user => user.id === assignment.userId)?.lastName}
+                  </Typography>
+                  <Typography variant='body1'>
+                    {chores.find(chore => chore.id === assignment.choreId)?.title}
+                  </Typography>
+                  {assignment.userId === session.user.id && (
+                    < IconButton onClick={() => { markChoreDone(assignment.id) }}>
+                      <Check fontSize="small" />
+                    </IconButton>
+                  )}
+                </Stack>
+              )
+            }
+          })}
         </Stack>
-      ))}
-    </Stack>
+        <Stack
+          direction="column"
+          divider={<Divider flexItem orientation='horizontal' />}
+          alignItems="center"
+          spacing={1}
+        >
+          <Typography variant="h4">Completed</Typography>
+          {choreAssignments.map(assignment => {
+            if (assignment.status === "Completed") {
+              return (
+                <Stack
+                  key={assignment.id}
+                  direction='row'
+                  divider={<Divider flexItem orientation='vertical' />}
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Typography variant='body1'>
+                    {users.find(user => user.id === assignment.userId)?.firstName}{" "}
+                    {users.find(user => user.id === assignment.userId)?.lastName}
+                  </Typography>
+                  <Typography variant='body1'>
+                    {chores.find(chore => chore.id === assignment.choreId)?.title}
+                  </Typography>
+                </Stack>
+              )
+            }
+          })}
+        </Stack>
+      </Stack>
+    </Stack >
   );
 };
 

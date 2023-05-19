@@ -6,7 +6,8 @@ import { Status, House, User } from "@prisma/client";
 import isValidObjectId from "@/utils/isValidObjectId";
 
 export interface ChoreAssignmentIdPutBody {
-  status: Status;
+  status?: Status;
+  dueDate?: Date;
 }
 
 const handler = async (
@@ -41,13 +42,14 @@ const handler = async (
     return res.status(200).json({ message: "Cancelled chore assignment successfully" })
   } else
     if (req.method === "PATCH" || req.method === "PUT") {
-      const { status } = req.body as ChoreAssignmentIdPutBody;
+      const { status, dueDate } = req.body as ChoreAssignmentIdPutBody;
       const updatedChore = await prisma.choreAssignment.update({
         where: {
           id: choreAssignmentId
         },
         data: {
-          status
+          status,
+          dueDate
         }
       })
       return res.status(200).json({ choreAssignment: updatedChore })
