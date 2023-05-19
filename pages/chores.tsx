@@ -1,4 +1,4 @@
-import { Divider, IconButton, Stack, Typography } from "@mui/material";
+import { Divider, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import prisma from "@/utils/PrismaClient";
@@ -21,6 +21,7 @@ interface Props {
 const Chores = ({ chores, choreAssignments, users, session }: Props) => {
   const router = useRouter();
   const appVM = useAppVM();
+  const isMobile = useMediaQuery('(max-width: 600px)')
 
   const markChoreDone = async (id: string) => {
     const body: ChoreAssignmentIdPutBody = {
@@ -66,7 +67,7 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
       <Typography variant='h5'>Chore Assignments</Typography>
       <Stack
         divider={<Divider flexItem orientation='vertical' />}
-        direction="row"
+        direction={isMobile ? 'column' : 'row'}
         spacing={2}
       >
         <Stack
