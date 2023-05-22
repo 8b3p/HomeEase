@@ -16,13 +16,13 @@ export default corsMW(async function handler(
         },
       });
       if (response) {
-        res.status(200).json(true);
+        return res.status(200).json(true);
       }
-      res.status(200).json(false);
+      return res.status(200).json(false);
     } catch (e: any) {
-      res.status(500).json({ message: e.message });
+      return res.status(500).json({ message: e.message });
     }
   } else {
-    res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ message: "Method not allowed" });
   }
 });

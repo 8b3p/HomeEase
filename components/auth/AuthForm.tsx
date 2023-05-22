@@ -66,7 +66,7 @@ export const StyledForm = styled("form")(() => ({
   },
 }))
 
-const AuthForm = ({ submit, resendAuthEmail, loading }: props) => {
+const AuthForm = ({ submit, loading }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
   const [firstnameInput, setFirstnameInput] = React.useState<string | null>(null);
