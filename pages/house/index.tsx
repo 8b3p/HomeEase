@@ -15,6 +15,7 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { LoadingButton } from "@mui/lab";
 import { Session } from "next-auth";
+import { getBaseUrl } from "@/utils/apiService";
 
 interface props {
   session: Session;
@@ -33,21 +34,22 @@ const House = ({ session }: props) => {
     if (appVM.house) {
       router.push(`/house/${appVM.house.id}`);
     }
-    const checkHouse = async () => {
-      const res = await fetch(`/api/users/${session.user.id}/house`);
-      const data = await res.json();
-      console.log(data);
-      if (!res.ok) {
-        appVM.showAlert(data.message, "error");
-        return;
-      }
-      if (data.user.House) {
-        appVM.house = data.user.House;
-        return router.push(`/house/${data.user.House.id}`);
-      }
-      setLoading(false);
-    };
-    checkHouse();
+    // const checkHouse = async () => {
+    //   const res = await fetch(`/api/users/${session.user.id}/house`);
+    //   const data = await res.json();
+    //   console.log(data);
+    //   if (!res.ok) {
+    //     appVM.showAlert(data.message, "error");
+    //     return;
+    //   }
+    //   if (data.user.House) {
+    //     appVM.house = data.user.House;
+    //     return router.push(`/house/${data.user.House.id}`);
+    //   }
+    //   setLoading(false);
+    // };
+    // checkHouse();
+    setLoading(false)
   }, [appVM, router, session.user.id]);
 
   const createHouse = async () => {
@@ -169,6 +171,31 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
+  const res = await fetch(`${getBaseUrl(ctx.req)}/api/users/${session?.user.id}/house`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      accept: "application/json",
+      cookie: ctx.req.headers.cookie || "",
+    }
+  });
+  const data = await res.json();
+  console.log(data);
+  if (!res.ok) {
+    return {
+      props: {
+        session
+      }
+    };
+  }
+  if (data.user.House) {
+    return {
+      props: {},
+      redirect: {
+        destination: `/house/${data.user.House.id}`,
+      }
+    }
+  }
   return {
     props: {
       session: session,

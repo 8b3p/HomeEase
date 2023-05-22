@@ -8,7 +8,7 @@ import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface props {
   house: {
@@ -25,6 +25,7 @@ interface props {
   } | null
   baseUrl: string
   session: Session;
+  test?: boolean
 }
 
 function copyToClipboard(text: string) {
@@ -36,8 +37,9 @@ function copyToClipboard(text: string) {
   document.body.removeChild(tempTextArea);
 }
 
-const House = ({ house, baseUrl, session }: props) => {
+const House = ({ house, baseUrl, session, test }: props) => {
   const appVM = useAppVM();
+  console.log("test", test)
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
   const [linkButtonContent, setContent] = useState<string | JSX.Element>('Copy invitation link')
@@ -59,6 +61,8 @@ const House = ({ house, baseUrl, session }: props) => {
     setLeaving(false);
   }
 
+  useEffect(() => { appVM.house = house }, [appVM, house])
+
   const copyLinkHandler = () => {
     if (typeof linkButtonContent !== "string") return
     copyToClipboard(`${baseUrl}/house/join/${appVM.house?.invitationCode}`)
@@ -70,7 +74,7 @@ const House = ({ house, baseUrl, session }: props) => {
 
   return (
     <Stack height='100%' alignItems='center' justifyContent="center">
-      {appVM.house ? (
+      {house ? (
         <Stack spacing={4} justifyContent="center" alignItems="center">
           {house?.users.map((user) => (<Typography variant="h5" key={user.id}>{user.firstName + ' ' + user.lastName}</Typography>))}
           <Button variant="contained" onClick={copyLinkHandler} >{linkButtonContent}</Button>

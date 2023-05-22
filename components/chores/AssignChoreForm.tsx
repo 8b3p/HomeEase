@@ -11,26 +11,31 @@ import {
   FormHelperText,
   TextField,
   CircularProgress,
+  useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import { Chore, User } from "@prisma/client";
 import { ChoreAssignPostBody } from "@/pages/api/houses/[houseId]/chores/assignment";
 import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
+import { Add } from "@mui/icons-material";
 
 interface props {
   users: Partial<User>[];
   chores: Chore[]
   houseId: string;
+  defaultDate: Date
 }
 
-const AssignChoreForm = ({ users, chores, houseId }: props) => {
+const AssignChoreForm = ({ users, chores, houseId, defaultDate }: props) => {
   const appVM = useAppVM()
+  const isMobile = useMediaQuery('(max-width: 600px)')
   const [userId, setUserId] = useState('');
   const [userIdError, setUserIdError] = useState('');
   const [choreId, setChoreId] = useState('');
   const [choreIdError, setChoreIdError] = useState('');
-  const [dueDate, setDueDate] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>(defaultDate.toISOString().split("T")[0]);
   const [dueDateError, setDueDateError] = useState('');
   const [isAssignPanelOpen, setAssignPanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -42,10 +47,10 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
       setUserIdError('')
       setChoreId('')
       setChoreIdError('')
-      setDueDate('')
+      setDueDate(defaultDate.toISOString().split("T")[0])
       setDueDateError('')
     }
-  }, [isAssignPanelOpen])
+  }, [isAssignPanelOpen, defaultDate])
 
   const toggleAssignPanel = () => {
     setAssignPanelOpen((prevState) => !prevState);
@@ -67,10 +72,14 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
       setChoreIdError('')
     }
 
+    const selectedDate = new Date(dueDate);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
     if (dueDate === null) {
       setDueDateError('Due date must be selected')
       isValid = false
-    } else if (new Date(dueDate).getTime() < Date.now()) {
+    } else if (selectedDate < currentDate) {
       setDueDateError('Due date must be in the future')
       isValid = false
     } else {
@@ -81,10 +90,10 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
   }
 
   const handleAssignChore = async () => {
-    setIsLoading(true);
     if (!validateInputs()) return;
     // Perform chore assignment logic here
 
+    setIsLoading(true);
     const body: ChoreAssignPostBody = {
       userId,
       choreId,
@@ -116,9 +125,13 @@ const AssignChoreForm = ({ users, chores, houseId }: props) => {
 
   return (
     <Stack justifyContent="center" alignItems="center">
-      <Button variant="outlined" onClick={toggleAssignPanel}>
-        Assign Chore
-      </Button>
+      {isMobile ? (
+        <IconButton onClick={toggleAssignPanel}><Add fontSize="small" color="primary" /></IconButton>
+      ) : (
+        <Button variant="outlined" onClick={toggleAssignPanel}>
+          Assign Chore
+        </Button>
+      )}
 
       {/* Assign Chore Panel */}
       <Drawer anchor="right" open={isAssignPanelOpen}>

@@ -1,6 +1,6 @@
 import GlobalAlert from "@/components/UI/GlobalAlert";
 import { AlertProps } from "@mui/material";
-import { House } from "@prisma/client";
+import { House, User } from "@prisma/client";
 import { makeAutoObservable } from "mobx";
 import { Session } from "next-auth";
 import React from "react";
@@ -12,7 +12,7 @@ export interface HydrationData {
 
 export default class AppVM {
   public isServer = typeof window === "undefined";
-  public house: Partial<House> | null = null;
+  public house: Partial<House & Partial<User>[]> | null = null;
   public user: Session['user'] | null = null;
   private alertTimer: NodeJS.Timeout | null = null;
   private alertRoot: ReactDOM.Root | null = null;

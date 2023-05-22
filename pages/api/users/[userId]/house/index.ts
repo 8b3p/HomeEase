@@ -21,7 +21,14 @@ const handler = async (
           email: true,
           firstName: true,
           lastName: true,
-          House: true
+          House: {
+            select: {
+              id: true,
+              name: true,
+              invitationCode: true,
+              users: true
+            }
+          }
         }
       });
       if (!user) return res.status(404).json({ message: "User not found" })
