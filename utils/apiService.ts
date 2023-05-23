@@ -46,17 +46,30 @@ export async function onRegister({ username, email, password }: registerArgs): P
       return { ok: false, error: { errorMessage: res1.error?.message || "Something went wrong, please try again" } }
     }
     //*third: if the register request is successful, send the email verification request
-    const res = await signIn("email", {
-      redirect: false,
-      email: email,
-      callbackUrl: "/",
-    });
-    // handle error
-    if (res && !res.ok) {
-      return { ok: false, error: { errorMessage: res.error || '' } }
+    try {
+      console.log("before email signin")
+      const res = await signIn("email", {
+        redirect: false,
+        email: email,
+        callbackUrl: "/",
+      });
+      // handle error
+      if (res && res.error) {
+        console.dir(res)
+        if (res.error === "EmailSignin") return { ok: false, error: { errorMessage: "Could not send email, please try again" } }
+        return { ok: false, error: { errorMessage: res.error || '' } }
+      }
+      if (res && !res.ok) {
+        console.dir(res)
+        return { ok: false, error: { errorMessage: res.error || '' } }
+      }
+      console.dir(res)
+      //*fourth: if the email verification request is successful, show a success message
+      return { ok: true }
+    } catch (e) {
+      console.log(e)
+      return { ok: false }
     }
-    //*fourth: if the email verification request is successful, show a success message
-    return { ok: true }
   } else {
     //*if the user already exists, show an error message
     return { ok: false, error: { errorMessage: "User already exists" } }

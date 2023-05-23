@@ -71,7 +71,12 @@ function Auth() {
   const resendAuthEmail = async (email: string) => {
     const res = await signIn("email", { redirect: false, email });
     if (res?.error) {
-      appVM.showAlert(res.error, "error")
+      console.log(res?.error)
+      if (res?.error == "EmailSignin") {
+        appVM.showAlert("Could not send email, please try again", "error")
+      } else {
+        appVM.showAlert(res.error, "error")
+      }
       return;
     }
     appVM.showAlert('A sign in link has been sent to your email address.', 'success')
