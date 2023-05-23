@@ -12,6 +12,13 @@ export default NextAuth({
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: '/auth',
+    signOut: '/auth',
+    verifyRequest: '/auth', // (used for check email message)
+    newUser: '/auth' // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
+  debug: true,
   providers: [
     CredentialsProvider({
       credentials: {

@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { corsMW } from "@/utils/middleware";
 import { hashPassword } from "@/utils/passwordCrypt";
 import prisma from "@/utils/PrismaClient";
 import { safeUser, getSafeUser } from "@/utils/safeUser";
@@ -6,7 +7,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export type registerResponse = safeUser | { message: string };
 
-export default async function handler(
+export default corsMW(async function handler(
   req: NextApiRequest,
   res: NextApiResponse<registerResponse>
 ) {
@@ -37,4 +38,4 @@ export default async function handler(
       .status(405)
       .json({ message: "Method not allowed" });
   }
-}
+})

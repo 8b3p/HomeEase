@@ -1,23 +1,29 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '@/utils/PrismaClient'
-import { authMW } from '@/utils/middleware'
-import { Session } from 'next-auth'
+import { NextApiRequest, NextApiResponse } from "next";
+import prisma from "@/utils/PrismaClient";
+import { corsMW, authMW } from "@/utils/middleware";
+import { Session } from "next-auth";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse, session: Session) => {
-  if (req.method === 'POST') {
-    const { invitationCode } = req.query
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  session: Session
+) => {
+  if (req.method === "POST") {
+    const { invitationCode } = req.query;
     const house = await prisma.house.findUnique({
       where: { invitationCode: invitationCode as string },
       include: {
-        users: true
-      }
-    })
+        users: true,
+      },
+    });
 
     if (!house)
-      return res.status(404).json({ message: 'The invitation code is invalid' })
+      return res
+        .status(404)
+        .json({ message: "The invitation code is invalid" });
 
     if (house.users.find(user => user.id === session.user.id)) {
-      return res.status(400).json({ message: 'You are already in this house' })
+      return res.status(400).json({ message: "You are already in this house" });
     }
 
     const newHouse = await prisma.house.update({
@@ -42,13 +48,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: Sessi
             houseId: true,
           },
         },
-      }
-    })
+      },
+    });
 
-    res.status(200).json({ house: newHouse, message: 'User joined house successfully' })
+    res
+      .status(200)
+      .json({ house: newHouse, message: "User joined house successfully" });
   } else {
-    res.status(405).json({ message: 'Method not allowed' })
+    res.status(405).json({ message: "Method not allowed" });
   }
-}
+};
 
-export default authMW(handler)
+export default corsMW(authMW(handler));

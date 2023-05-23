@@ -8,7 +8,7 @@ import { safeUser } from "./safeUser";
 
 // Initialize the cors middleware
 const cors = Cors({
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 });
 
 // middleware to enable CORS for Next.js API routes

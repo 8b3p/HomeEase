@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, isPartOfHouse } from "@/utils/middleware";
+import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
 import prisma from "@/utils/PrismaClient";
 import { Session } from "next-auth";
 import { ChoreType, House, User } from "@prisma/client";
@@ -38,4 +38,4 @@ const handler = async (
   }
 };
 
-export default authMW(isPartOfHouse(handler));
+export default corsMW(authMW(isPartOfHouse(handler)));
