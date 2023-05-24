@@ -3,6 +3,7 @@ import { Divider, Stack, Typography, useMediaQuery } from "@mui/material"
 interface props {
   title: string
   maxWidth?: number
+  orientation?: "horizontal" | "vertical"
 }
 
 const DashText = ({ title, maxWidth, orientation }: props) => {
