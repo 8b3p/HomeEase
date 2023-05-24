@@ -11,7 +11,7 @@ const StyledBox = styled(Box)(({ theme }) => {
     borderRadius: "0.5rem",
     width: "fit-content",
     height: "fit-content",
-    boxShadow: `0 0 10px 2px ${theme.palette.background.paper} 0 0 0 1px ${theme.palette.background.default}`,
+    boxShadow: theme.shadows[5],
   })
 })
 

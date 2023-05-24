@@ -25,10 +25,12 @@ interface props {
   users: Partial<User>[];
   chores: Chore[]
   houseId: string;
-  defaultDate: Date
+  defaultDate: Date;
+  isIcon?: boolean
+  variant?: "text" | "outlined" | "contained";
 }
 
-const AssignChoreForm = ({ users, chores, houseId, defaultDate }: props) => {
+const AssignChoreForm = ({ users, chores, houseId, defaultDate, isIcon, variant = "outlined" }: props) => {
   const appVM = useAppVM()
   const isMobile = useMediaQuery('(max-width: 600px)')
   const [userId, setUserId] = useState('');
@@ -125,13 +127,16 @@ const AssignChoreForm = ({ users, chores, houseId, defaultDate }: props) => {
 
   return (
     <Stack justifyContent="center" alignItems="center">
-      {isMobile ? (
+      {isIcon ? (
         <IconButton onClick={toggleAssignPanel}><Add fontSize="small" color="primary" /></IconButton>
-      ) : (
-        <Button variant="outlined" onClick={toggleAssignPanel}>
-          Assign Chore
-        </Button>
-      )}
+      )
+        : isMobile ? (
+          <IconButton onClick={toggleAssignPanel}><Add fontSize="small" color="primary" /></IconButton>
+        ) : (
+          <Button variant={variant} onClick={toggleAssignPanel}>
+            Assign Chore
+          </Button>
+        )}
 
       {/* Assign Chore Panel */}
       <Drawer anchor="right" open={isAssignPanelOpen}>

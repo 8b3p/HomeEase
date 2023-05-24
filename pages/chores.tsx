@@ -1,12 +1,12 @@
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import prisma from "@/utils/PrismaClient";
-import { Chore, ChoreAssignment, Status, User } from "@prisma/client";
+import { Chore, ChoreAssignment, User } from "@prisma/client";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import ChoreOptions from "@/components/chores/ChoresOptions";
-import ChoresList from "@/components/chores/ChoresList";
+import ChoresList from "@/components/chores/choresList/ChoresList";
 
 interface Props {
   chores: Chore[];
@@ -40,8 +40,10 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
       justifyContent='start'
       alignItems='center'
       height='100%'
+      padding="2rem 0"
       margin="auto"
-      width='90%'
+      width='95%'
+      gap={4}
     >
       <ChoreOptions
         assignmentsByDay={byDay}
@@ -51,17 +53,18 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
         chores={chores}
         session={session}
       />
-      {(byDay &&
+      {byDay && (
         byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
-        byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) && (
-          <ChoresList
-            chores={chores}
-            choreAssignments={byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]}
-            users={users}
-            session={session}
-          />
-        )
-      }
+        byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
+        <ChoresList
+          chores={chores}
+          choreAssignments={byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]}
+          users={users}
+          session={session}
+        />
+      ) : (
+        <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Chores on this day</Typography></Stack>
+      )}
     </Stack >
   );
 };

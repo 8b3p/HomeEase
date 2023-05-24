@@ -25,6 +25,7 @@ const Item = styled(Paper)(({ theme }: any) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  boxShadow: theme.shadows[0],
   textAlign: 'center',
   height: '100%',
 }));
@@ -46,49 +47,69 @@ const ChoreOptions = ({ assignmentsByDay, selected, setSelected, session, users,
     setStartDate(date)
   }
   return (
-    <>
-      <Stack direction="row" width="100%" padding="0.5rem 0" justifyContent="space-between">
-        <Stack direction="row">
-          <IconButton onClick={() => handleDayJump(-daysInterval)}><ArrowLeft /></IconButton>
-          <IconButton onClick={() => handleDayJump(daysInterval)}><ArrowRight /></IconButton>
-          <Stack justifyContent="center" alignItems="center">
-            {selected.toLocaleString('default', { weekday: 'short' })}, {selected.toLocaleString('default', { month: 'long' })} {selected.getDate()}
-          </Stack>
-        </Stack>
-        <AssignChoreForm
-          houseId={session.user.houseId || ""}
-          defaultDate={selected}
-          chores={chores}
-          users={users}
-        />
-      </Stack>
-      <Grid container columns={daysInterval} height="3rem" width="100%">
-        {new Array(daysInterval).fill(0).map((_, i) => {
-          const date = new Date();
-          const msPerDay = 1000 * 60 * 60 * 24;
-          date.setTime(startDate.getTime() + (i * msPerDay))
-          const dateString = date.toLocaleString(undefined, { day: "numeric", month: 'long', year: 'numeric' });
-          const day = date.getDate();
-          const dayOfWeek = date.toLocaleString('default', { weekday: 'short' });
-          return (
-            <Grid xs={1} key={i}>
-              <Item onClick={() => { setSelected(date) }} sx={selected.getDate() === date.getDate() ? { color: 'primary.main', cursor: 'pointer' } : { cursor: "pointer" }}>
-                <Typography variant='h6' sx={{ cursor: "pointer" }}>{isMobile ? '' : dayOfWeek} {day}</Typography>
-                {assignmentsByDay && assignmentsByDay[dateString] && assignmentsByDay[dateString].length > 0 ?
-                  <Circle
-                    sx={{
-                      position: 'absolute',
-                      fontSize: '6px',
-                      top: '80%'
-                    }}
-                    color={assignmentsByDay[dateString].filter(chore => chore.status === "Pending").find(chore => chore.userId === session.user?.id) ? "info" : "disabled"}
-                  /> : ''}
-              </Item>
-            </Grid>
-          )
+    <Stack
+      justifyContent='start'
+      alignItems='center'
+      width='100%'
+    >
+      <Paper
+        sx={(theme) => ({
+          width: "100%",
+          boxShadow: theme.shadows[5],
+          padding: "0.5rem",
+          borderRadius: theme.shape.borderRadius,
         })}
-      </Grid>
-    </>
+      >
+        <Grid container columns={daysInterval} height="3rem" width="100%">
+          <Grid xs={daysInterval - 1}>
+            <Stack alignItems="center" height="100%" direction="row">
+              <IconButton onClick={() => handleDayJump(-daysInterval)}><ArrowLeft /></IconButton>
+              <IconButton onClick={() => handleDayJump(daysInterval)}><ArrowRight /></IconButton>
+              <Stack justifyContent="center" alignItems="center">
+                {selected.toLocaleString('default', { weekday: 'short' })}, {selected.toLocaleString('default', { month: 'long' })} {selected.getDate()}
+              </Stack>
+            </Stack>
+          </Grid>
+          <Grid xs={1} alignItems="center">
+            <Stack justifyContent="center" alignItems="center" height="100%">
+              <AssignChoreForm
+                variant="text"
+                houseId={session.user.houseId || ""}
+                defaultDate={selected}
+                chores={chores}
+                users={users}
+              />
+            </Stack>
+          </Grid>
+        </Grid>
+        <Grid container columns={daysInterval} height="3rem" width="100%">
+          {new Array(daysInterval).fill(0).map((_, i) => {
+            const date = new Date();
+            const msPerDay = 1000 * 60 * 60 * 24;
+            date.setTime(startDate.getTime() + (i * msPerDay))
+            const dateString = date.toLocaleString(undefined, { day: "numeric", month: 'long', year: 'numeric' });
+            const day = date.getDate();
+            const dayOfWeek = date.toLocaleString('default', { weekday: 'short' });
+            return (
+              <Grid xs={1} key={i}>
+                <Item onClick={() => { setSelected(date) }} sx={selected.getDate() === date.getDate() ? { color: 'primary.main', cursor: 'pointer' } : { cursor: "pointer" }}>
+                  <Typography variant='h6' sx={{ cursor: "pointer" }}>{isMobile ? '' : dayOfWeek} {day}</Typography>
+                  {assignmentsByDay && assignmentsByDay[dateString] && assignmentsByDay[dateString].length > 0 ?
+                    <Circle
+                      sx={{
+                        position: 'absolute',
+                        fontSize: '6px',
+                        top: '80%'
+                      }}
+                      color={assignmentsByDay[dateString].filter(chore => chore.status === "Pending").find(chore => chore.userId === session.user?.id) ? "info" : "disabled"}
+                    /> : ''}
+                </Item>
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Paper>
+    </Stack >
   )
 }
 
