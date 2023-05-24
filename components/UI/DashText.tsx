@@ -3,10 +3,9 @@ import { Divider, Stack, Typography, useMediaQuery } from "@mui/material"
 interface props {
   title: string
   maxWidth?: number
-  orientation?: "horizontal" | "vertical"
 }
 
-const DashText = ({ title, maxWidth, orientation }: props) => {
+const DashText = ({ title, maxWidth }: props) => {
   const isMobile = useMediaQuery('(max-width: 600px)')
 
   return (
