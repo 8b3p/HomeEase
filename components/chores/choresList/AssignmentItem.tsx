@@ -86,9 +86,9 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
         />
       </ListItem>
       {item === "MinePending" ? (
-        <IconButton onClick={() => markChoreDone(assignmentId)}><Check fontSize="small" /></IconButton>
-      ) : (item === "MineComplete") || (item === "OtherComplete") ? (<Typography color={theme => theme.palette.primary.main}>Completed</Typography>) : (
-        <Typography color={theme => theme.palette.primary.main}>Pending</Typography>
+        <IconButton onClick={() => markChoreDone(assignmentId)}><Check color="info" fontSize="small" /></IconButton>
+      ) : (item === "MineComplete") || (item === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) : (
+        <Typography color={theme => theme.palette.info.main}>Pending</Typography>
       )}
     </Stack >
   )
