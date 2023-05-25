@@ -20,7 +20,7 @@ import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { Add } from "@mui/icons-material";
-import CreateChoreForm from "./CreateChoreForm";
+import CreateChoreForm from "@/components/chores/CreateChoreForm";
 
 interface props {
   users: Partial<User>[];

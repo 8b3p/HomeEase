@@ -7,6 +7,7 @@ import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import ChoreOptions from "@/components/chores/ChoresOptions";
 import ChoresList from "@/components/chores/choresList/ChoresList";
+import AssignChoreForm from "@/components/chores/AssignChoreForm";
 
 interface Props {
   chores: Chore[];
@@ -46,12 +47,21 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
       gap={4}
     >
       <ChoreOptions
-        assignmentsByDay={byDay}
+        byDay={byDay}
         setSelected={setSelectedDate}
         selected={selectedDate}
         users={users}
         chores={chores}
         session={session}
+        addButton={
+          <AssignChoreForm
+            variant="outlined"
+            houseId={session.user.houseId || ""}
+            defaultDate={selectedDate}
+            chores={chores ? chores : []}
+            users={users ? users : []}
+          />
+        }
       />
       {byDay && (
         byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
@@ -89,6 +99,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       },
     };
   }
+
   const [chores, choreAssignments, houseUsers] = await Promise.all([
     prisma.chore.findMany({
       where: { OR: [{ owner: session?.user?.houseId }, { owner: null }] },

@@ -1,6 +1,5 @@
 import { IconButton, Paper, Stack, Typography, useMediaQuery } from "@mui/material";
-import { Chore, ChoreAssignment, User } from "@prisma/client";
-import AssignChoreForm from "@/components/chores/AssignChoreForm";
+import { Chore, Status, User } from "@prisma/client";
 import { Session } from "next-auth";
 import { ArrowRight, ArrowLeft, Circle } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -8,12 +7,13 @@ import styled from "@mui/styled-engine";
 import { useState } from "react";
 
 interface props {
-  assignmentsByDay: { [key: string]: ChoreAssignment[] } | undefined;
+  byDay: { [key: string]: { status: Status; userId: string }[] } | undefined;
   setSelected: (arg: Date) => void;
   selected: Date;
-  chores: Chore[];
-  users: Partial<User>[];
+  chores?: Chore[];
+  users?: Partial<User>[];
   session: Session;
+  addButton?: JSX.Element;
 }
 
 const daysInterval = 5;
@@ -30,14 +30,14 @@ const Item = styled(Paper)(({ theme }: any) => ({
   height: '100%',
 }));
 
-const ChoreOptions = ({ assignmentsByDay, selected, setSelected, session, users, chores }: props) => {
+const ChoreOptions = ({ byDay, selected, setSelected, session, users, chores, addButton }: props) => {
   const currentDate = new Date(); // Get the current date
   const start = new Date(currentDate); // Create a new date object for the start date
   start.setDate(currentDate.getDate() - 1); // Set the start date to yesterday
   const [startDate, setStartDate] = useState<Date>(start)
   const isMobile = useMediaQuery('(max-width: 600px)')
 
-
+  console.log(byDay)
 
   const handleDayJump = (day: number) => {
     const msPerDay = 1000 * 60 * 60 * 24;
@@ -72,13 +72,7 @@ const ChoreOptions = ({ assignmentsByDay, selected, setSelected, session, users,
           </Grid>
           <Grid xs={1} alignItems="center">
             <Stack justifyContent="center" alignItems="center" height="100%">
-              <AssignChoreForm
-                variant="text"
-                houseId={session.user.houseId || ""}
-                defaultDate={selected}
-                chores={chores}
-                users={users}
-              />
+              {addButton}
             </Stack>
           </Grid>
         </Grid>
@@ -94,14 +88,14 @@ const ChoreOptions = ({ assignmentsByDay, selected, setSelected, session, users,
               <Grid xs={1} key={i}>
                 <Item onClick={() => { setSelected(date) }} sx={selected.getDate() === date.getDate() ? { color: 'primary.main', cursor: 'pointer' } : { cursor: "pointer" }}>
                   <Typography variant='h6' sx={{ cursor: "pointer" }}>{isMobile ? '' : dayOfWeek} {day}</Typography>
-                  {assignmentsByDay && assignmentsByDay[dateString] && assignmentsByDay[dateString].length > 0 ?
+                  {byDay && byDay[dateString] && byDay[dateString].length > 0 ?
                     <Circle
                       sx={{
                         position: 'absolute',
                         fontSize: '6px',
                         top: '80%'
                       }}
-                      color={assignmentsByDay[dateString].filter(chore => chore.status === "Pending").find(chore => chore.userId === session.user?.id) ? "info" : "disabled"}
+                      color={byDay[dateString].filter(day => day.status === "Pending").find(day => day.userId === session.user?.id) ? "info" : "disabled"}
                     /> : ''}
                 </Item>
               </Grid>

@@ -136,18 +136,18 @@ model ChoreAssignment {
 }
 
 model Payment {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // @default(auto()) is only needed for MongoDB
   amount      Float
-  dueDate     DateTime? @map("due_date")
   status      Status
-  createdAt   DateTime  @default(now()) @map("createdAt")
-  updatedAt   DateTime  @updatedAt @map("updatedAt")
-  houseId     String    @map("houseId") @db.ObjectId
-  House       House     @relation(fields: [houseId], references: [id])
-  Recipient   User      @relation(name: "recipient", fields: [recipientId], references: [id])
-  recipientId String    @map("recipientId") @db.ObjectId
-  Payer       User      @relation(name: "payer", fields: [payerId], references: [id])
-  payerId     String    @map("payerId") @db.ObjectId
+  description String
+  createdAt   DateTime @default(now()) @map("createdAt")
+  updatedAt   DateTime @updatedAt @map("updatedAt")
+  houseId     String   @map("houseId") @db.ObjectId
+  House       House    @relation(fields: [houseId], references: [id])
+  Recipient   User     @relation(name: "recipient", fields: [recipientId], references: [id])
+  recipientId String   @map("recipientId") @db.ObjectId
+  Payer       User     @relation(name: "payer", fields: [payerId], references: [id])
+  payerId     String   @map("payerId") @db.ObjectId
 
   @@map("payments")
 }

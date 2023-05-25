@@ -18,11 +18,9 @@ const Home: NextPage = () => {
   // }, [hasMounted, themeVM.themeType]);
 
   return (
-    <Stack height="100%" justifyContent="center" alignItems="center">
-      <Typography variant="h1" textAlign="center">
-        Welcome to HomeEase
-      </Typography>
-    </Stack>
+    <Typography variant="h1" textAlign="center">
+      Welcome to HomeEase
+    </Typography>
   );
 };
 

@@ -11,7 +11,7 @@ const Layout = ({ children }: props) => {
   return (
     <Stack height="100%">
       <Navbar />
-      <Container sx={{ height: '100%', overflowX: 'hidden' }}>{children}</Container>
+      <Container sx={{ height: '-webkit-fill-available', overflowX: 'hidden' }}>{children}</Container>
     </Stack>
   );
 };

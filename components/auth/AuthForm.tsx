@@ -2,12 +2,13 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import Card from "@/components/UI/Card";
 import { styled } from '@mui/material/styles'
-import { Login } from "@mui/icons-material";
+import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import { LoadingButton } from "@mui/lab";
+import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from "@mui/material";
 
 interface props {
   submit: <
@@ -77,6 +78,7 @@ const AuthForm = ({ submit, loading }: props) => {
   const [emailError, setEmailError] = React.useState<string | null>(null);
   const [validate, setValidate] = React.useState<boolean>(false);
   const [islogin, setIsLogin] = React.useState(true);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const switchAuthModeHandler = () => {
     setIsLogin(prevState => !prevState);
@@ -255,7 +257,21 @@ const AuthForm = ({ submit, loading }: props) => {
               error={passwordError ? true : false}
               helperText={passwordError}
               label='Password'
-              type='password'
+              type={showPassword ? "text" : "password"}
+              InputProps={{
+                endAdornment: (
+                  < InputAdornment position="end" >
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => { setShowPassword(prev => !prev) }}
+                      onMouseDown={(e) => e.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
               id='password'
               onChange={e => {
                 setPasswordInput(e.target.value);
@@ -299,7 +315,7 @@ const AuthForm = ({ submit, loading }: props) => {
           </footer>
         </StyledForm>
       </StyledCard>
-    </Stack>
+    </Stack >
   );
 };
 

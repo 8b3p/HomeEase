@@ -8,9 +8,11 @@ import isValidObjectId from "@/utils/isValidObjectId";
 export interface PaymentPostBody {
   amount: number;
   dueDate?: Date;
-  status: Status;
+  status?: Status;
   payerId: string;
+  description: string;
   recipientId: string;
+  createdAt: Date;
 }
 
 const handler = async (
@@ -27,7 +29,7 @@ const handler = async (
     });
     res.status(200).json({ payments });
   } else if (req.method === "POST") {
-    const { amount, dueDate, payerId, recipientId } =
+    const { amount, createdAt, description, payerId, recipientId } =
       req.body as PaymentPostBody;
     if (!isValidObjectId(payerId) || !isValidObjectId(recipientId))
       return res.status(400).json({ message: "Invalid user id" });
@@ -35,8 +37,9 @@ const handler = async (
     const payment = await prisma.payment.create({
       data: {
         amount: amount,
-        dueDate: dueDate,
         status: Status.Pending,
+        description: description,
+        createdAt,
         House: {
           connect: {
             id: house.id,
