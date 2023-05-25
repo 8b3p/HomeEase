@@ -1,6 +1,6 @@
 import { useAppVM } from '@/context/Contexts';
 import { ChoreAssignmentIdPutBody } from '@/pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]';
-import { Check } from '@mui/icons-material';
+import { Check, Close } from '@mui/icons-material';
 import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
 import { Chore, Status } from '@prisma/client';
 import { observer } from 'mobx-react-lite';
@@ -13,7 +13,7 @@ interface ItemProps {
   firstname: string;
   lastname: string;
   assignmentId: string;
-  item: "MinePending" | "MineComplete" | "OtherPending" | "OtherComplete";
+  item: "MinePending" | "MineComplete" | "OtherPending" | "OtherComplete" | "Cancelled";
   session: Session;
 }
 
@@ -33,12 +33,10 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
   const appVM = useAppVM();
   const [itemState, setItemState] = React.useState(item);
 
-  const markChoreDone = async (id: string) => {
-
-    const body: ChoreAssignmentIdPutBody = {
-      status: Status.Completed
-    }
-    setItemState("MineComplete");
+  const markChore = async (id: string, status: Status) => {
+    const body: ChoreAssignmentIdPutBody = { status };
+    if (status === Status.Completed) setItemState("MineComplete");
+    if (status === Status.Cancelled) setItemState("Cancelled");
     try {
       // Make a POST request to the API endpoint to create the chore
       const res = await fetch(`/api/houses/${session.user.houseId}/chores/assignment/${id}`, {
@@ -88,10 +86,16 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
         />
       </ListItem>
       {itemState === "MinePending" ? (
-        <IconButton onClick={() => markChoreDone(assignmentId)}><Check color="info" fontSize="small" /></IconButton>
-      ) : (itemState === "MineComplete") || (itemState === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) : (
-        <Typography color={theme => theme.palette.info.main}>Pending</Typography>
-      )}
+        <Stack direction="row">
+          <IconButton onClick={() => markChore(assignmentId, Status.Completed)}><Check color="info" fontSize="small" /></IconButton>
+          <IconButton onClick={() => markChore(assignmentId, Status.Cancelled)}><Close color="error" fontSize="small" /></IconButton>
+        </Stack>
+      ) : (itemState === "MineComplete") || (itemState === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) :
+        itemState === "Cancelled" ? (
+          <Typography color={theme => theme.palette.error.main}>Cancelled</Typography>
+        ) : itemState === "OtherPending" && (
+          <Typography color={theme => theme.palette.info.main}>Pending</Typography>
+        )}
     </Stack >
   )
 }

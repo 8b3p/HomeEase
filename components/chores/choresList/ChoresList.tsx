@@ -73,20 +73,35 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
           </Stack>
           <Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />
           <Stack width={isMobile ? "100%" : "50%"} padding={2}>
-            {mine.filter(c => c.status === "Completed").length === 0 ? (
+            {mine.filter(c => (c.status === "Completed" || c.status === "Cancelled")).length === 0 ? (
               <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Completed Chores</Typography></Stack>
             ) : (
-              mine.filter(c => c.status === "Completed").map((choreAssignment) => (
-                <AssignmentItem
-                  key={choreAssignment.id}
-                  session={session}
-                  chore={chores.find(chore => chore.id === choreAssignment.choreId)}
-                  firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
-                  lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
-                  item="MineComplete"
-                  assignmentId={choreAssignment.id}
-                />
-              ))
+              <>
+                {mine.filter(c => c.status === "Completed").map((choreAssignment) => (
+                  <AssignmentItem
+                    key={choreAssignment.id}
+                    session={session}
+                    chore={chores.find(chore => chore.id === choreAssignment.choreId)}
+                    firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
+                    lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
+                    item="MineComplete"
+                    assignmentId={choreAssignment.id}
+                  />
+                ))}
+                {mine.filter(c => c.status === "Cancelled").map((choreAssignment) => {
+                  return (
+                    <AssignmentItem
+                      key={choreAssignment.id}
+                      session={session}
+                      chore={chores.find(chore => chore.id === choreAssignment.choreId)}
+                      firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
+                      lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
+                      item="Cancelled"
+                      assignmentId={choreAssignment.id}
+                    />
+                  )
+                })}
+              </>
             )}
           </Stack>
         </Stack >
@@ -129,19 +144,34 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
             {other.filter(c => c.status === "Completed").length === 0 ? (
               <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Completed Chores</Typography></Stack>
             ) : (
-              other.filter(c => c.status === "Completed").map((choreAssignment) => {
-                return (
-                  <AssignmentItem
-                    key={choreAssignment.id}
-                    session={session}
-                    chore={chores.find(chore => chore.id === choreAssignment.choreId)}
-                    assignmentId={choreAssignment.id}
-                    firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
-                    lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
-                    item="OtherComplete"
-                  />
-                )
-              })
+              <>
+                {other.filter(c => c.status === "Completed").map((choreAssignment) => {
+                  return (
+                    <AssignmentItem
+                      key={choreAssignment.id}
+                      session={session}
+                      chore={chores.find(chore => chore.id === choreAssignment.choreId)}
+                      assignmentId={choreAssignment.id}
+                      firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
+                      lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
+                      item="OtherComplete"
+                    />
+                  )
+                })}
+                {other.filter(c => c.status === "Cancelled").map((choreAssignment) => {
+                  return (
+                    <AssignmentItem
+                      key={choreAssignment.id}
+                      session={session}
+                      chore={chores.find(chore => chore.id === choreAssignment.choreId)}
+                      assignmentId={choreAssignment.id}
+                      firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
+                      lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
+                      item="Cancelled"
+                    />
+                  )
+                })}
+              </>
             )}
           </Stack >
         </Stack >
