@@ -7,7 +7,7 @@ import isValidObjectId from "@/utils/isValidObjectId";
 
 export interface PaymentIdPutBody {
   amount?: number;
-  dueDate?: Date;
+  description: string;
   status?: Status;
 }
 
@@ -53,10 +53,10 @@ const handler = async (
     return res.status(200).json({ message: "Payment cancelled successfully" });
   } else if (req.method === "PATCH" || req.method === "PUT") {
     //update it
-    const { status, amount, dueDate } = req.body as PaymentIdPutBody;
+    const { status, amount, description } = req.body as PaymentIdPutBody;
     const updatedPayment = await prisma.payment.update({
       where: { id: paymentId },
-      data: { status, amount, dueDate },
+      data: { status, amount, description },
     });
     return res.status(200).json({ payment: updatedPayment });
   } else {
