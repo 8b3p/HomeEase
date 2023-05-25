@@ -176,7 +176,7 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
 
       {/* Create Payment Panel */}
       <Drawer anchor="right" open={isAssignPanelOpen}>
-        <Stack justifyContent="space-between" alignItems="stretch" width={375} padding={3} height="100%">
+        <Stack justifyContent="space-between" alignItems="stretch" width={375} maxWidth="100vw" padding={3} height="100%">
           {isLoading ? (
             <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
               <CircularProgress />
