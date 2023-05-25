@@ -20,6 +20,7 @@ import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { Add } from "@mui/icons-material";
+import CreateChoreForm from "./CreateChoreForm";
 
 interface props {
   users: Partial<User>[];
@@ -40,6 +41,7 @@ const AssignChoreForm = ({ users, chores, houseId, defaultDate, isIcon, variant 
   const [dueDate, setDueDate] = useState<string>(defaultDate.toISOString().split("T")[0]);
   const [dueDateError, setDueDateError] = useState('');
   const [isAssignPanelOpen, setAssignPanelOpen] = useState(false);
+  const [isCreatePanelOpen, setCreatePanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
 
@@ -168,9 +170,15 @@ const AssignChoreForm = ({ users, chores, houseId, defaultDate, isIcon, variant 
                   labelId="chore-select-id"
                   label="Chore"
                   value={choreId}
-                  onChange={(e) => { setChoreId(e.target.value); if (choreIdError) validateInputs() }}
+                  onChange={(e) => {
+                    if (e.target.value === "NewChore") {
+                      return setCreatePanelOpen(true);
+                    }
+                    setChoreId(e.target.value); if (choreIdError) validateInputs()
+                  }}
                   fullWidth
                 >
+                  <MenuItem value="NewChore" sx={(theme) => ({ color: theme.palette.primary.main, borderBottom: '1px solid ' + theme.palette.divider })}>Create a new Chore</MenuItem>
                   {chores.map((chore) => {
                     return <MenuItem key={chore.id} value={chore.id}>{chore.title}</MenuItem>
                   })}
@@ -200,6 +208,7 @@ const AssignChoreForm = ({ users, chores, houseId, defaultDate, isIcon, variant 
           </Stack>
         </Stack>
       </Drawer >
+      <CreateChoreForm houseId={houseId} isCreatePanelOpen={isCreatePanelOpen} setCreatePanelOpen={setCreatePanelOpen} />
     </Stack >
   );
 };

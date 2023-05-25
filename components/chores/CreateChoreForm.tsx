@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -20,9 +20,11 @@ import { useRouter } from "next/router";
 
 interface props {
   houseId: string;
+  isCreatePanelOpen: boolean;
+  setCreatePanelOpen: (value: SetStateAction<boolean>) => void;
 }
 
-const CreateChoreForm = ({ houseId }: props) => {
+const CreateChoreForm = ({ houseId, isCreatePanelOpen, setCreatePanelOpen }: props) => {
   const appVM = useAppVM();
   const [title, setTitle] = useState('')
   const [titleError, setTitleError] = useState('')
@@ -30,7 +32,6 @@ const CreateChoreForm = ({ houseId }: props) => {
   const [descriptionError, setDescriptionError] = useState('')
   const [type, setType] = useState('None')
   const [typeError, setTypeError] = useState('')
-  const [isCreatePanelOpen, setCreatePanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
 
@@ -120,68 +121,61 @@ const CreateChoreForm = ({ houseId }: props) => {
   };
 
   return (
-    <Stack justifyContent="center" alignItems="center">
-      <Button variant="outlined" onClick={toggleCreatePanel}>
-        Create Chore
-      </Button>
-
-      {/* Create Chore Panel */}
-      <Drawer anchor="right" open={isCreatePanelOpen}>
-        <Stack justifyContent="space-between" alignItems="stretch" width={375} padding={3} height="100%">
-          {isLoading ? (
-            <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
-              <CircularProgress />
-            </Stack>) : (
-            <Stack spacing={2}>
-              <Typography variant="h5">Create Chore</Typography>
-              <TextField
-                label="Title"
-                value={title}
-                onChange={(e) => { setTitle(e.target.value); if (titleError) validateInputs() }}
-                error={titleError !== ''}
-                helperText={titleError}
+    <Drawer anchor="right" open={isCreatePanelOpen} >
+      <Stack justifyContent="space-between" alignItems="stretch" width={375} padding={3} height="100%">
+        {isLoading ? (
+          <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
+            <CircularProgress />
+          </Stack>) : (
+          <Stack spacing={2}>
+            <Typography variant="h5">Create Chore</Typography>
+            <TextField
+              label="Title"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); if (titleError) validateInputs() }}
+              error={titleError !== ''}
+              helperText={titleError}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              multiline
+              label="Description"
+              value={description}
+              onChange={(e) => { setDescription(e.target.value); if (descriptionError) validateInputs() }}
+              error={descriptionError !== ''}
+              helperText={descriptionError}
+              fullWidth
+              margin="normal"
+            />
+            <FormControl error={typeError !== ''}>
+              <InputLabel id="select-id">Type</InputLabel>
+              <Select
+                labelId="select-id"
+                label="Type"
+                value={type}
+                onChange={(e) => { setType(e.target.value); if (typeError) validateInputs() }}
                 fullWidth
-                margin="normal"
-              />
-              <TextField
-                multiline
-                label="Description"
-                value={description}
-                onChange={(e) => { setDescription(e.target.value); if (descriptionError) validateInputs() }}
-                error={descriptionError !== ''}
-                helperText={descriptionError}
-                fullWidth
-                margin="normal"
-              />
-              <FormControl error={typeError !== ''}>
-                <InputLabel id="select-id">Type</InputLabel>
-                <Select
-                  labelId="select-id"
-                  label="Type"
-                  value={type}
-                  onChange={(e) => { setType(e.target.value); if (typeError) validateInputs() }}
-                  fullWidth
-                >
-                  {[<MenuItem key="None" value="None">None</MenuItem>, ...Object.values(ChoreType).map((type) => {
-                    return <MenuItem key={type} value={type}>{type}</MenuItem>
-                  })]}
-                </Select>
-                {typeError !== '' && <FormHelperText error>{typeError}</FormHelperText>}
-              </FormControl>
-            </Stack>
-
-          )}
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={handleCreateChore} fullWidth disabled={isLoading}>
-              Create
-            </Button>
-            <Button variant="outlined" onClick={toggleCreatePanel} fullWidth disabled={isLoading}>
-              Cancel
-            </Button>
+              >
+                {[<MenuItem key="None" value="None">None</MenuItem>, ...Object.values(ChoreType).map((type) => {
+                  return <MenuItem key={type} value={type}>{type}</MenuItem>
+                })]}
+              </Select>
+              {typeError !== '' && <FormHelperText error>{typeError}</FormHelperText>}
+            </FormControl>
           </Stack>
+
+        )}
+        <Stack direction="row" spacing={1}>
+          <Button variant="contained" onClick={handleCreateChore} fullWidth disabled={isLoading}>
+            Create
+          </Button>
+          <Button variant="outlined" onClick={toggleCreatePanel} fullWidth disabled={isLoading}>
+            Cancel
+          </Button>
         </Stack>
-      </Drawer >
-    </Stack >
+      </Stack>
+    </Drawer >
   );
 };
 

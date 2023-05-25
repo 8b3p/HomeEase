@@ -31,12 +31,14 @@ interface ItemProps {
 const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentId }: ItemProps) => {
   const router = useRouter();
   const appVM = useAppVM();
+  const [itemState, setItemState] = React.useState(item);
 
   const markChoreDone = async (id: string) => {
 
     const body: ChoreAssignmentIdPutBody = {
       status: Status.Completed
     }
+    setItemState("MineComplete");
     try {
       // Make a POST request to the API endpoint to create the chore
       const res = await fetch(`/api/houses/${session.user.houseId}/chores/assignment/${id}`, {
@@ -85,9 +87,9 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
           }
         />
       </ListItem>
-      {item === "MinePending" ? (
+      {itemState === "MinePending" ? (
         <IconButton onClick={() => markChoreDone(assignmentId)}><Check color="info" fontSize="small" /></IconButton>
-      ) : (item === "MineComplete") || (item === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) : (
+      ) : (itemState === "MineComplete") || (itemState === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) : (
         <Typography color={theme => theme.palette.info.main}>Pending</Typography>
       )}
     </Stack >
