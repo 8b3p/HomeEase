@@ -38,7 +38,7 @@ interface props {
 const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "outlined", session }: props) => {
   const appVM = useAppVM()
   const isMobile = useMediaQuery('(max-width: 600px)')
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [amountError, setAmountError] = useState('');
   const [description, setDescription] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
@@ -55,7 +55,7 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
 
   useEffect(() => {
     if (isAssignPanelOpen) {
-      setAmount(undefined)
+      setAmount(0)
       setAmountError('')
       setDescription('')
       setDescriptionError('')
@@ -86,33 +86,22 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
       setDescriptionError('')
     }
 
-    if (amount === undefined) {
-      setAmountError('Amount must be entered')
-      isValid = false
-    } else if (amount <= 0) {
-      setAmountError('Amount must be greater than 0')
-      isValid = false
-    } else {
-      setAmountError('')
-    }
     if (isCustom) {
-      let isCustomValid = true;
-      const remaining = (amount || 0) - (Object.values(customAmounts).length ? Object.values(customAmounts).reduce((acc, amount) => acc += amount) : 0)
-      if (remaining !== 0) {
-        Object.keys(customAmounts).forEach((userId) => {
-          setCustomAmountsError((prev) => ({ ...prev, [userId]: "Remaining must be 0!" }))
-        })
-        isValid = false
-        isCustomValid = false
-      }
       Object.entries(customAmounts).forEach(([userId, amount]) => {
         if (amount <= 0) {
           setCustomAmountsError((prev) => ({ ...prev, [userId]: 'Amount must be greater than 0' }))
           isValid = false
-        } else if (isCustomValid) {
+        } else {
           setCustomAmountsError((prev) => ({ ...prev, [userId]: '' }))
         }
       })
+    } else {
+      if (amount <= 0) {
+        setAmountError('Amount must be greater than 0')
+        isValid = false
+      } else {
+        setAmountError('')
+      }
     }
 
 
@@ -131,29 +120,28 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
 
     // Perform payment creation logic here
     setIsLoading(true);
-    const res = await Promise.all(payersId.map(async (payerId) => {
-      const body: PaymentPostBody = {
-        amount: isCustom ? customAmounts[payerId] : ((amount || 0) / payersId.length),
-        payerId,
-        description,
-        status: Status.Pending,
-        recipientId: session.user.id,
-        createdAt: new Date(paymentDate)
-      }
+    const bodies: PaymentPostBody[] = payersId.filter(id => id !== session.user.id).map((payerId) => ({
+      amount: parseFloat((isCustom ? customAmounts[payerId] : ((amount || 0) / payersId.length)).toFixed(2)),
+      payerId,
+      description,
+      status: Status.Pending,
+      recipientId: session.user.id,
+      createdAt: new Date(paymentDate)
+    } as PaymentPostBody))
 
-      return fetch(`/api/houses/${houseId}/payments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      })
-    }))
-    console.log(res)
-    res.forEach(async (res) => {
-      const data = await res.json();
-      console.log(data)
+
+    const res = await fetch(`/api/houses/${houseId}/payments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodies),
     })
+    const data = await res.json();
+    if (!res.ok) {
+      appVM.showAlert(data.message, "error")
+    }
+
     // Reset the form fields and close the create panel
     setIsLoading(false);
     setAssignPanelOpen(false);
@@ -183,16 +171,18 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
             </Stack>) : (
             <Stack spacing={2}>
               <Typography variant="h5">Add Payment</Typography>
-              <TextField
-                required
-                inputProps={{ min: 0, inputMode: 'decimal', pattern: '^[0-9]*\.?[0-9]+$' }}
-                label="Amount"
-                value={amount}
-                onChange={(e) => { setAmount(parseFloat(e.target.value || '0')); amountError && setAmountError('') }}
-                error={amountError !== ''}
-                helperText={amountError}
-                fullWidth
-              />
+              {!isCustom && (
+                <TextField
+                  required
+                  inputProps={{ min: 0, inputMode: 'decimal', pattern: '^[0-9]*\.?[0-9]+$' }}
+                  label="Amount"
+                  value={amount}
+                  onChange={(e) => { setAmount(parseFloat(e.target.value || '0')); amountError && setAmountError('') }}
+                  error={amountError !== ''}
+                  helperText={amountError}
+                  fullWidth
+                />
+              )}
               <TextField
                 required
                 label="Description"
@@ -204,7 +194,7 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
               />
               <TextField
                 required
-                label="Payment Date"
+                label="Date Of Expense"
                 InputLabelProps={{ shrink: true }}
                 type="date"
                 value={paymentDate}
@@ -231,11 +221,19 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
                   )}
                   onChange={(e) => {
                     const { target: { value }, } = e;
+                    setPayersId(typeof value === 'string' ? value.split(',') : value,);
                     const payerIds = typeof value === 'string' ? value.split(',') : value;
                     if (isCustom) {
-                      setCustomAmounts(payerIds.reduce((acc, payerId) => ({ ...acc, [payerId]: ((amount || 0) / payerIds.length) }), {}))
+                      setCustomAmounts(prev => {
+                        return payerIds.reduce((acc, payerId) => {
+                          if (prev[payerId] && prev[payerId] > 0) {
+                            return { ...acc, [payerId]: prev[payerId] }
+                          } else {
+                            return { ...acc, [payerId]: 0 }
+                          }
+                        }, {} as { [key: string]: number })
+                      })
                     }
-                    setPayersId(typeof value === 'string' ? value.split(',') : value,);
                     payersIdError && setPayersIdError('')
                   }}
                   fullWidth
@@ -265,19 +263,21 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
               </FormControl>
               <FormControlLabel control={<Switch checked={isCustom} onChange={(e) => {
                 if (!e.target.checked) { setCustomAmounts({}) }
-                else { setCustomAmounts(payersId.reduce((acc, payerId) => ({ ...acc, [payerId]: ((amount || 0) / payersId.length) }), {})) }
+                else { setCustomAmounts(payersId.reduce((acc, payerId) => ({ ...acc, [payerId]: parseInt(((amount || 0) / payersId.length).toString()) }), {})); setAmount(0) }
                 setIsCustom(e.target.checked)
-              }} />} label="Custom" />
+              }} />} label="Separate" />
               {isCustom && (
                 <Stack spacing={2}>
                   {payersId.map((payerId) => {
                     const user = users.find(user => user.id === payerId)
+                    if (user?.id === session.user.id) return null;
                     return (
                       <TextField
                         key={payerId}
                         required
                         inputProps={{ min: 0, inputMode: 'decimal', pattern: '^[0-9]*\.?[0-9]*$' }}
                         label={`${user?.firstName} ${user?.lastName}`}
+                        InputLabelProps={{ sx: { textTransform: 'capitalize' } }}
                         hiddenLabel
                         defaultValue={((amount || 0) / payersId.length).toFixed(2)}
                         value={customAmounts[payerId]}
@@ -293,7 +293,9 @@ const CreatePaymentForm = ({ users, houseId, defaultDate, isIcon, variant = "out
                       />
                     )
                   })}
-                  <Typography sx={(theme) => ({ color: theme.palette.text.secondary })}>Remaining: {(amount || 0) - (Object.values(customAmounts).length ? Object.values(customAmounts).reduce((acc, amount) => acc += amount) : 0)}</Typography>
+                  <Typography sx={(theme) => ({ color: theme.palette.text.secondary })}>
+                    Total: {Object.values(customAmounts).length ? Object.values(customAmounts).reduce((acc, amount) => acc += amount) : 0}
+                  </Typography>
                 </Stack>
               )}
             </Stack>

@@ -5,8 +5,10 @@ import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Session } from "next-auth";
-import ChoreOptions from "@/components/chores/ChoresOptions";
+import PaymentOptions from "@/components/DateOptions";
 import CreatePaymentForm from "@/components/payments/CreatePaymentForm";
+import PaymentsList from "@/components/payments/paymentsList/PaymentsList";
+import { Add, ArrowDownwardRounded, ArrowUpwardRounded, Remove } from "@mui/icons-material";
 
 interface props {
   payments: Payment[];
@@ -20,7 +22,7 @@ const groupByDay = (payments: Payment[], userId: string) => {
     if (!acc[dateString]) {
       acc[dateString] = [];
     }
-    acc[dateString].push({ status: payment.status, userId });
+    acc[dateString].push({ userId, ...payment });
     return acc;
   }, {} as { [key: string]: { status: Status; userId: string }[] });
   return grouped;
@@ -29,6 +31,7 @@ const groupByDay = (payments: Payment[], userId: string) => {
 const Payments = ({ payments, session, users }: props) => {
   const [byDay, setByDay] = useState<{ [key: string]: { status: Status; userId: string }[] } | undefined>();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
 
   useEffect(() => {
     setByDay(groupByDay(payments, session.user.id))
@@ -44,7 +47,7 @@ const Payments = ({ payments, session, users }: props) => {
       width='95%'
       gap={4}
     >
-      <ChoreOptions
+      <PaymentOptions
         byDay={byDay}
         setSelected={setSelectedDate}
         selected={selectedDate}
@@ -58,8 +61,22 @@ const Payments = ({ payments, session, users }: props) => {
           />
         }
       />
-      <Typography variant="h1">I&apos;m a Payment</Typography>
-    </Stack>
+      {
+        byDay && (
+          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
+          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
+          <PaymentsList
+            payments={
+              byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]
+                .map(payment => { let { userId, ...rest } = payment; return rest as Payment })
+            }
+            users={users}
+            session={session} />
+        ) : (
+          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Payments on this day</Typography></Stack>
+        )
+      }
+    </Stack >
   );
 };
 

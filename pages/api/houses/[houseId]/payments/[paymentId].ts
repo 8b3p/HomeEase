@@ -7,7 +7,7 @@ import isValidObjectId from "@/utils/isValidObjectId";
 
 export interface PaymentIdPutBody {
   amount?: number;
-  description: string;
+  description?: string;
   status?: Status;
 }
 

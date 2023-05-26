@@ -5,7 +5,7 @@ import prisma from "@/utils/PrismaClient";
 import { Chore, ChoreAssignment, User } from "@prisma/client";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
-import ChoreOptions from "@/components/chores/ChoresOptions";
+import ChoreOptions from "@/components/DateOptions";
 import ChoresList from "@/components/chores/choresList/ChoresList";
 import AssignChoreForm from "@/components/chores/AssignChoreForm";
 
@@ -50,8 +50,6 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
         byDay={byDay}
         setSelected={setSelectedDate}
         selected={selectedDate}
-        users={users}
-        chores={chores}
         session={session}
         addButton={
           <AssignChoreForm

@@ -10,8 +10,6 @@ interface props {
   byDay: { [key: string]: { status: Status; userId: string }[] } | undefined;
   setSelected: (arg: Date) => void;
   selected: Date;
-  chores?: Chore[];
-  users?: Partial<User>[];
   session: Session;
   addButton?: JSX.Element;
 }
@@ -30,14 +28,12 @@ const Item = styled(Paper)(({ theme }: any) => ({
   height: '100%',
 }));
 
-const ChoreOptions = ({ byDay, selected, setSelected, session, users, chores, addButton }: props) => {
+const DateOptions = ({ byDay, selected, setSelected, session, addButton }: props) => {
   const currentDate = new Date(); // Get the current date
   const start = new Date(currentDate); // Create a new date object for the start date
   start.setDate(currentDate.getDate() - 1); // Set the start date to yesterday
   const [startDate, setStartDate] = useState<Date>(start)
   const isMobile = useMediaQuery('(max-width: 600px)')
-
-  console.log(byDay)
 
   const handleDayJump = (day: number) => {
     const msPerDay = 1000 * 60 * 60 * 24;
@@ -107,4 +103,4 @@ const ChoreOptions = ({ byDay, selected, setSelected, session, users, chores, ad
   )
 }
 
-export default ChoreOptions;
+export default DateOptions;
