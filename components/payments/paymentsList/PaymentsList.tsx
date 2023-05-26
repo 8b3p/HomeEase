@@ -33,7 +33,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
         spacing={1}
         paddingBottom="2rem"
       >
-        <DashText title={"Outgoing " + payments.reduce((acc, payment) => (payment.payerId === session.user.id ? acc += payment.amount : acc), 0)} maxWidth={1000} />
+        <DashText title={"Outgoing " + payments.filter(payment => payment.status === "Pending").reduce((acc, payment) => (payment.payerId === session.user.id ? acc += payment.amount : acc), 0)} maxWidth={1000} />
         <Stack
           width="100%"
           direction={isMobile ? "column" : "row"}
