@@ -53,7 +53,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                     paymentId={payment.id}
                     amount={payment.amount}
                     description={payment.description}
-                    payer={users.find(user => user.id === payment.payerId)!}
+                    user={users.find(user => user.id === payment.recipientId)!}
                     session={session}
                     type="OutgoingPending"
                   />
@@ -73,7 +73,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                     paymentId={payment.id}
                     amount={payment.amount}
                     description={payment.description}
-                    payer={users.find(user => user.id === payment.payerId)!}
+                    user={users.find(user => user.id === payment.recipientId)!}
                     session={session}
                     type="Complete"
                   />
@@ -85,7 +85,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                       paymentId={payment.id}
                       amount={payment.amount}
                       description={payment.description}
-                      payer={users.find(user => user.id === payment.payerId)!}
+                      user={users.find(user => user.id === payment.recipientId)!}
                       session={session}
                       type="Cancelled"
                     />
@@ -121,7 +121,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                     paymentId={payment.id}
                     amount={payment.amount}
                     description={payment.description}
-                    payer={users.find(user => user.id === payment.payerId)!}
+                    user={users.find(user => user.id === payment.payerId)!}
                     session={session}
                     type="IncomingPending"
                   />
@@ -142,7 +142,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                       paymentId={payment.id}
                       amount={payment.amount}
                       description={payment.description}
-                      payer={users.find(user => user.id === payment.payerId)!}
+                      user={users.find(user => user.id === payment.payerId)!}
                       session={session}
                       type="Complete"
                     />
@@ -155,7 +155,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                       paymentId={payment.id}
                       amount={payment.amount}
                       description={payment.description}
-                      payer={users.find(user => user.id === payment.payerId)!}
+                      user={users.find(user => user.id === payment.payerId)!}
                       session={session}
                       type="Cancelled"
                     />

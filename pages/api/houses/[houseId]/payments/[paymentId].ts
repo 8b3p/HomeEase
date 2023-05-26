@@ -37,7 +37,7 @@ const handler = async (
   }
 
   if (
-    payment.payerId !== session.user.id ||
+    payment.payerId !== session.user.id &&
     payment.recipientId !== session.user.id
   )
     return res
