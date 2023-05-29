@@ -3,6 +3,7 @@ import { getBaseUrl } from "@/utils/apiService";
 import { Check, CopyAll } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
+import { House, User } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
@@ -11,18 +12,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 interface props {
-  house: {
-    id: string;
-    name: string;
-    invitationCode: string;
-    users: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-      houseId: string;
-    }[]
-  } | null
+  house: House & { users: User[] } | null
   baseUrl: string
   session: Session;
   test?: boolean

@@ -1,6 +1,6 @@
 import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Stack, useMediaQuery } from "@mui/material";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
@@ -20,14 +20,6 @@ const Profile = ({ session, baseUrl }: props) => {
   const router = useRouter();
   const isSmallScreen = useMediaQuery("(max-width: 600px)");
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.log(session)
-    //TODO if (appVM.house) {
-    //   router.push(`/house/${appVM.house.id}`);
-    // }
-    setLoading(false);
-  }, [appVM, router, session.user.id]);
 
   return (
     <Stack>

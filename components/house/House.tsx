@@ -12,10 +12,6 @@ interface props {
   session: Session;
 }
 
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text)
-}
-
 const House = ({ baseUrl, session }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
@@ -51,7 +47,7 @@ const House = ({ baseUrl, session }: props) => {
       setLoading(false);
     }
     getHouse()
-  }, [session.user.houseId])
+  }, [session.user.houseId, appVM])
 
   const copyLinkHandler = async () => {
     await navigator.clipboard.writeText(`${baseUrl}/house/join/${appVM.house?.invitationCode}`)
