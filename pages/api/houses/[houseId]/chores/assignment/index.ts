@@ -21,6 +21,17 @@ const handler = async (
       where: {
         houseId: house.id,
       },
+      include: {
+        Chore: true,
+        User: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          }
+        }
+      }
     });
     res.status(200).json({ choreAssignments });
   } else if (req.method === "POST") {

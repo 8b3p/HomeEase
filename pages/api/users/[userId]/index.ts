@@ -3,6 +3,7 @@ import prisma from "@/utils/PrismaClient";
 import { corsMW, authMW } from "@/utils/middleware";
 import { Session } from "next-auth";
 
+
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
