@@ -1,6 +1,6 @@
 import { useAppVM } from "@/context/Contexts";
 import { getBaseUrl } from "@/utils/apiService";
-import { Check } from "@mui/icons-material";
+import { Check, CopyAll } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Stack, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
@@ -29,20 +29,14 @@ interface props {
 }
 
 function copyToClipboard(text: string) {
-  const tempTextArea = document.createElement('textarea');
-  tempTextArea.value = text;
-  document.body.appendChild(tempTextArea);
-  tempTextArea.select();
-  document.execCommand('copy');
-  document.body.removeChild(tempTextArea);
+  navigator.clipboard.writeText(text)
 }
 
 const House = ({ house, baseUrl, session, test }: props) => {
   const appVM = useAppVM();
-  console.log("test", test)
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
-  const [linkButtonContent, setContent] = useState<string | JSX.Element>('Copy invitation link')
+  const [linkButtonContent, setContent] = useState<string | JSX.Element>(<CopyAll />)
 
   const leaveHouseHandler = async () => {
     setLeaving(true);
@@ -64,11 +58,10 @@ const House = ({ house, baseUrl, session, test }: props) => {
   useEffect(() => { appVM.house = house }, [appVM, house])
 
   const copyLinkHandler = () => {
-    if (typeof linkButtonContent !== "string") return
     copyToClipboard(`${baseUrl}/house/join/${appVM.house?.invitationCode}`)
     setContent(<Check />)
     setTimeout(() => {
-      setContent('Copy invitation link')
+      setContent(<CopyAll />)
     }, 1000)
   }
 
