@@ -91,18 +91,16 @@ export default NextAuth({
     },
     async session({ session, token, user }) {
       const userWithHouse = await prisma.user.findUnique({
-        where: {
-          id: <string>token.id,
-        },
-        include: {
-          House: true,
-        },
+        where: { id: <string>token.id, },
+        include: { House: true, },
       });
-      if (session.user && token) {
+      if (session.user && token.id) {
+        const capFN = userWithHouse!.firstName[0].toUpperCase() + userWithHouse?.firstName.slice(1);
+        const capLN = userWithHouse!.lastName[0].toUpperCase() + userWithHouse?.lastName.slice(1);
         session.user = {
           ...user,
-          email: token.email,
-          name: `${token.firstName} ${token.lastName}`,
+          email: userWithHouse?.email,
+          name: `${capFN} ${capLN}`,
           id: <string>token.id,
           houseId: userWithHouse?.houseId || undefined
         };

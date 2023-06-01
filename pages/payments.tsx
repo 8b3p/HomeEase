@@ -8,7 +8,6 @@ import { Session } from "next-auth";
 import PaymentOptions from "@/components/DateOptions";
 import CreatePaymentForm from "@/components/payments/CreatePaymentForm";
 import PaymentsList from "@/components/payments/paymentsList/PaymentsList";
-import { Add, ArrowDownwardRounded, ArrowUpwardRounded, Remove } from "@mui/icons-material";
 
 interface props {
   payments: Payment[];

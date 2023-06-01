@@ -1,7 +1,7 @@
 import { useAppVM } from "@/context/Contexts";
 import { Check, CopyAll } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography, useMediaQuery } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ const House = ({ baseUrl, session }: props) => {
   const [leaving, setLeaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [linkButtonContent, setContent] = useState<string | JSX.Element>(<CopyAll />)
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
 
   const leaveHouseHandler = async () => {
     setLeaving(true);
@@ -58,7 +59,8 @@ const House = ({ baseUrl, session }: props) => {
   }
 
   return (
-    <Stack height='100%' alignItems='center' justifyContent="center">
+    <Stack height='100%' alignItems='center' justifyContent="start" paddingTop={isSmallScreen ? 0 : 4}>
+      <Typography variant="h4">House Settings</Typography>
       {loading ? (<>loading</>) : (
         <Stack spacing={4} justifyContent="center" alignItems="center">
           {appVM.house?.users?.map((user) => (<Typography variant="h5" key={user.id}>{user.firstName + ' ' + user.lastName}</Typography>))}
