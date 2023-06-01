@@ -50,7 +50,7 @@ const handler = async (
         },
       }),
       prisma.user.update({
-        where: { id: userId },
+        where: { id: userId as string },
         data: {
           houseId: null,
         },
