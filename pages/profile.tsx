@@ -25,7 +25,7 @@ const Profile = ({ session, baseUrl }: props) => {
   return (
     <Stack direction={isSmallScreen ? 'column' : 'row'} width="100%" height="100%" spacing={4} paddingBottom={2}>
       <Box width={isSmallScreen ? '100%' : '50%'}>
-        <UserSettings />
+        <UserSettings session={session} />
       </Box>
       <Divider orientation={isSmallScreen ? 'horizontal' : 'vertical'} flexItem />
       <Box width={isSmallScreen ? '100%' : '50%'}>

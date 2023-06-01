@@ -1,10 +1,9 @@
 import { UserPutRequestBody } from "@/pages/api/users/[userId]";
-import { Check, Close } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Button, CircularProgress, Drawer, Stack, TextField, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import { Button, CircularProgress, Drawer, IconButton, Stack, TextField, Theme, Typography, useMediaQuery } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface props {
   session: Session | null | undefined;
@@ -18,6 +17,11 @@ const UserName = ({ session, updateUser }: props) => {
   const [firstNameError, setFirstNameError] = useState("");
   const [changingName, setChangingName] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLastName(session?.user.name?.split(" ")[1]);
+    setFirstName(session?.user.name?.split(" ")[0]);
+  }, [session])
 
   const validateUsername = (
     value: string | null | undefined,
@@ -113,7 +117,7 @@ const UserName = ({ session, updateUser }: props) => {
           </Stack>
         </Stack>
       </Drawer >
-      <Button variant="outlined" onClick={() => setChangingName(true)}>Change</Button>
+      <IconButton color="primary" onClick={() => setChangingName(true)}><Edit fontSize="small" /></IconButton>
     </Stack >
   );
 };

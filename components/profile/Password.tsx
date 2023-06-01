@@ -122,7 +122,7 @@ const Password = ({ session, updateUser }: props) => {
           </Stack>
         </Stack>
       </Drawer >
-      <Button variant="outlined" onClick={() => setChangingPassword(true)}>Change Passwrod</Button>
+      <Button variant="text" onClick={() => setChangingPassword(true)}>Change Passwrod</Button>
     </Stack>
   );
 };

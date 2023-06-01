@@ -35,7 +35,7 @@ export default NextAuth({
         try {
           user = await prisma.user.findUnique({
             where: {
-              email: credentials.email,
+              email: credentials.email.toLowerCase(),
             },
           });
         } catch (error: any) {

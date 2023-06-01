@@ -21,7 +21,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-function stringAvatar(name: string, theme: ThemeType) {
+export function stringAvatar(name: string, theme: ThemeType) {
   return {
     sx: {
       bgcolor: stringToColor(name, theme),
@@ -33,7 +33,6 @@ function stringAvatar(name: string, theme: ThemeType) {
 }
 
 const NavbarMenu = ({ isMobile }: { isMobile: boolean }) => {
-  const appVM = useAppVM();
   const session = useSession();
   const themeVM = useThemeVM();
   const router = useRouter();
@@ -57,7 +56,7 @@ const NavbarMenu = ({ isMobile }: { isMobile: boolean }) => {
           >
             <Avatar
               variant='rounded'
-              {...stringAvatar(session.data.user.name || "", themeVM.themeType)}
+              {...stringAvatar(session.data.user.name!, themeVM.themeType)}
             />
           </IconButton>
           <Menu
