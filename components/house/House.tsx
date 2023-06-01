@@ -6,6 +6,8 @@ import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import HouseUser from "./HouseUser";
+import { CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 
 interface props {
   baseUrl: string
@@ -60,12 +62,12 @@ const House = ({ baseUrl, session }: props) => {
   return (
     <Stack height='100%' alignItems='center' justifyContent="start" paddingBottom={4} paddingTop={isSmallScreen ? 0 : 4} spacing={4}>
       <Typography variant="h4">House Settings</Typography>
-      {loading ? (<>loading</>) : (
+      {loading ? (<Box sx={{paddingTop: '3rem'}}><CircularProgress /></Box>) : (
         <>
           <Card sx={theme => ({ width: '100%', borderRadius: theme.shape.borderRadius })}>
             <Stack padding={3} spacing={1} justifyContent="center" alignItems="start" width="100%">
               <Typography variant="h5">Members</Typography>
-              {appVM.house?.users?.map((user) => <HouseUser user={user} />)}
+              {appVM.house?.users?.map((user) => <HouseUser key={user.id}user={user} />)}
             </Stack>
           </Card>
           <Button variant="contained" onClick={copyLinkHandler} >{linkButtonContent}</Button>

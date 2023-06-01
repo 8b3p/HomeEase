@@ -23,7 +23,7 @@ const HouseUser = ({ user }: props) => {
         <ListItemText
           sx={{ textTransform: 'capitalize' }}
           primary={
-            <div>
+            <>
               <Typography
                 sx={{ display: 'inline' }}
                 component="span"
@@ -32,7 +32,7 @@ const HouseUser = ({ user }: props) => {
               >
                 Name
               </Typography>
-            </div>
+            </>
           }
           secondary={
             <Typography
