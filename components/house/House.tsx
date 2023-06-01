@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import HouseUser from "./HouseUser";
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/material";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 interface props {
   baseUrl: string
@@ -20,6 +22,8 @@ const House = ({ baseUrl, session }: props) => {
   const [loading, setLoading] = useState(false);
   const [linkButtonContent, setContent] = useState<string | JSX.Element>('Copy invitation link')
   const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const router = useRouter()
+  const {update} = useSession();
 
   const leaveHouseHandler = async () => {
     setLeaving(true);
@@ -32,8 +36,7 @@ const House = ({ baseUrl, session }: props) => {
       setLeaving(false);
       return;
     }
-    appVM.house = null;
-    setLeaving(false);
+    router.push('/profile')
   }
 
   useEffect(() => {

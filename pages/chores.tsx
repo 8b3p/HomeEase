@@ -93,7 +93,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     return {
       props: {},
       redirect: {
-        destination: `/house`,
+        destination: `/profile`,
       },
     };
   }

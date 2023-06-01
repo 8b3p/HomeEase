@@ -66,7 +66,7 @@ const NoHouse = () => {
   };
 
   return (
-    <Stack height='100%' alignItems='center' justifyContent='center' gap={3}>
+    <Stack height='100%' alignItems='center' justifyContent='start' paddingBottom={4} paddingTop={isSmallScreen ? 0 : 4} gap={3}>
       <Typography variant={isSmallScreen ? "h5" : "h4"}>
         You are not part of a house
       </Typography>

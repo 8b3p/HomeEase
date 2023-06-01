@@ -23,16 +23,14 @@ const HouseUser = ({ user }: props) => {
         <ListItemText
           sx={{ textTransform: 'capitalize' }}
           primary={
-            <>
               <Typography
-                sx={{ display: 'inline' }}
+                sx={{ display: 'block' }}
                 component="span"
                 variant="body2"
                 color="text.secondary"
               >
                 Name
               </Typography>
-            </>
           }
           secondary={
             <Typography

@@ -14,9 +14,6 @@ const handler = async (
     // handle delete request
     const { userId } = req.query;
     const { id: houseId } = house;
-    await prisma.choreAssignment.deleteMany({
-      where: { userId: userId as string },
-    });
     if (house.users.length === 1) {
       await Promise.all([
         prisma.choreAssignment.deleteMany({
@@ -50,6 +47,12 @@ const handler = async (
         where: { id: houseId },
         data: {
           users: { disconnect: { id: userId as string } },
+        },
+      }),
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          houseId: null,
         },
       }),
     ]);

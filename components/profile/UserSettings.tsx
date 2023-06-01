@@ -63,14 +63,12 @@ const UserSettings = ({ session }: props) => {
                       >Name</Typography>
                     }
                     secondary={
-                      <>
                         <Typography
-                          sx={{ display: 'inline', textTransform: 'capitalize' }}
+                          sx={{ display: 'block', textTransform: 'capitalize' }}
                           component="span"
                           variant={isSmallScreen ? "subtitle1" : "h5"}
                           color="text.primary"
                         >{session?.user.name}</Typography>
-                      </>
                     }
                   />
                 </ListItem>
@@ -87,13 +85,12 @@ const UserSettings = ({ session }: props) => {
                     > Email </Typography>
                   }
                   secondary={
-                    <>
                       <Typography
                         component="span"
                         variant={isSmallScreen ? "subtitle1" : "h5"}
+                        sx={{display: 'block'}}
                         color="text.primary"
                       > {session?.user.email} </Typography>
-                    </>
                   }
                 />
               </ListItem>
@@ -108,9 +105,7 @@ const UserSettings = ({ session }: props) => {
                     > Password </Typography>
                   }
                   secondary={
-                    <>
                       <Password session={session} updateUser={updateUser} />
-                    </>
                   }
                 />
               </ListItem>

@@ -34,14 +34,14 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
     if (!response.ok) {
       // Handle error
       appVM.showAlert(data.error, "error");
-      router.push("/house");
+      router.push("/profile");
       return;
     }
     // User successfully joined house
     const { users, ...house } = data.house;
     appVM.house = house;
     appVM.showAlert(`You have joined "${data.house.name}" house`, "success");
-    router.push(`/house/${appVM.house?.id}`);
+    router.push("/profile");
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
     }
     if (isPartOfHouse) {
       appVM.showAlert(`You are already part of "${house.name}" house`, "error");
-      router.push(`/house/${house.id}`);
+      router.push("/profile");
       return;
     }
     setLoading(false);

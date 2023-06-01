@@ -1,8 +1,8 @@
 import { useAppVM } from "@/context/Contexts";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Divider, Stack, useMediaQuery } from "@mui/material";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { Session } from "next-auth";
@@ -21,6 +21,7 @@ const Profile = ({ session, baseUrl }: props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const isSmallScreen = useMediaQuery("(max-width: 800px)");
+  const {update} = useSession();
 
   return (
     <Stack direction={isSmallScreen ? 'column' : 'row'} width="100%" height="100%" spacing={4} paddingBottom={2}>
