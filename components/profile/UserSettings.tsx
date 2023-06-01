@@ -8,6 +8,8 @@ import { useState } from "react";
 import Password from "./Password";
 import UserName from "./UserName";
 import { useSession } from "next-auth/react";
+import { Box } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 
 interface props {
   session: Session;
@@ -43,7 +45,7 @@ const UserSettings = ({ session }: props) => {
   return (
     <Stack height='100%' alignItems='center' justifyContent="start" paddingTop={4} spacing={4}>
       <Typography variant="h4">User Settings</Typography>
-      {loading ? (<>loading</>) : (
+      {loading ? (<Box sx={{paddingTop: '3rem'}}><CircularProgress /></Box>) : (
         <Stack spacing={2} justifyContent="center" alignItems="start" width="100%">
           {/*show user info*/}
           <Card sx={theme => ({ width: '100%', borderRadius: theme.shape.borderRadius })}>

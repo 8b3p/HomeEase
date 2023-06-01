@@ -18,7 +18,7 @@ const House = ({ baseUrl, session }: props) => {
   const appVM = useAppVM();
   const [leaving, setLeaving] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [linkButtonContent, setContent] = useState<string | JSX.Element>(<CopyAll />)
+  const [linkButtonContent, setContent] = useState<string | JSX.Element>('Copy invitation link')
   const isSmallScreen = useMediaQuery("(max-width: 600px)");
 
   const leaveHouseHandler = async () => {
