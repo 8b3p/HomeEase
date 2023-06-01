@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Password from "./Password";
 import UserName from "./UserName";
+import { useSession } from "next-auth/react";
 
 interface props {
   session: Session;
@@ -16,6 +17,7 @@ const UserSettings = ({ session }: props) => {
   const appVM = useAppVM();
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const router = useRouter();
+  const {update} = useSession();
   const [loading, setLoading] = useState(false);
 
 
@@ -31,6 +33,7 @@ const UserSettings = ({ session }: props) => {
       appVM.showAlert(data.message, 'error');
     } else {
       appVM.showAlert('User updated successfully', 'success');
+      update();
     }
     router.push('/profile')
     setLoading(false);
