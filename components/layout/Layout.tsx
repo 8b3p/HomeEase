@@ -11,7 +11,9 @@ const Layout = ({ children }: props) => {
   return (
     <Stack height="100%">
       <Navbar />
+      <Stack sx={{ overflowY: 'scroll' }} width="100%" height="100%">
         <Container sx={{ height: '-webkit-fill-available' }}>{children}</Container>
+      </Stack>
     </Stack>
   );
 };
