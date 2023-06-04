@@ -9,7 +9,10 @@ export interface UserPutRequestBody {
     firstname: string,
     lastname: string
   }
-  password?: string;
+  password?: {
+    oldPassword: string,
+    newPassword: string
+  };
 }
 
 const handler = async (
@@ -40,8 +43,14 @@ const handler = async (
     const { name, password } = req.body as UserPutRequestBody;
     if (!name && !password) return res.status(400).json({ message: "Bad Request" });
     try {
-      let hashedPassword, salt;
-      if (password) { const { hashedPassword: a, salt: b } = hashPassword(password); hashedPassword = a; salt = b }
+      let oldHashedPassword, newHashedPassword, newSalt;
+      if (password) {
+        const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+        if (!password.oldPassword || !password.newPassword) return res.status(400).json({ message: "Bad Request" });
+        const { hashedPassword: a, salt: b } = hashPassword(password.newPassword); newHashedPassword = a; newSalt = b
+        const { hashedPassword: c } = hashPassword(password.oldPassword, user?.salt); oldHashedPassword = c;
+        if (oldHashedPassword !== user?.password) return res.status(401).json({ message: "Wrong password" })
+      }
       const user = await prisma.user.update({
         where: {
           id: session.user.id,
@@ -49,8 +58,15 @@ const handler = async (
         data: {
           firstName: name?.firstname,
           lastName: name?.lastname,
-          password: hashedPassword,
-          salt: salt
+          password: newHashedPassword,
+          salt: newSalt
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          houseId: true,
+          email: true,
         }
       })
       return res.status(200).json({ user });

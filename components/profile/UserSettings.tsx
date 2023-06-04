@@ -4,7 +4,7 @@ import { Card, ListItem, ListItemText, Stack, Theme, Typography, useMediaQuery }
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Password from "./Password";
 import UserName from "./UserName";
 import { useSession } from "next-auth/react";
@@ -19,9 +19,10 @@ const UserSettings = ({ session }: props) => {
   const appVM = useAppVM();
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const router = useRouter();
-  const {update} = useSession();
-  const [loading, setLoading] = useState(false);
+  const { update } = useSession();
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => { setLoading(false) }, [])
 
   const updateUser = async (body: UserPutRequestBody) => {
     setLoading(true);
@@ -43,9 +44,9 @@ const UserSettings = ({ session }: props) => {
 
 
   return (
-    <Stack height='100%' alignItems='center' justifyContent="start" paddingTop={4} spacing={4}>
+    <Stack minHeight='100%' alignItems='center' justifyContent="start" paddingTop={4} spacing={4}>
       <Typography variant="h4">User Settings</Typography>
-      {loading ? (<Box sx={{paddingTop: '3rem'}}><CircularProgress /></Box>) : (
+      {loading ? (<Box sx={{ paddingTop: '3rem' }}><CircularProgress /></Box>) : (
         <Stack spacing={2} justifyContent="center" alignItems="start" width="100%">
           {/*show user info*/}
           <Card sx={theme => ({ width: '100%', borderRadius: theme.shape.borderRadius })}>
@@ -57,18 +58,16 @@ const UserSettings = ({ session }: props) => {
                     primary={
                       <Typography
                         sx={{ display: 'inline', textTransform: 'capitalize' }}
-                        component="span"
                         variant={isSmallScreen ? "body2" : "body1"}
                         color="text.secondary"
                       >Name</Typography>
                     }
                     secondary={
-                        <Typography
-                          sx={{ display: 'block', textTransform: 'capitalize' }}
-                          component="span"
-                          variant={isSmallScreen ? "subtitle1" : "h5"}
-                          color="text.primary"
-                        >{session?.user.name}</Typography>
+                      <Typography
+                        sx={{ display: 'block', textTransform: 'capitalize' }}
+                        variant={isSmallScreen ? "subtitle1" : "h5"}
+                        color="text.primary"
+                      >{session?.user.name}</Typography>
                     }
                   />
                 </ListItem>
@@ -79,18 +78,16 @@ const UserSettings = ({ session }: props) => {
                   primary={
                     <Typography
                       sx={{ display: 'inline', textTransform: 'capitalize' }}
-                      component="span"
                       variant={isSmallScreen ? "body2" : "body1"}
                       color="text.secondary"
                     > Email </Typography>
                   }
                   secondary={
-                      <Typography
-                        component="span"
-                        variant={isSmallScreen ? "subtitle1" : "h5"}
-                        sx={{display: 'block'}}
-                        color="text.primary"
-                      > {session?.user.email} </Typography>
+                    <Typography
+                      variant={isSmallScreen ? "subtitle1" : "h5"}
+                      sx={{ display: 'block' }}
+                      color="text.primary"
+                    > {session?.user.email} </Typography>
                   }
                 />
               </ListItem>
@@ -99,13 +96,12 @@ const UserSettings = ({ session }: props) => {
                   primary={
                     <Typography
                       sx={{ display: 'inline', textTransform: 'capitalize' }}
-                      component="span"
                       variant={isSmallScreen ? "body2" : "body1"}
                       color="text.secondary"
                     > Password </Typography>
                   }
                   secondary={
-                      <Password session={session} updateUser={updateUser} />
+                    <Password session={session} updateUser={updateUser} />
                   }
                 />
               </ListItem>

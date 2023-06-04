@@ -1,6 +1,4 @@
 import { UserPutRequestBody } from "@/pages/api/users/[userId]";
-import { Check, Close } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import { Button, CircularProgress, Drawer, Stack, TextField, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
@@ -13,34 +11,36 @@ interface props {
 
 const Password = ({ session, updateUser }: props) => {
   const [changingPassword, setChangingPassword] = useState(false);
-  const [password, setPassword] = useState<string | undefined>();
+  const [oldPassword, setOldPassword] = useState<string>("");
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState<string | undefined>();
+  const [repeatPassword, setRepeatPassword] = useState<string>("");
   const [repeatPasswordError, setRepeatPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const validatePassword = (value: string | null | undefined): boolean => {
+  const validatePassword = (value: string | null | undefined, which: "old" | "new"): boolean => {
     let isValid = true;
     if (!value) {
-      setPasswordError("Required");
+      which === "new" ? setPasswordError("Required") : setOldPasswordError("Required");
       isValid = false;
     } else if (value.trim().length === 0) {
-      setPasswordError("Required");
+      which === "new" ? setPasswordError("Required") : setOldPasswordError("Required");
       isValid = false;
     } else if (value.trim().length < 6) {
-      setPasswordError("Password must be at least 6 characters long");
+      which === "new" ? setPasswordError("Password must be at least 6 characters long") : setOldPasswordError("Password must be at least 6 characters long");
       isValid = false;
     } else if (!value.match(/\d/)) {
-      setPasswordError("Password must contain at least one number");
+      which === "new" ? setPasswordError("Password must contain at least one number") : setOldPasswordError("Password must contain at least one number");
       isValid = false;
     } else if (!value.match(/[A-Z]/)) {
-      setPasswordError("Password must contain at least one uppercase letter");
+      which === "new" ? setPasswordError("Password must contain at least one uppercase letter") : setOldPasswordError("Password must contain at least one uppercase letter");
       isValid = false;
     } else if (!value.match(/[a-z]/)) {
-      setPasswordError("Password must contain at least one lowercase letter");
+      which === "new" ? setPasswordError("Password must contain at least one lowercase letter") : setOldPasswordError("Password must contain at least one lowercase letter");
       isValid = false;
     } else {
-      setPasswordError("");
+      which === "new" ? setPasswordError("") : setOldPasswordError("");
     }
     return isValid;
   };
@@ -65,13 +65,14 @@ const Password = ({ session, updateUser }: props) => {
   const submitHandler = async () => {
     if (changingPassword) {
       setLoading(true)
-      const passwordIsValid = validatePassword(password);
+      const oldPasswordIsValid = validatePassword(oldPassword, "old");
+      const newPasswordIsValid = validatePassword(password, "new");
       const repeatPasswordIsValid = validateRepeatPassword(repeatPassword);
-      if (!passwordIsValid || !repeatPasswordIsValid) {
+      if (!newPasswordIsValid || !repeatPasswordIsValid || !oldPasswordIsValid) {
         setLoading(false)
         return;
       }
-      await updateUser({ password: password })
+      await updateUser({ password: { oldPassword: oldPassword!, newPassword: password! } })
       setLoading(false)
     } else {
       setChangingPassword(true);
@@ -87,7 +88,7 @@ const Password = ({ session, updateUser }: props) => {
   }
 
   return (
-    <Stack direction="row" spacing={2} justifyContent="space-between" width="100%">
+    <>
       <Drawer anchor="right" open={changingPassword} >
         <Stack justifyContent="space-between" alignItems="stretch" width={375} maxWidth="100vw" padding={3} height="100%">
           {loading ? (
@@ -97,11 +98,20 @@ const Password = ({ session, updateUser }: props) => {
             <Stack spacing={2}>
               <Typography variant="h5">Change Password</Typography>
               <TextField
+                label="Old Password"
+                variant="outlined"
+                value={oldPassword}
+                onChange={(e) => { setOldPassword(e.target.value); oldPasswordError && validatePassword(e.target.value, "old"); }}
+                onBlur={(e) => { validatePassword(e.target.value, "old"); }}
+                error={oldPasswordError ? true : false}
+                helperText={oldPasswordError}
+              />
+              <TextField
                 label="New Password"
                 variant="outlined"
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); passwordError && validatePassword(e.target.value); }}
-                onBlur={(e) => { validatePassword(e.target.value); }}
+                onChange={(e) => { setPassword(e.target.value); passwordError && validatePassword(e.target.value, "new"); }}
+                onBlur={(e) => { validatePassword(e.target.value, "new"); }}
                 error={passwordError ? true : false}
                 helperText={passwordError}
               />
@@ -123,7 +133,7 @@ const Password = ({ session, updateUser }: props) => {
         </Stack>
       </Drawer >
       <Button variant="text" onClick={() => setChangingPassword(true)}>Change Passwrod</Button>
-    </Stack>
+    </>
   );
 };
 
