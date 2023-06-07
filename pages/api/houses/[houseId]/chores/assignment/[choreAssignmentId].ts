@@ -57,6 +57,17 @@ const handler = async (
         status,
         dueDate,
       },
+      include: {
+        Chore: true,
+        User: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
+      }
     });
     return res.status(200).json({ choreAssignment: updatedChore });
   } else {
