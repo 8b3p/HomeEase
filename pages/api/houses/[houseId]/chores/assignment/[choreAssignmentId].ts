@@ -22,6 +22,17 @@ const handler = async (
 
   const choreAssignment = await prisma.choreAssignment.findUnique({
     where: { id: choreAssignmentId },
+    include: {
+      Chore: true,
+      User: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true
+        }
+      }
+    }
   });
   if (!choreAssignment)
     return res.status(404).json({ message: "choreAssignment not found" });
@@ -66,7 +77,7 @@ const handler = async (
             lastName: true,
             email: true
           }
-        }
+        },
       }
     });
     return res.status(200).json({ choreAssignment: updatedChore });

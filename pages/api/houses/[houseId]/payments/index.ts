@@ -54,32 +54,20 @@ const handler = async (
       if (!isValidObjectId(payerId) || !isValidObjectId(recipientId))
         return res.status(400).json({ message: "Invalid user id" });
     })
-    const prismaRes = await Promise.all(bodies.map(async ({ payerId, recipientId, amount, createdAt, description }) => {
-      return prisma.payment.create({
-        data: {
+    const batchCreate = await prisma.payment.createMany({
+      data: bodies.map(({ payerId, recipientId, amount, createdAt, description }) => {
+        return {
+          houseId: house.id,
           amount: amount,
           status: Status.Pending,
-          description: description,
-          createdAt,
-          House: {
-            connect: {
-              id: house.id,
-            },
-          },
-          Recipient: {
-            connect: {
-              id: recipientId,
-            },
-          },
-          Payer: {
-            connect: {
-              id: payerId,
-            },
-          },
-        },
-      });
-    }))
-    res.status(200).json({ prismaRes });
+          payerId: payerId,
+          recipientId: recipientId,
+          createdAt: createdAt,
+          description: description
+        }
+      })
+    })
+    res.status(200).json(batchCreate);
   } else {
     res.status(405).json({ message: "Method not allowed" });
   }
