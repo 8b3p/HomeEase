@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { safeUser } from "@/utils/safeUser";
 import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
 import { House, User } from "@prisma/client";
 import { Session } from "next-auth";
@@ -17,11 +16,9 @@ const handler = async (
       return {
         id: user.id,
         email: user.email,
-        emailVerified: user.emailVerified,
         firstName: user.firstName,
         lastName: user.lastName,
-        houseId: user.houseId,
-      } as safeUser;
+      };
     });
     return res.status(200).json({ users });
   } else {

@@ -17,13 +17,34 @@ export interface PaymentPostBody {
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  _session: Session,
+  session: Session,
   house: House & { users: User[] }
 ) => {
   if (req.method === "GET") {
     const payments = await prisma.payment.findMany({
       where: {
-        houseId: house.id,
+        OR: [
+          { payerId: session?.user?.id },
+          { recipientId: session?.user?.id }
+        ]
+      },
+      include: {
+        Payer: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
+        Recipient: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
       },
     });
     res.status(200).json({ payments });
