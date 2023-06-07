@@ -30,7 +30,7 @@ function Auth() {
 
   async function loginHandler(Args: { email: string; password: string }) {
     //*first: send the signin request with credentials
-    const res = await onLogin({ ...Args });
+    const res = await onLogin({ ...Args, redirectUrl: "/" });
     if (!res.ok) {
       if (res.error?.unverifiedEmail) {
         appVM.showAlert(res.error.errorMessage, "warning", {
@@ -42,7 +42,7 @@ function Auth() {
       appVM.showAlert(res.error?.errorMessage || "", "error")
       return;
     }
-    router.push('/')
+    router.push((router.query?.redirectUrl as string) ?? "/")
     appVM.showAlert("Login successful", "success")
   }
 

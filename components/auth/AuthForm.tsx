@@ -152,21 +152,21 @@ const AuthForm = ({ submit, loading }: props) => {
   };
 
   const validateEmail = (value: string | null): null | string => {
-    // if (!value) {
-    //   setEmailError("Email cannot be empty");
-    //   return null;
-    // }
-    // if (value.trim().length === 0) {
-    //   setEmailError("Email cannot be empty");
-    //   return null;
-    // }
-    // //check if email is valid
-    // if (!value.match(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/)) {
-    //   setEmailError("Email is not valid");
-    //   return null;
-    // }
+    if (!value) {
+      setEmailError("Email cannot be empty");
+      return null;
+    }
+    if (value.trim().length === 0) {
+      setEmailError("Email cannot be empty");
+      return null;
+    }
+    //check if email is valid
+    if (!value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setEmailError("Email is not valid");
+      return null;
+    }
     setEmailError(null);
-    return value!.trim();
+    return value.trim()
   };
 
   const submitHandler = (e: React.FormEvent) => {

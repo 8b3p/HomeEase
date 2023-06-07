@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       props: {},
       redirect: {
         destination: `/auth?redirectUrl=${encodeURIComponent(
-          ctx.req.url || "/"
+          ctx.resolvedUrl
         )}`,
       },
     };
