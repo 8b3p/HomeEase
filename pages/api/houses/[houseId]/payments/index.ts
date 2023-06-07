@@ -67,7 +67,7 @@ const handler = async (
         }
       })
     })
-    res.status(200).json(batchCreate);
+    res.status(200).json({ ...batchCreate, message: "Payments created successfully" });
   } else {
     res.status(405).json({ message: "Method not allowed" });
   }
