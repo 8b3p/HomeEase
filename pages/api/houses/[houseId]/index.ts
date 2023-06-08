@@ -2,15 +2,24 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
 import prisma from "@/utils/PrismaClient";
 import { Session } from "next-auth";
-import { House, User } from "@prisma/client";
+import { Chore, House, User } from "@prisma/client";
 
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
   _session: Session,
-  house: House & { users: User[] }
+  house: House & { users: User[], chores: Chore[] }
 ) => {
   if (req.method === "GET") {
+    const chores = await prisma.chore.findMany({
+      where: {
+        OR: [
+          { owner: house.id },
+          { owner: null },
+        ]
+      },
+    })
+    house.chores = chores;
     res.status(200).json({ house });
   } else if (req.method === "PATCH" || req.method === "PUT") {
     // handle put request

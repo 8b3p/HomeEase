@@ -148,7 +148,7 @@ const Home: NextPage<props> = ({ house, session }) => {
                       key={payment.id}
                       amount={payment.amount}
                       description={payment.description}
-                      user={house.users.find(user => user.id === payment.recipientId)!}
+                      user={house.users.find(user => user.id === payment.payerId)!}
                       paymentId={payment.id}
                       type="IncomingPending"
                       session={session}
@@ -164,7 +164,7 @@ const Home: NextPage<props> = ({ house, session }) => {
                       key={payment.id}
                       amount={payment.amount}
                       description={payment.description}
-                      user={house.users.find(user => user.id === payment.recipientId)!}
+                      user={house.users.find(user => user.id === payment.payerId)!}
                       paymentId={payment.id}
                       type="OutgoingPending"
                       session={session}
