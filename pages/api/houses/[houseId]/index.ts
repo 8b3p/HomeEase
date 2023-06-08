@@ -7,19 +7,12 @@ import { Chore, House, User } from "@prisma/client";
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  _session: Session,
+  session: Session,
   house: House & { users: User[], chores: Chore[] }
 ) => {
   if (req.method === "GET") {
-    const chores = await prisma.chore.findMany({
-      where: {
-        OR: [
-          { owner: house.id },
-          { owner: null },
-        ]
-      },
-    })
-    house.chores = chores;
+    const chores = await prisma.chore.findMany()
+    house.chores = chores.filter(chore => chore.owner === null || chore.owner === session?.user?.houseId);
     res.status(200).json({ house });
   } else if (req.method === "PATCH" || req.method === "PUT") {
     // handle put request
