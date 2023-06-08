@@ -15,7 +15,7 @@ const handler = async (
       where: {
         id: session.user.id,
       },
-      include: {
+      select: {
         House: true,
       },
     });

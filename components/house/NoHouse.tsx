@@ -7,6 +7,10 @@ import { useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
 import LoadingButton from "@mui/lab/LoadingButton";
 
+interface props {
+  title?: boolean
+}
+
 const a11yProps = (index: number) => {
   return {
     id: `simple-tab-${index}`,
@@ -40,7 +44,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const NoHouse = () => {
+const NoHouse = ({ title }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
   const [tabValue, setTabValue] = useState(0);
@@ -118,10 +122,12 @@ const NoHouse = () => {
   };
 
   return (
-    <Stack height='100%' alignItems='center' justifyContent='start' paddingBottom={4} paddingTop={isSmallScreen ? 0 : 4} gap={4}>
-      <Typography variant={isSmallScreen ? "h5" : "h4"}>
-        You are not part of a house
-      </Typography>
+    <Stack height={title ? "100%" : "fit-content"} alignItems='center' justifyContent='start' paddingBottom={4} paddingTop={isSmallScreen ? 0 : 4} gap={4}>
+      {title && (
+        <Typography variant={isSmallScreen ? "h5" : "h4"}>
+          You are not part of a house
+        </Typography>
+      )}
       {loading ? (<Box sx={{ paddingTop: '3rem' }}><CircularProgress /></Box>) : (
         <Stack>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example" sx={{ maxWidth: '350px', width: "100%" }}>

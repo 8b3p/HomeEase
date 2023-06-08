@@ -58,7 +58,6 @@ export function isPartOfHouse(handler: any) {
             firstName: true,
             lastName: true,
             email: true,
-            houseId: true,
           },
         },
       }

@@ -2,7 +2,7 @@ import AuthForm from "@/components/auth/AuthForm";
 import { useAppVM } from "@/context/Contexts";
 import { onLogin, onRegister } from "@/utils/apiService";
 import { Send } from "@mui/icons-material";
-import { Box } from "@mui/material";
+import { Box, Grow } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { getSession, signIn } from "next-auth/react";
@@ -83,9 +83,11 @@ function Auth() {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
-      <AuthForm submit={submitHandler} resendAuthEmail={resendAuthEmail} loading={loading} />
-    </Box>
+    <Grow in={true}>
+      <Box sx={{ width: '100%', height: '100%' }}>
+        <AuthForm submit={submitHandler} resendAuthEmail={resendAuthEmail} loading={loading} />
+      </Box>
+    </Grow>
   );
 }
 

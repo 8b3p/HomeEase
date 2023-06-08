@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Grow, Stack, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import prisma from "@/utils/PrismaClient";
@@ -37,43 +37,45 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
   }, [choreAssignments])
 
   return (
-    <Stack
-      justifyContent='start'
-      alignItems='center'
-      height='100%'
-      padding="2rem 0"
-      margin="auto"
-      width='95%'
-      gap={4}
-    >
-      <ChoreOptions
-        byDay={byDay}
-        setSelected={setSelectedDate}
-        selected={selectedDate}
-        session={session}
-        addButton={
-          <AssignChoreForm
-            variant="outlined"
-            houseId={session.user.houseId || ""}
-            defaultDate={selectedDate}
-            chores={chores ? chores : []}
-            users={users ? users : []}
-          />
-        }
-      />
-      {byDay && (
-        byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
-        byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
-        <ChoresList
-          chores={chores}
-          choreAssignments={byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]}
-          users={users}
+    <Grow in={true}>
+      <Stack
+        justifyContent='start'
+        alignItems='center'
+        height='100%'
+        padding="2rem 0"
+        margin="auto"
+        width='95%'
+        gap={4}
+      >
+        <ChoreOptions
+          byDay={byDay}
+          setSelected={setSelectedDate}
+          selected={selectedDate}
           session={session}
+          addButton={
+            <AssignChoreForm
+              variant="outlined"
+              houseId={session.user.houseId || ""}
+              defaultDate={selectedDate}
+              chores={chores ? chores : []}
+              users={users ? users : []}
+            />
+          }
         />
-      ) : (
-        <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Chores on this day</Typography></Stack>
-      )}
-    </Stack >
+        {byDay && (
+          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
+          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
+          <ChoresList
+            chores={chores}
+            choreAssignments={byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]}
+            users={users}
+            session={session}
+          />
+        ) : (
+          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Chores on this day</Typography></Stack>
+        )}
+      </Stack >
+    </Grow>
   );
 };
 

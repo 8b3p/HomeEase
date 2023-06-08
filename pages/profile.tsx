@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Box, Divider, Stack, useMediaQuery } from "@mui/material";
+import { Box, Divider, Grow, Stack, useMediaQuery } from "@mui/material";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
@@ -17,21 +17,23 @@ const Profile = ({ session, baseUrl }: props) => {
   const isSmallScreen = useMediaQuery("(max-width: 800px)");
 
   return (
-    <Stack direction={isSmallScreen ? 'column' : 'row'} width="100%" minHeight="100%" spacing={4} paddingBottom={2}>
-      <Box width={isSmallScreen ? '100%' : '50%'}>
-        <UserSettings session={session} />
-      </Box>
-      <Divider orientation={isSmallScreen ? 'horizontal' : 'vertical'} flexItem />
-      <Box width={isSmallScreen ? '100%' : '50%'}>
-        {
-          session?.user.houseId ? (
-            <House baseUrl={baseUrl} session={session} />
-          ) : (
-            <NoHouse />
-          )
-        }
-      </Box>
-    </Stack>
+    <Grow in={true}>
+      <Stack direction={isSmallScreen ? 'column' : 'row'} width="100%" minHeight="100%" spacing={4} paddingBottom={2}>
+        <Box width={isSmallScreen ? '100%' : '50%'}>
+          <UserSettings session={session} />
+        </Box>
+        <Divider orientation={isSmallScreen ? 'horizontal' : 'vertical'} flexItem />
+        <Box width={isSmallScreen ? '100%' : '50%'}>
+          {
+            session?.user.houseId ? (
+              <House baseUrl={baseUrl} session={session} />
+            ) : (
+              <NoHouse />
+            )
+          }
+        </Box>
+      </Stack>
+    </Grow>
   );
 };
 

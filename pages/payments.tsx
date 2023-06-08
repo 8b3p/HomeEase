@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Grow, Stack, Typography } from "@mui/material";
 import prisma from "@/utils/PrismaClient";
 import { Payment, Status, User } from "@prisma/client";
 import { GetServerSideProps } from "next";
@@ -37,45 +37,47 @@ const Payments = ({ payments, session, users }: props) => {
   }, [payments, session.user.id])
 
   return (
-    <Stack
-      justifyContent='start'
-      alignItems='center'
-      height='100%'
-      padding="2rem 0"
-      margin="auto"
-      width='95%'
-      gap={4}
-    >
-      <PaymentOptions
-        byDay={byDay}
-        setSelected={setSelectedDate}
-        selected={selectedDate}
-        session={session}
-        addButton={
-          <CreatePaymentForm
-            session={session}
-            defaultDate={selectedDate}
-            users={users}
-            houseId={session.user.houseId || ''}
-          />
+    <Grow in={true}>
+      <Stack
+        justifyContent='start'
+        alignItems='center'
+        height='100%'
+        padding="2rem 0"
+        margin="auto"
+        width='95%'
+        gap={4}
+      >
+        <PaymentOptions
+          byDay={byDay}
+          setSelected={setSelectedDate}
+          selected={selectedDate}
+          session={session}
+          addButton={
+            <CreatePaymentForm
+              session={session}
+              defaultDate={selectedDate}
+              users={users}
+              houseId={session.user.houseId || ''}
+            />
+          }
+        />
+        {
+          byDay && (
+            byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
+            byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
+            <PaymentsList
+              payments={
+                byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]
+                  .map(payment => { let { userId, ...rest } = payment; return rest as Payment })
+              }
+              users={users}
+              session={session} />
+          ) : (
+            <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Payments on this day</Typography></Stack>
+          )
         }
-      />
-      {
-        byDay && (
-          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
-          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
-          <PaymentsList
-            payments={
-              byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]
-                .map(payment => { let { userId, ...rest } = payment; return rest as Payment })
-            }
-            users={users}
-            session={session} />
-        ) : (
-          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Payments on this day</Typography></Stack>
-        )
-      }
-    </Stack >
+      </Stack >
+    </Grow>
   );
 };
 

@@ -5,7 +5,16 @@ import prisma from "@/utils/PrismaClient";
 import { safeUser, getSafeUser } from "@/utils/safeUser";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export type registerResponse = safeUser | { message: string };
+export type registerResponse = { id: string, email: string, firstName: string, lastName: string } | { message: string };
+
+export interface RegisterPostBody {
+  username: {
+    firstname: string;
+    lastname: string;
+  };
+  email: string;
+  password: string;
+}
 
 export default corsMW(async function handler(
   req: NextApiRequest,
@@ -15,18 +24,25 @@ export default corsMW(async function handler(
     // Process a POST request
     //create a user in the database
     try {
-      const { hashedPassword, salt } = hashPassword(req.body.password);
+      const { username, email, password } = req.body as RegisterPostBody;
+      const { hashedPassword, salt } = hashPassword(password);
       const response = await prisma.user.create({
         data: {
-          firstName: req.body.username?.firstname,
-          lastName: req.body.username?.lastname,
-          email: req.body.email,
+          firstName: username?.firstname,
+          lastName: username?.lastname,
+          email: email,
           password: hashedPassword,
           salt: salt,
         },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        }
       });
       // return the user
-      res.status(201).json(getSafeUser(response));
+      res.status(201).json(response);
     } catch (e: any) {
       if (e.code === "P2002")
         res.status(409).json({ message: "User already exists" });

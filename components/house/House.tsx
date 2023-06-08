@@ -1,5 +1,5 @@
 import { useAppVM } from "@/context/Contexts";
-import { Check, ContentCopy } from "@mui/icons-material";
+import { ContentCopy } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, Card, Divider, IconButton, ListItem, ListItemText, Stack, Typography, useMediaQuery } from "@mui/material";
 import { observer } from "mobx-react-lite";
