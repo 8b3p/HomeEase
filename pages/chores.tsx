@@ -100,10 +100,9 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
-  const [chores, choreAssignments, houseUsers] = await Promise.all([
-    prisma.chore.findMany({
-      where: { OR: [{ owner: session?.user?.houseId }, { owner: null }] },
-    }),
+  console.log(session?.user?.houseId)
+  let [chores, choreAssignments, houseUsers] = await Promise.all([
+    prisma.chore.findMany(),
     prisma.choreAssignment.findMany({
       where: { houseId: session?.user?.houseId },
     }),
@@ -119,6 +118,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       },
     }),
   ]);
+  chores = chores.filter(chore => chore.owner === null || chore.owner === session?.user?.houseId)
   const serializableChore = chores.map(chore => {
     return {
       ...chore,

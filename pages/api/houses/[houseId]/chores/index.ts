@@ -13,13 +13,12 @@ export interface ChorePostBody {
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  _session: Session,
+  session: Session,
   house: House & { users: User[] }
 ) => {
   if (req.method === "GET") {
-    const chores = await prisma.chore.findMany({
-      where: { OR: [{ owner: house.id }, { owner: null }] },
-    });
+    let chores = await prisma.chore.findMany();
+    chores = chores.filter(chore => chore.owner === null || chore.owner === session?.user?.houseId)
     res.status(200).json({ chores });
   } else if (req.method === "POST") {
     const { title, description, type } = req.body;
