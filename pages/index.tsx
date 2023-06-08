@@ -75,7 +75,7 @@ const Home: NextPage<props> = ({ house, session }) => {
             >
               <Stack direction={isSmallScreen ? "column" : "row"} justifyContent="space-between" alignItems={isSmallScreen ? "start" : "center"} spacing={2}>
                 <Typography variant="h4" color={theme => theme.palette.secondary.main}>
-                  Member of '{house.name}'
+                  Member of &#39;{house.name}&#39;
                 </Typography>
                 <AvatarGroup max={4} sx={{ cursor: 'pointer' }} onClick={() => router.push('profile')}>
                   {house.users.map((user) => (
