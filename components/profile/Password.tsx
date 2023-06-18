@@ -11,36 +11,36 @@ interface props {
 
 const Password = ({ session, updateUser }: props) => {
   const [changingPassword, setChangingPassword] = useState(false);
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [oldPasswordError, setOldPasswordError] = useState("");
+  //  const [oldPassword, setOldPassword] = useState<string>("");
+  //  const [oldPasswordError, setOldPasswordError] = useState("");
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState("");
   const [repeatPassword, setRepeatPassword] = useState<string>("");
   const [repeatPasswordError, setRepeatPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const validatePassword = (value: string | null | undefined, which: "old" | "new"): boolean => {
+  const validatePassword = (value: string | null | undefined): boolean => {
     let isValid = true;
     if (!value) {
-      which === "new" ? setPasswordError("Required") : setOldPasswordError("Required");
+      setPasswordError("Required");
       isValid = false;
     } else if (value.trim().length === 0) {
-      which === "new" ? setPasswordError("Required") : setOldPasswordError("Required");
+      setPasswordError("Required");
       isValid = false;
     } else if (value.trim().length < 6) {
-      which === "new" ? setPasswordError("Password must be at least 6 characters long") : setOldPasswordError("Password must be at least 6 characters long");
+      setPasswordError("Password must be at least 6 characters long");
       isValid = false;
     } else if (!value.match(/\d/)) {
-      which === "new" ? setPasswordError("Password must contain at least one number") : setOldPasswordError("Password must contain at least one number");
+      setPasswordError("Password must contain at least one number");
       isValid = false;
     } else if (!value.match(/[A-Z]/)) {
-      which === "new" ? setPasswordError("Password must contain at least one uppercase letter") : setOldPasswordError("Password must contain at least one uppercase letter");
+      setPasswordError("Password must contain at least one uppercase letter")
       isValid = false;
     } else if (!value.match(/[a-z]/)) {
-      which === "new" ? setPasswordError("Password must contain at least one lowercase letter") : setOldPasswordError("Password must contain at least one lowercase letter");
+      setPasswordError("Password must contain at least one lowercase letter")
       isValid = false;
     } else {
-      which === "new" ? setPasswordError("") : setOldPasswordError("");
+      setPasswordError("");
     }
     return isValid;
   };
@@ -65,14 +65,14 @@ const Password = ({ session, updateUser }: props) => {
   const submitHandler = async () => {
     if (changingPassword) {
       setLoading(true)
-      const oldPasswordIsValid = validatePassword(oldPassword, "old");
-      const newPasswordIsValid = validatePassword(password, "new");
+      // const oldPasswordIsValid = validatePassword(oldPassword, "old");
+      const newPasswordIsValid = validatePassword(password);
       const repeatPasswordIsValid = validateRepeatPassword(repeatPassword);
-      if (!newPasswordIsValid || !repeatPasswordIsValid || !oldPasswordIsValid) {
+      if (!newPasswordIsValid || !repeatPasswordIsValid) {
         setLoading(false)
         return;
       }
-      await updateUser({ password: { oldPassword: oldPassword!, newPassword: password! } })
+      await updateUser({ password: { newPassword: password! } })
       setLoading(false)
     } else {
       setChangingPassword(true);
@@ -98,24 +98,17 @@ const Password = ({ session, updateUser }: props) => {
             <Stack spacing={2}>
               <Typography variant="h5">Change Password</Typography>
               <TextField
-                label="Old Password"
-                variant="outlined"
-                value={oldPassword}
-                onChange={(e) => { setOldPassword(e.target.value); oldPasswordError && validatePassword(e.target.value, "old"); }}
-                onBlur={(e) => { validatePassword(e.target.value, "old"); }}
-                error={oldPasswordError ? true : false}
-                helperText={oldPasswordError}
-              />
-              <TextField
+                type="password"
                 label="New Password"
                 variant="outlined"
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); passwordError && validatePassword(e.target.value, "new"); }}
-                onBlur={(e) => { validatePassword(e.target.value, "new"); }}
+                onChange={(e) => { setPassword(e.target.value); passwordError && validatePassword(e.target.value); }}
+                onBlur={(e) => { validatePassword(e.target.value); }}
                 error={passwordError ? true : false}
                 helperText={passwordError}
               />
               <TextField
+                type="password"
                 label="Repeat Password"
                 variant="outlined"
                 value={repeatPassword}
