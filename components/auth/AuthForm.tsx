@@ -166,7 +166,7 @@ const AuthForm = ({ submit, loading }: props) => {
       return null;
     }
     setEmailError(null);
-    return value.trim()
+    return value.trim().toLowerCase();
   };
 
   const submitHandler = (e: React.FormEvent) => {

@@ -10,7 +10,7 @@ export interface UserPutRequestBody {
     lastname: string
   }
   password?: {
-    oldPassword: string,
+    oldPassword?: string,
     newPassword: string
   };
 }
@@ -43,7 +43,8 @@ const handler = async (
     const { name, password } = req.body as UserPutRequestBody;
     if (!name && !password) return res.status(400).json({ message: "Bad Request" });
     try {
-      let oldHashedPassword, newHashedPassword, newSalt;
+      /*
+       let oldHashedPassword, newHashedPassword, newSalt;
       if (password) {
         const user = await prisma.user.findUnique({ where: { id: session.user.id } });
         if (!password.oldPassword || !password.newPassword) return res.status(400).json({ message: "Bad Request" });
@@ -51,6 +52,13 @@ const handler = async (
         const { hashedPassword: c } = hashPassword(password.oldPassword, user?.salt); oldHashedPassword = c;
         if (oldHashedPassword !== user?.password) return res.status(401).json({ message: "Wrong password" })
       }
+      */
+
+      let newHashedPassword, newSalt;
+      if (password) {
+        const { hashedPassword: a, salt: b } = hashPassword(password.newPassword); newHashedPassword = a; newSalt = b
+      }
+      
       const user = await prisma.user.update({
         where: {
           id: session.user.id,

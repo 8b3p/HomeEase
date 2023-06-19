@@ -12,7 +12,7 @@ export default corsMW(async function handler(
     try {
       const response = await prisma.user.findUnique({
         where: {
-          email: req.body.email,
+          email: (req.body.email as string).trim().toLowerCase()
         },
       });
       if (response) {
