@@ -11,13 +11,14 @@ import React, { useState } from 'react';
 interface ItemProps {
   amount: number;
   description: string;
-  user: Partial<User>
-  paymentId: string
+  user: Partial<User>;
+  paymentId: string;
+  redirectPath: string;
   type: "OutgoingPending" | "IncomingPending" | "Complete" | "Cancelled";
   session: Session;
 }
 
-const AssignmentItem = ({ amount, user, paymentId, type, session, description }: ItemProps) => {
+const AssignmentItem = ({ amount, user, paymentId, type, session, description, redirectPath }: ItemProps) => {
   const router = useRouter();
   const appVM = useAppVM();
   const [editAmount, setAmount] = useState<number>(amount);
@@ -97,7 +98,7 @@ const AssignmentItem = ({ amount, user, paymentId, type, session, description }:
         appVM.showAlert(e.message, 'error')
       }
     }
-    router.push('/payments')
+    router.push(redirectPath)
   };
 
   return (

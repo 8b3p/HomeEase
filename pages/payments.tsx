@@ -13,6 +13,7 @@ interface props {
   payments: Payment[];
   session: Session;
   users: User[];
+  initDate: string;
 }
 
 const groupByDay = (payments: Payment[], userId: string) => {
@@ -27,10 +28,9 @@ const groupByDay = (payments: Payment[], userId: string) => {
   return grouped;
 }
 
-const Payments = ({ payments, session, users }: props) => {
+const Payments = ({ payments, session, users, initDate }: props) => {
   const [byDay, setByDay] = useState<{ [key: string]: { status: Status; userId: string }[] } | undefined>();
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(initDate))
 
   useEffect(() => {
     setByDay(groupByDay(payments, session.user.id))
@@ -83,6 +83,7 @@ const Payments = ({ payments, session, users }: props) => {
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getSession(ctx);
+  const initDate = JSON.parse(JSON.stringify(ctx.query.d ? new Date(ctx.query.d as string) : new Date()));
   if (!session) {
     return {
       props: {},
@@ -131,6 +132,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       session: session,
       users: houseUsers,
       payments: serializablePayments,
+      initDate
     },
   };
 };

@@ -14,6 +14,7 @@ interface Props {
   choreAssignments: ChoreAssignment[];
   users: Partial<User>[];
   session: Session;
+  initDate: string;
 }
 
 const groupByDay = (chores: ChoreAssignment[]) => {
@@ -28,9 +29,9 @@ const groupByDay = (chores: ChoreAssignment[]) => {
   return grouped;
 }
 
-const Chores = ({ chores, choreAssignments, users, session }: Props) => {
+const Chores = ({ chores, choreAssignments, users, session, initDate }: Props) => {
   const [byDay, setByDay] = useState<{ [key: string]: ChoreAssignment[] } | undefined>();
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(initDate))
 
   useEffect(() => {
     setByDay(groupByDay(choreAssignments))
@@ -81,6 +82,7 @@ const Chores = ({ chores, choreAssignments, users, session }: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getSession(ctx);
+  const initDate = JSON.parse(JSON.stringify(ctx.query.d ? new Date(ctx.query.d as string) : new Date()));
   if (!session) {
     return {
       props: {},
@@ -140,6 +142,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       choreAssignments: serializableChoreAssignment,
       users: houseUsers,
       session: session,
+      initDate
     },
   };
 };

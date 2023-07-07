@@ -1,4 +1,4 @@
-import { useAppVM } from '@/context/Contexts';
+import { useAppVM, useThemeVM } from '@/context/Contexts';
 import { ChoreAssignmentIdPutBody } from '@/pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]';
 import { Check, Close } from '@mui/icons-material';
 import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
@@ -6,6 +6,7 @@ import { Chore, Status } from '@prisma/client';
 import { observer } from 'mobx-react-lite';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
+import { stringAvatar } from "@components/layout/Navbar/NavbarMenu";
 import React from 'react';
 
 interface ItemProps {
@@ -14,6 +15,8 @@ interface ItemProps {
   lastname: string;
   assignmentId: string;
   item: "MinePending" | "MineComplete" | "OtherPending" | "OtherComplete" | "Cancelled";
+  redirectPath: string;
+  coloredAvatar?: boolean;
   session: Session;
 }
 
@@ -28,8 +31,9 @@ interface ItemProps {
 //   return grouped;
 // }
 
-const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentId }: ItemProps) => {
+const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentId, redirectPath, coloredAvatar }: ItemProps) => {
   const router = useRouter();
+  const themeVM = useThemeVM();
   const appVM = useAppVM();
   const [itemState, setItemState] = React.useState(item);
 
@@ -56,16 +60,23 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
     } catch (e: any) {
       appVM.showAlert(e.message, 'error')
     }
-    router.push('/chores')
+    router.push(redirectPath)
   };
 
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between" minHeight="3rem" spacing={2}>
       <ListItem alignItems="flex-start" disablePadding>
         <ListItemAvatar>
-          <Avatar alt="Remy Sharp">
-            {`${firstname[0].toUpperCase()}${lastname[0].toUpperCase()}`}
-          </Avatar>
+          {coloredAvatar ? (
+            <Avatar
+              {...stringAvatar(firstname + " " + lastname, themeVM.themeType)}
+              alt={firstname + ' ' + lastname}
+            />
+          ) : (
+            <Avatar alt={firstname + ' ' + lastname}>
+              {`${firstname[0].toUpperCase()}${lastname[0].toUpperCase()}`}
+            </Avatar>
+          )}
         </ListItemAvatar>
         <ListItemText
           sx={{ textTransform: 'capitalize' }}

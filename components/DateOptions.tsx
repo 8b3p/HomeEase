@@ -1,5 +1,5 @@
 import { IconButton, Paper, Stack, Typography, useMediaQuery } from "@mui/material";
-import { Chore, Status, User } from "@prisma/client";
+import { Status } from "@prisma/client";
 import { Session } from "next-auth";
 import { ArrowRight, ArrowLeft, Circle } from "@mui/icons-material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -29,7 +29,7 @@ const Item = styled(Paper)(({ theme }: any) => ({
 }));
 
 const DateOptions = ({ byDay, selected, setSelected, session, addButton }: props) => {
-  const currentDate = new Date(); // Get the current date
+  const currentDate = selected
   const start = new Date(currentDate); // Create a new date object for the start date
   start.setDate(currentDate.getDate() - 1); // Set the start date to yesterday
   const [startDate, setStartDate] = useState<Date>(start)

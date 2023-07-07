@@ -55,6 +55,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                     description={payment.description}
                     user={users.find(user => user.id === payment.recipientId)!}
                     session={session}
+                    redirectPath="/payments"
                     type="OutgoingPending"
                   />
                 );
@@ -69,6 +70,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
               <>
                 {outgoing.filter(p => p.status === "Completed").map((payment) => (
                   <PaymentItem
+                    redirectPath="/payments"
                     key={payment.id}
                     paymentId={payment.id}
                     amount={payment.amount}
@@ -81,6 +83,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                 {outgoing.filter(p => p.status === "Cancelled").map((payment) => {
                   return (
                     <PaymentItem
+                      redirectPath="/payments"
                       key={payment.id}
                       paymentId={payment.id}
                       amount={payment.amount}
@@ -117,6 +120,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
               incoming.filter(p => p.status === "Pending").map((payment) => {
                 return (
                   <PaymentItem
+                    redirectPath="/payments"
                     key={payment.id}
                     paymentId={payment.id}
                     amount={payment.amount}
@@ -138,6 +142,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                 {incoming.filter(p => p.status === "Completed").map((payment) => {
                   return (
                     <PaymentItem
+                      redirectPath="/payments"
                       key={payment.id}
                       paymentId={payment.id}
                       amount={payment.amount}
@@ -151,6 +156,7 @@ const PaymentsList = ({ payments, users, session }: props) => {
                 {incoming.filter(p => p.status === "Cancelled").map((payment) => {
                   return (
                     <PaymentItem
+                      redirectPath="/payments"
                       key={payment.id}
                       paymentId={payment.id}
                       amount={payment.amount}

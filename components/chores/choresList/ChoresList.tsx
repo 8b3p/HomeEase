@@ -66,6 +66,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
                     firstname={users.find(user => user.id === choreAssignment.userId)?.firstName || ''}
                     lastname={users.find(user => user.id === choreAssignment.userId)?.lastName || ''}
                     item="MinePending"
+                    redirectPath="/chores"
                     assignmentId={choreAssignment.id} />
                 );
               })
@@ -79,6 +80,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
               <>
                 {mine.filter(c => c.status === "Completed").map((choreAssignment) => (
                   <AssignmentItem
+                    redirectPath="/chores"
                     key={choreAssignment.id}
                     session={session}
                     chore={chores.find(chore => chore.id === choreAssignment.choreId)}
@@ -91,6 +93,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
                 {mine.filter(c => c.status === "Cancelled").map((choreAssignment) => {
                   return (
                     <AssignmentItem
+                      redirectPath="/chores"
                       key={choreAssignment.id}
                       session={session}
                       chore={chores.find(chore => chore.id === choreAssignment.choreId)}
@@ -127,6 +130,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
               other.filter(c => c.status === "Pending").map((choreAssignment) => {
                 return (
                   <AssignmentItem
+                    redirectPath="/chores"
                     key={choreAssignment.id}
                     session={session}
                     chore={chores.find(chore => chore.id === choreAssignment.choreId)}
@@ -148,6 +152,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
                 {other.filter(c => c.status === "Completed").map((choreAssignment) => {
                   return (
                     <AssignmentItem
+                      redirectPath="/chores"
                       key={choreAssignment.id}
                       session={session}
                       chore={chores.find(chore => chore.id === choreAssignment.choreId)}
@@ -162,6 +167,7 @@ const ChoresList = ({ chores, choreAssignments, users, session }: props) => {
                   return (
                     <AssignmentItem
                       key={choreAssignment.id}
+                      redirectPath="/chores"
                       session={session}
                       chore={chores.find(chore => chore.id === choreAssignment.choreId)}
                       assignmentId={choreAssignment.id}
