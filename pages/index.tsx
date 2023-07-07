@@ -10,7 +10,7 @@ import NoHouse from "@/components/house/NoHouse";
 import { useRouter } from "next/router";
 import { useThemeVM } from "@/context/Contexts";
 import AssignmentItem from "@/components/chores/choresList/AssignmentItem";
-import { InfoOutlined } from "@mui/icons-material";
+import { ArrowDropDown, ArrowDropUp, InfoOutlined } from "@mui/icons-material";
 
 interface props {
   session: Session;
@@ -27,6 +27,7 @@ interface props {
 const Home: NextPage<props> = ({ house, session, balances }) => {
   const themeVM = useThemeVM();
   const router = useRouter();
+  const isExtraSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   if (!session) {
@@ -144,14 +145,28 @@ const Home: NextPage<props> = ({ house, session, balances }) => {
                 borderRadius: theme.shape.borderRadius,
               })}
             >
-              <Stack justifyContent="center" alignItems="start" spacing={2} padding={2}>
-                <Stack justifyContent="center" alignItems="start">
-                  <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
-                    <Typography variant="h4" textAlign="center">Summary</Typography>
-                    <Tooltip title="This is the summary of all the pending payments together">
-                      <InfoOutlined color="disabled" fontSize="small" />
-                    </Tooltip>
-                  </Stack>
+              <Stack justifyContent="center" alignItems="start" spacing={2} padding={2} width="100%">
+                <Stack justifyContent="center" alignItems="start" width="100%" spacing={1}>
+                  <Grid container spacing={1} width="100%">
+                    <Grid item md={5} xs={12}>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <Typography variant="h4" textAlign="center">Summary</Typography>
+                        <Tooltip title="This is the summary of all the pending payments together">
+                          <InfoOutlined color="disabled" fontSize="small" />
+                        </Tooltip>
+                      </Stack>
+                    </Grid>
+                    <Grid item md={7} xs={12}>
+                      <Stack direction="row" justifyContent={isExtraSmallScreen ? "" : "end"} alignItems="center" spacing={1}>
+                        <Typography variant="h6" textAlign="center" color={theme => theme.palette.success.main}>
+                          ${house.payments.filter(payment => payment.recipientId === session.user.id).reduce((a, b) => a + b.amount, 0).toFixed(2)}<ArrowDropUp color="success" />
+                        </Typography>
+                        <Typography variant="h6" textAlign="center" color={theme => theme.palette.error.light}>
+                          ${house.payments.filter(payment => payment.payerId === session.user.id).reduce((a, b) => a + b.amount, 0).toFixed(2)}<ArrowDropDown color="error" />
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  </Grid>
                   {house.users.filter(user => user.id !== session.user.id).map((user) => (
                     <ListItem alignItems="flex-start" disablePadding key={user.id}>
                       <ListItemAvatar>
@@ -160,7 +175,7 @@ const Home: NextPage<props> = ({ house, session, balances }) => {
                         ></Avatar>
                       </ListItemAvatar>
                       <ListItemText
-                        sx={(theme) => ({ textTransform: 'capitalize', color: balances[user.id]?.owe ? theme.palette.error.light : theme.palette.success.main })}
+                        sx={(theme) => ({ textTransform: 'capitalize', color: balances[user.id].amount === 0 ? '' : balances[user.id]?.owe ? theme.palette.error.light : theme.palette.success.main })}
                         primary={"$" + balances[user.id].amount}
                         secondary={
                           <Typography
@@ -169,7 +184,7 @@ const Home: NextPage<props> = ({ house, session, balances }) => {
                             variant="body2"
                             color="text.primary"
                           >
-                            {balances[user.id]?.owe ? `You owe ${user.firstName} ${user.lastName}` : `${user.firstName} ${user.lastName} owes you`}
+                            {balances[user.id].amount === 0 ? `${user.firstName} ${user.lastName} is all good` : balances[user.id]?.owe ? `You owe ${user.firstName} ${user.lastName}` : `${user.firstName} ${user.lastName} owes you`}
                           </Typography>
                         }
                       />
