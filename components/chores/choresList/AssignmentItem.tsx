@@ -16,6 +16,7 @@ import { Session } from "next-auth";
 import { useRouter } from "next/router";
 import { stringAvatar } from "@components/layout/Navbar/NavbarMenu";
 import React from "react";
+import AppVM from "@/context/appVM";
 
 interface ItemProps {
   chore?: Chore;
@@ -23,11 +24,11 @@ interface ItemProps {
   lastname: string;
   assignmentId: string;
   item:
-    | "MinePending"
-    | "MineComplete"
-    | "OtherPending"
-    | "OtherComplete"
-    | "Cancelled";
+  | "MinePending"
+  | "MineComplete"
+  | "OtherPending"
+  | "OtherComplete"
+  | "Cancelled";
   redirectPath: string;
   coloredAvatar?: boolean;
   session: Session;
@@ -56,7 +57,6 @@ const AssignmentItem = ({
 }: ItemProps) => {
   const router = useRouter();
   const themeVM = useThemeVM();
-  const appVM = useAppVM();
   const [itemState, setItemState] = React.useState(item);
 
   const markChore = async (id: string, status: Status) => {
