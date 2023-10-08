@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { Button, LinearProgress } from "@mui/material";
 import { Stack } from "@mui/system";
+import AppVM from "@/context/appVM";
 
 interface props {
   house?: { id: string; name: string };
@@ -33,14 +34,14 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
     const data = await response.json();
     if (!response.ok) {
       // Handle error
-      appVM.showAlert(data.error, "error");
+      AppVM.showAlert(data.error, "error");
       router.push("/profile");
       return;
     }
     // User successfully joined house
     const { users, ...house } = data.house;
     appVM.house = house;
-    appVM.showAlert(`You have joined "${data.house.name}" house`, "success");
+    AppVM.showAlert(`You have joined "${data.house.name}" house`, "success");
     router.push("/profile");
   };
 
@@ -50,12 +51,12 @@ const InvitationPage = ({ house, isPartOfHouse }: props) => {
       return;
     }
     if (!house) {
-      appVM.showAlert("Invalid invitaion link", "error");
+      AppVM.showAlert("Invalid invitaion link", "error");
       router.push("/");
       return;
     }
     if (isPartOfHouse) {
-      appVM.showAlert(`You are already part of "${house.name}" house`, "error");
+      AppVM.showAlert(`You are already part of "${house.name}" house`, "error");
       router.push("/profile");
       return;
     }
@@ -93,9 +94,7 @@ export const getServerSideProps: GetServerSideProps<props> = async ctx => {
     return {
       props: {},
       redirect: {
-        destination: `/auth?redirectUrl=${encodeURIComponent(
-          ctx.resolvedUrl
-        )}`,
+        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.resolvedUrl)}`,
       },
     };
   }

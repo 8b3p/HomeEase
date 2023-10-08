@@ -1,20 +1,33 @@
-import { useAppVM, useThemeVM } from '@/context/Contexts';
-import { ChoreAssignmentIdPutBody } from '@/pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]';
-import { Check, Close } from '@mui/icons-material';
-import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
-import { Chore, Status } from '@prisma/client';
-import { observer } from 'mobx-react-lite';
-import { Session } from 'next-auth';
-import { useRouter } from 'next/router';
+import { useAppVM, useThemeVM } from "@/context/Contexts";
+import { ChoreAssignmentIdPutBody } from "@/pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]";
+import { Check, Close } from "@mui/icons-material";
+import {
+  Avatar,
+  IconButton,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { Chore, Status } from "@prisma/client";
+import { observer } from "mobx-react-lite";
+import { Session } from "next-auth";
+import { useRouter } from "next/router";
 import { stringAvatar } from "@components/layout/Navbar/NavbarMenu";
-import React from 'react';
+import React from "react";
 
 interface ItemProps {
   chore?: Chore;
   firstname: string;
   lastname: string;
   assignmentId: string;
-  item: "MinePending" | "MineComplete" | "OtherPending" | "OtherComplete" | "Cancelled";
+  item:
+    | "MinePending"
+    | "MineComplete"
+    | "OtherPending"
+    | "OtherComplete"
+    | "Cancelled";
   redirectPath: string;
   coloredAvatar?: boolean;
   session: Session;
@@ -31,7 +44,16 @@ interface ItemProps {
 //   return grouped;
 // }
 
-const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentId, redirectPath, coloredAvatar }: ItemProps) => {
+const AssignmentItem = ({
+  chore,
+  firstname,
+  lastname,
+  item,
+  session,
+  assignmentId,
+  redirectPath,
+  coloredAvatar,
+}: ItemProps) => {
   const router = useRouter();
   const themeVM = useThemeVM();
   const appVM = useAppVM();
@@ -43,51 +65,60 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
     if (status === Status.Cancelled) setItemState("Cancelled");
     try {
       // Make a POST request to the API endpoint to create the chore
-      const res = await fetch(`/api/houses/${session.user.houseId}/chores/assignment/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      })
+      const res = await fetch(
+        `/api/houses/${session.user.houseId}/chores/assignment/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
       const data = await res.json();
       if (!res.ok) {
-        appVM.showAlert(data.message, 'error')
+        AppVM.showAlert(data.message, "error");
       }
 
-      appVM.showAlert('Assignment Completed', "success")
+      AppVM.showAlert("Assignment Completed", "success");
       // Reset the form fields and close the create panel
     } catch (e: any) {
-      appVM.showAlert(e.message, 'error')
+      AppVM.showAlert(e.message, "error");
     }
-    router.push(redirectPath)
+    router.push(redirectPath);
   };
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between" minHeight="3rem" spacing={2}>
-      <ListItem alignItems="flex-start" disablePadding>
+    <Stack
+      direction='row'
+      alignItems='center'
+      justifyContent='space-between'
+      minHeight='3rem'
+      spacing={2}
+    >
+      <ListItem alignItems='flex-start' disablePadding>
         <ListItemAvatar>
           {coloredAvatar ? (
             <Avatar
               {...stringAvatar(firstname + " " + lastname, themeVM.themeType)}
-              alt={firstname + ' ' + lastname}
+              alt={firstname + " " + lastname}
             />
           ) : (
-            <Avatar alt={firstname + ' ' + lastname}>
+            <Avatar alt={firstname + " " + lastname}>
               {`${firstname[0].toUpperCase()}${lastname[0].toUpperCase()}`}
             </Avatar>
           )}
         </ListItemAvatar>
         <ListItemText
-          sx={{ textTransform: 'capitalize' }}
+          sx={{ textTransform: "capitalize" }}
           primary={chore?.title}
           secondary={
             <>
               <Typography
-                sx={{ display: 'inline' }}
-                component="span"
-                variant="body2"
-                color="text.primary"
+                sx={{ display: "inline" }}
+                component='span'
+                variant='body2'
+                color='text.primary'
               >
                 {firstname} {lastname}
               </Typography>
@@ -97,18 +128,31 @@ const AssignmentItem = ({ chore, firstname, lastname, item, session, assignmentI
         />
       </ListItem>
       {itemState === "MinePending" ? (
-        <Stack direction="row">
-          <IconButton onClick={() => markChore(assignmentId, Status.Completed)}><Check color="info" fontSize="small" /></IconButton>
-          <IconButton onClick={() => markChore(assignmentId, Status.Cancelled)}><Close color="error" fontSize="small" /></IconButton>
+        <Stack direction='row'>
+          <IconButton onClick={() => markChore(assignmentId, Status.Completed)}>
+            <Check color='info' fontSize='small' />
+          </IconButton>
+          <IconButton onClick={() => markChore(assignmentId, Status.Cancelled)}>
+            <Close color='error' fontSize='small' />
+          </IconButton>
         </Stack>
-      ) : (itemState === "MineComplete") || (itemState === "OtherComplete") ? (<Typography color={theme => theme.palette.success.main}>Completed</Typography>) :
-        itemState === "Cancelled" ? (
-          <Typography color={theme => theme.palette.error.main}>Cancelled</Typography>
-        ) : itemState === "OtherPending" && (
-          <Typography color={theme => theme.palette.info.main}>Pending</Typography>
-        )}
-    </Stack >
-  )
-}
+      ) : itemState === "MineComplete" || itemState === "OtherComplete" ? (
+        <Typography color={theme => theme.palette.success.main}>
+          Completed
+        </Typography>
+      ) : itemState === "Cancelled" ? (
+        <Typography color={theme => theme.palette.error.main}>
+          Cancelled
+        </Typography>
+      ) : (
+        itemState === "OtherPending" && (
+          <Typography color={theme => theme.palette.info.main}>
+            Pending
+          </Typography>
+        )
+      )}
+    </Stack>
+  );
+};
 
-export default observer(AssignmentItem)
+export default observer(AssignmentItem);

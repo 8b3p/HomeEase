@@ -14,8 +14,8 @@ export default class AppVM {
   public isServer = typeof window === "undefined";
   public house: Partial<House & { users: User[] }> | null = null;
   public user: Session['user'] | null = null;
-  private alertTimer: NodeJS.Timeout | null = null;
-  private alertRoot: ReactDOM.Root | null = null;
+  private static alertTimer: NodeJS.Timeout | null = null;
+  private static alertRoot: ReactDOM.Root | null = null;
 
   constructor(house?: House, user?: Session['user']) {
     if (house) this.house = house;
@@ -23,7 +23,7 @@ export default class AppVM {
     makeAutoObservable(this);
   }
 
-  public showAlert = (message: string, type: AlertProps['severity'], action?: {
+  public static showAlert = (message: string, type: AlertProps['severity'], action?: {
     icon: JSX.Element,
     action: () => void
   }) => {

@@ -1,6 +1,14 @@
 import { useAppVM } from "@/context/Contexts";
 import { UserPutRequestBody } from "@/pages/api/users/[userId]";
-import { Card, ListItem, ListItemText, Stack, Theme, Typography, useMediaQuery } from "@mui/material";
+import {
+  Card,
+  ListItem,
+  ListItemText,
+  Stack,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
@@ -10,6 +18,7 @@ import UserName from "./UserName";
 import { useSession } from "next-auth/react";
 import { Box } from "@mui/material";
 import { CircularProgress } from "@mui/material";
+import AppVM from "@/context/appVM";
 
 interface props {
   session: Session;
@@ -17,88 +26,136 @@ interface props {
 
 const UserSettings = ({ session }: props) => {
   const appVM = useAppVM();
-  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
   const router = useRouter();
   const { update } = useSession();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setLoading(false) }, [])
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const updateUser = async (body: UserPutRequestBody) => {
     setLoading(true);
     const res = await fetch(`/api/users/${session?.user.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
     const data = await res.json();
     if (!res.ok) {
-      appVM.showAlert(data.message, 'error');
+      AppVM.showAlert(data.message, "error");
     } else {
-      appVM.showAlert('User updated successfully', 'success');
+      AppVM.showAlert("User updated successfully", "success");
       update();
     }
-    router.push('/profile')
+    router.push("/profile");
     setLoading(false);
-  }
-
+  };
 
   return (
-    <Stack minHeight='100%' alignItems='center' justifyContent="start" paddingTop={4} spacing={4}>
-      <Typography variant="h4">User Settings</Typography>
-      {loading ? (<Box sx={{ paddingTop: '3rem' }}><CircularProgress /></Box>) : (
-        <Stack spacing={2} justifyContent="center" alignItems="start" width="100%">
+    <Stack
+      minHeight='100%'
+      alignItems='center'
+      justifyContent='start'
+      paddingTop={4}
+      spacing={4}
+    >
+      <Typography variant='h4'>User Settings</Typography>
+      {loading ? (
+        <Box sx={{ paddingTop: "3rem" }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Stack
+          spacing={2}
+          justifyContent='center'
+          alignItems='start'
+          width='100%'
+        >
           {/*show user info*/}
-          <Card sx={theme => ({ width: '100%', borderRadius: theme.shape.borderRadius })}>
-            <Stack padding={3} spacing={1} justifyContent="center" alignItems="start" width="100%">
-              <Stack direction="row" spacing={2} justifyContent="space-between" width="100%" alignItems="center">
-                <ListItem alignItems="flex-start" disablePadding>
+          <Card
+            sx={theme => ({
+              width: "100%",
+              borderRadius: theme.shape.borderRadius,
+            })}
+          >
+            <Stack
+              padding={3}
+              spacing={1}
+              justifyContent='center'
+              alignItems='start'
+              width='100%'
+            >
+              <Stack
+                direction='row'
+                spacing={2}
+                justifyContent='space-between'
+                width='100%'
+                alignItems='center'
+              >
+                <ListItem alignItems='flex-start' disablePadding>
                   <ListItemText
-                    sx={{ textTransform: 'capitalize' }}
+                    sx={{ textTransform: "capitalize" }}
                     primary={
                       <Typography
-                        sx={{ display: 'inline', textTransform: 'capitalize' }}
+                        sx={{ display: "inline", textTransform: "capitalize" }}
                         variant={isSmallScreen ? "body2" : "body1"}
-                        color="text.secondary"
-                      >Name</Typography>
+                        color='text.secondary'
+                      >
+                        Name
+                      </Typography>
                     }
                     secondary={
                       <Typography
-                        sx={{ display: 'block', textTransform: 'capitalize' }}
+                        sx={{ display: "block", textTransform: "capitalize" }}
                         variant={isSmallScreen ? "subtitle1" : "h5"}
-                        color="text.primary"
-                      >{session?.user.name}</Typography>
+                        color='text.primary'
+                      >
+                        {session?.user.name}
+                      </Typography>
                     }
                   />
                 </ListItem>
                 <UserName session={session} updateUser={updateUser} />
               </Stack>
-              <ListItem alignItems="flex-start" disablePadding>
+              <ListItem alignItems='flex-start' disablePadding>
                 <ListItemText
                   primary={
                     <Typography
-                      sx={{ display: 'inline', textTransform: 'capitalize' }}
+                      sx={{ display: "inline", textTransform: "capitalize" }}
                       variant={isSmallScreen ? "body2" : "body1"}
-                      color="text.secondary"
-                    > Email </Typography>
+                      color='text.secondary'
+                    >
+                      {" "}
+                      Email{" "}
+                    </Typography>
                   }
                   secondary={
                     <Typography
                       variant={isSmallScreen ? "subtitle1" : "h5"}
-                      sx={{ display: 'block' }}
-                      color="text.primary"
-                    > {session?.user.email} </Typography>
+                      sx={{ display: "block" }}
+                      color='text.primary'
+                    >
+                      {" "}
+                      {session?.user.email}{" "}
+                    </Typography>
                   }
                 />
               </ListItem>
-              <ListItem alignItems="flex-start" disablePadding>
+              <ListItem alignItems='flex-start' disablePadding>
                 <ListItemText
                   primary={
                     <Typography
-                      sx={{ display: 'inline', textTransform: 'capitalize' }}
+                      sx={{ display: "inline", textTransform: "capitalize" }}
                       variant={isSmallScreen ? "body2" : "body1"}
-                      color="text.secondary"
-                    > Password </Typography>
+                      color='text.secondary'
+                    >
+                      {" "}
+                      Password{" "}
+                    </Typography>
                   }
                   secondary={
                     <Password session={session} updateUser={updateUser} />
@@ -107,12 +164,10 @@ const UserSettings = ({ session }: props) => {
               </ListItem>
             </Stack>
           </Card>
-        </Stack >
-      )
-      }
-    </Stack >
+        </Stack>
+      )}
+    </Stack>
   );
 };
 
 export default observer(UserSettings);
-

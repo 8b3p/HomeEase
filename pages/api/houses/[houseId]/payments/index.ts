@@ -50,15 +50,23 @@ const handler = async (
     res.status(200).json({ payments });
   } else if (req.method === "POST") {
     const bodies = req.body as PaymentPostBody[];
-    bodies.forEach(({ payerId, recipientId }) => {
+    bodies.forEach(({ payerId, recipientId, amount }) => {
       if (!isValidObjectId(payerId) || !isValidObjectId(recipientId))
         return res.status(400).json({ message: "Invalid user id" });
+      if (session.user.id !== payerId && session.user.id !== recipientId)
+        return res.status(403).json({ message: "Only payers and recipients can create their payments" });
+      if (payerId === recipientId)
+        return res.status(400).json({ message: "Payer and recipient cannot be the same" });
+      if (isNaN(amount))
+        return res.status(400).json({ message: "Amount must be a number" });
+      if (amount <= 0)
+        return res.status(400).json({ message: "Amount must be greater than 0" });
     })
     const batchCreate = await prisma.payment.createMany({
       data: bodies.map(({ payerId, recipientId, amount, createdAt, description }) => {
         return {
           houseId: house.id,
-          amount: amount,
+          amount: parseFloat(amount.toFixed(2)),
           status: Status.Pending,
           payerId: payerId,
           recipientId: recipientId,
