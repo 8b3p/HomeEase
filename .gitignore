@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+# this folder holds the private key for the https server, create localhost-key.pem localhost.pem files and puth them inside the https_certs folder
+/https_certs
+
 # testing
 /coverage
 

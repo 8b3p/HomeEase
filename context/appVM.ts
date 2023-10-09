@@ -5,6 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { Session } from "next-auth";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import PaymentFormVM from "./PaymentFormVM";
 
 export interface HydrationData {
   user: Session['user'] | null
@@ -35,6 +36,14 @@ export default class AppVM {
       this.alertRoot.render(Alert);
       this.alertTimer = setTimeout(() => { this.alertRoot?.unmount() }, 7000);
     }
+  }
+
+  public newPaymentForm = (
+    users: Partial<User>[],
+    houseId: string,
+    defaultDate: Date,
+  ): PaymentFormVM => {
+    return new PaymentFormVM(users, houseId, defaultDate);
   }
 
   public hydrate = (data: HydrationData) => {
