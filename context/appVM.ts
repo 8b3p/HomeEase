@@ -1,6 +1,7 @@
 import GlobalAlert from "@/components/UI/GlobalAlert";
 import { AlertProps } from "@mui/material";
 import { House, User } from "@prisma/client";
+import { User as NextAuthUser } from 'next-auth';
 import { makeAutoObservable } from "mobx";
 import { Session } from "next-auth";
 import React from "react";
@@ -42,8 +43,9 @@ export default class AppVM {
     users: Partial<User>[],
     houseId: string,
     defaultDate: Date,
+    currentUser: NextAuthUser,
   ): PaymentFormVM => {
-    return new PaymentFormVM(users, houseId, defaultDate);
+    return new PaymentFormVM(users, houseId, defaultDate, currentUser);
   }
 
   public hydrate = (data: HydrationData) => {

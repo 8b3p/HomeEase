@@ -9,12 +9,14 @@ import AppVM from "@/context/appVM";
 import PaymentInputs from "./PaymentInputs";
 import { useAppVM } from "@/context/Contexts";
 import PaymentFormVM from "@/context/PaymentFormVM";
+import { Session } from "next-auth";
 
 interface props {
   users: Partial<User>[];
   houseId: string;
   defaultDate: Date;
   isIcon?: boolean;
+  session: Session;
   variant?: "text" | "outlined" | "contained";
 }
 
@@ -23,6 +25,7 @@ const CreatePaymentForm = ({
   houseId,
   defaultDate,
   isIcon,
+  session,
   variant = "outlined",
 }: props) => {
   const appVM = useAppVM();
@@ -33,7 +36,7 @@ const CreatePaymentForm = ({
 
   useEffect(() => {
     if (isAssignPanelOpen) return;
-    setPaymentFormVM(appVM.newPaymentForm(users, houseId, defaultDate))
+    setPaymentFormVM(appVM.newPaymentForm(users, houseId, defaultDate, session.user))
   }, [isAssignPanelOpen, defaultDate])
 
   if (!paymentFormVM) return null;

@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import { User as NextAuthUser } from 'next-auth';
 import { makeAutoObservable } from "mobx";
 
 
@@ -25,11 +26,13 @@ export default class PaymentFormVM {
     users: Partial<User>[],
     houseId: string,
     defaultDate: Date,
+    currentUser: NextAuthUser,
   ) {
     makeAutoObservable(this);
     this.users = users;
     this.houseId = houseId;
     this.paymentDate = defaultDate.toISOString().split('T')[0];
+    this.recipientId = currentUser.id;
   }
 
 }
