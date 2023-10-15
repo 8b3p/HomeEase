@@ -53,8 +53,6 @@ const handler = async (
     bodies.forEach(({ payerId, recipientId, amount }) => {
       if (!isValidObjectId(payerId) || !isValidObjectId(recipientId))
         return res.status(400).json({ message: "Invalid user id" });
-      if (session.user.id !== payerId && session.user.id !== recipientId)
-        return res.status(403).json({ message: "Only payers and recipients can create their payments" });
       if (payerId === recipientId)
         return res.status(400).json({ message: "Payer and recipient cannot be the same" });
       if (isNaN(amount))

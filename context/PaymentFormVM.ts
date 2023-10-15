@@ -2,6 +2,7 @@ import { User } from "@prisma/client";
 import { makeAutoObservable } from "mobx";
 
 
+// this was made to be used in a complex feature but the feature was not cancelled
 export default class PaymentFormVM {
   private users: Partial<User>[] = []; get Users() { return this.users; } set Users(value: Partial<User>[]) { this.users = value; }
   private houseId: string = ''; get HouseId() { return this.houseId; } set HouseId(value: string) { this.houseId = value; }
@@ -9,6 +10,8 @@ export default class PaymentFormVM {
   private amountError: string = ""; get AmountError() { return this.amountError; } set AmountError(value: string) { this.amountError = value; }
   private description: string = ''; get Description() { return this.description; } set Description(value: string) { this.description = value; }
   private descriptionError: string = ""; get DescriptionError() { return this.descriptionError; } set DescriptionError(value: string) { this.descriptionError = value; }
+  private recipientId: string = ""; get RecipientId() { return this.recipientId; } set RecipientId(value: string) { this.recipientId = value; }
+  private recipientIdError: string = ""; get RecipientIdError() { return this.recipientIdError; } set RecipientIdError(value: string) { this.recipientIdError = value; }
   private payersId: string[] = []; get PayersId() { return this.payersId; } set PayersId(value: string[]) { this.payersId = value; }
   private payersIdError: string = ""; get PayersIdError() { return this.payersIdError; } set PayersIdError(value: string) { this.payersIdError = value; }
   private paymentDate: string = ''; get PaymentDate() { return this.paymentDate; } set PaymentDate(value: string) { this.paymentDate = value; }

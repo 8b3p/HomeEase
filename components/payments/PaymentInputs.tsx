@@ -19,7 +19,7 @@ import PaymentFormVM from "@/context/PaymentFormVM";
 
 interface props { paymentFormVM: PaymentFormVM }
 
-const RecipientForm = ({ paymentFormVM }: props) => {
+const PaymentInputs = ({ paymentFormVM }: props) => {
   const router = useRouter();
   const { data: session } = useSession();
   if (!session) { router.push('/'); return null; }
@@ -72,6 +72,48 @@ const RecipientForm = ({ paymentFormVM }: props) => {
         helperText={paymentFormVM.PaymentDateError}
         fullWidth
       />
+      <FormControl error={paymentFormVM.RecipientIdError !== ""}>
+        <InputLabel required id='recipient-select-id'>
+          Recipient
+        </InputLabel>
+        <Select
+          required
+          labelId='recipient-select-id'
+          label='Recipient'
+          value={paymentFormVM.RecipientId}
+          renderValue={selected => (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+              <Chip
+                key={selected}
+                label={
+                  <Typography sx={{ textTransform: "capitalize" }}>
+                    {paymentFormVM.Users.find(user => user.id === selected)?.firstName} {paymentFormVM.Users.find(user => user.id === selected)?.lastName}
+                  </Typography>
+                }
+              />
+            </Box>
+          )}
+          onChange={e => {
+            const { target: { value }, } = e;
+            paymentFormVM.RecipientId = value;
+            paymentFormVM.RecipientIdError = "";
+          }}
+          fullWidth
+        >
+          {paymentFormVM.Users.map(user => {
+            return (
+              <MenuItem key={user.id} value={user.id} sx={{ textTransform: "capitalize" }} >
+                <Stack direction='row' justifyContent='space-between' width='100%' >
+                  <Typography>
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                </Stack>
+              </MenuItem>
+            );
+          })}
+        </Select>
+        {paymentFormVM.RecipientIdError !== "" && (<FormHelperText error>{paymentFormVM.RecipientIdError}</FormHelperText>)}
+      </FormControl>
       <FormControl error={paymentFormVM.PayersIdError !== ""}>
         <InputLabel required id='payers-select-id'>
           Payers
@@ -121,23 +163,13 @@ const RecipientForm = ({ paymentFormVM }: props) => {
         >
           {paymentFormVM.Users.map(user => {
             return (
-              <MenuItem
-                key={user.id}
-                value={user.id}
-                sx={{ textTransform: "capitalize" }}
-              >
-                <Stack
-                  direction='row'
-                  justifyContent='space-between'
-                  width='100%'
-                >
+              <MenuItem key={user.id} value={user.id} sx={{ textTransform: "capitalize" }}>
+                <Stack direction='row' justifyContent='space-between' width='100%'>
                   <Typography>
                     {user.firstName} {user.lastName}
                   </Typography>
                   {paymentFormVM.PayersId.indexOf(user.id!) > -1 && !paymentFormVM.IsSeparate ? (
-                    <Typography>
-                      {((paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toFixed(2)}
-                    </Typography>
+                    <Typography>{((paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toFixed(2)}</Typography>
                   ) : (
                     <Typography>{paymentFormVM.CustomAmounts[user.id!]}</Typography>
                   )}
@@ -146,9 +178,7 @@ const RecipientForm = ({ paymentFormVM }: props) => {
             );
           })}
         </Select>
-        {paymentFormVM.PayersIdError !== "" && (
-          <FormHelperText error>{paymentFormVM.PayersIdError}</FormHelperText>
-        )}
+        {paymentFormVM.PayersIdError !== "" && (<FormHelperText error>{paymentFormVM.PayersIdError}</FormHelperText>)}
       </FormControl>
       <FormControlLabel
         control={
@@ -171,7 +201,7 @@ const RecipientForm = ({ paymentFormVM }: props) => {
         <Stack spacing={2}>
           {paymentFormVM.PayersId.map(payerId => {
             const user = paymentFormVM.Users.find(user => user.id === payerId);
-            if (user?.id === session.user.id) return null;
+            if (user?.id === paymentFormVM.RecipientId) return null;
             return (
               <TextField
                 key={payerId}
@@ -207,7 +237,7 @@ const RecipientForm = ({ paymentFormVM }: props) => {
             Total:{" "}
             {Object.values(paymentFormVM.CustomAmounts).length
               ? Object.keys(paymentFormVM.CustomAmounts).reduce((acc, key) => {
-                if (key === session.user.id) return acc; return acc += paymentFormVM.CustomAmounts[key]
+                if (key === paymentFormVM.RecipientId) return acc; return acc += paymentFormVM.CustomAmounts[key]
               }, 0) : 0}
           </Typography>
         </Stack>
@@ -216,4 +246,4 @@ const RecipientForm = ({ paymentFormVM }: props) => {
   );
 };
 
-export default observer(RecipientForm)
+export default observer(PaymentInputs)

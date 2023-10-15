@@ -56,10 +56,10 @@ const Chores = ({ chores, choreAssignments, users, session, initDate }: Props) =
           addButton={
             <AssignChoreForm
               variant="outlined"
-              houseId={session.user.houseId || ""}
+              houseId={session.user.houseId ?? ""}
               defaultDate={selectedDate}
-              chores={chores ? chores : []}
-              users={users ? users : []}
+              chores={chores ?? []}
+              users={users ?? []}
             />
           }
         />
@@ -73,7 +73,9 @@ const Chores = ({ chores, choreAssignments, users, session, initDate }: Props) =
             session={session}
           />
         ) : (
-          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Chores on this day</Typography></Stack>
+          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" >
+            <Typography variant="h6">No Chores on this day</Typography>
+          </Stack>
         )}
       </Stack >
     </Grow>

@@ -5,9 +5,8 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { Add } from "@mui/icons-material";
 import { PaymentPostBody } from "@/pages/api/houses/[houseId]/payments";
-import { Session } from "next-auth";
 import AppVM from "@/context/appVM";
-import RecipientForm from "./RecipientForm";
+import PaymentInputs from "./PaymentInputs";
 import { useAppVM } from "@/context/Contexts";
 import PaymentFormVM from "@/context/PaymentFormVM";
 
@@ -16,7 +15,6 @@ interface props {
   houseId: string;
   defaultDate: Date;
   isIcon?: boolean;
-  session: Session;
   variant?: "text" | "outlined" | "contained";
 }
 
@@ -26,7 +24,6 @@ const CreatePaymentForm = ({
   defaultDate,
   isIcon,
   variant = "outlined",
-  session,
 }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
@@ -47,6 +44,13 @@ const CreatePaymentForm = ({
 
   const validateInputs = (): boolean => {
     let isValid = true;
+    if (!paymentFormVM.RecipientId) {
+      paymentFormVM.RecipientIdError = "A Recipient must be selected";
+      isValid = false;
+    } else {
+      paymentFormVM.RecipientIdError = "";
+    }
+
     if (paymentFormVM.PayersId.length === 0) {
       paymentFormVM.PayersIdError = "A Payer must be selected";
       isValid = false;
@@ -90,13 +94,13 @@ const CreatePaymentForm = ({
     // Perform payment creation logic here
     paymentFormVM.IsLoading = true;
     const bodies: PaymentPostBody[] = paymentFormVM.PayersId
-      .filter(id => id !== session.user.id)
+      .filter(id => id !== paymentFormVM.RecipientId)
       .map(payerId => ({
         amount: parseFloat((paymentFormVM.IsSeparate ? paymentFormVM.CustomAmounts[payerId] : (paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toFixed(2)),
         payerId,
         description: paymentFormVM.Description,
         status: Status.Pending,
-        recipientId: session.user.id,
+        recipientId: paymentFormVM.RecipientId,
         createdAt: new Date(paymentFormVM.PaymentDate),
       } as PaymentPostBody));
     const res = await fetch(`/api/houses/${houseId}/payments`, {
@@ -141,7 +145,7 @@ const CreatePaymentForm = ({
           ) : (
             <Stack spacing={2}>
               <Typography variant='h5'>Add Payment</Typography>
-              <RecipientForm paymentFormVM={paymentFormVM} />
+              <PaymentInputs paymentFormVM={paymentFormVM} />
             </Stack>
           )}
           <Stack direction='row' spacing={1}>
@@ -153,8 +157,8 @@ const CreatePaymentForm = ({
             </Button>
           </Stack>
         </Stack>
-      </Drawer>
-    </Stack>
+      </Drawer >
+    </Stack >
   );
 };
 
