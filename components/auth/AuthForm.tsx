@@ -258,6 +258,12 @@ const AuthForm = ({ submit, loading }: props) => {
               helperText={passwordError}
               label='Password'
               type={showPassword ? "text" : "password"}
+              onKeyDown={(e) => {
+                console.log('key pressed')
+                if (e.key == "Enter") {
+                  submitHandler(e);
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   < InputAdornment position="end" >
@@ -287,11 +293,6 @@ const AuthForm = ({ submit, loading }: props) => {
                 size="small"
                 onClick={submitHandler}
                 //when enter is pressed, the button is clicked
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    submitHandler(e);
-                  }
-                }}
                 endIcon={<Login />}
                 loading={loading}
                 loadingPosition="end"
@@ -304,11 +305,6 @@ const AuthForm = ({ submit, loading }: props) => {
               <LoadingButton
                 size="small"
                 onClick={submitHandler}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    submitHandler(e);
-                  }
-                }}
                 endIcon={<Login />}
                 loading={loading}
                 loadingPosition="end"
