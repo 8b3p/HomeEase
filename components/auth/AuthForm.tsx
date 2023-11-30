@@ -286,6 +286,12 @@ const AuthForm = ({ submit, loading }: props) => {
               <LoadingButton
                 size="small"
                 onClick={submitHandler}
+                //when enter is pressed, the button is clicked
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    submitHandler(e);
+                  }
+                }}
                 endIcon={<Login />}
                 loading={loading}
                 loadingPosition="end"
@@ -298,6 +304,11 @@ const AuthForm = ({ submit, loading }: props) => {
               <LoadingButton
                 size="small"
                 onClick={submitHandler}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    submitHandler(e);
+                  }
+                }}
                 endIcon={<Login />}
                 loading={loading}
                 loadingPosition="end"
