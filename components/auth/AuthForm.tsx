@@ -259,7 +259,6 @@ const AuthForm = ({ submit, loading }: props) => {
               label='Password'
               type={showPassword ? "text" : "password"}
               onKeyDown={(e) => {
-                console.log('key pressed')
                 if (e.key == "Enter") {
                   submitHandler(e);
                 }
