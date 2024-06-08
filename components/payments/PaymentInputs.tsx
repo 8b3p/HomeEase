@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { observer } from "mobx-react-lite";
 import PaymentFormVM from "@/context/PaymentFormVM";
+import AppVM from "@/context/appVM";
 
 interface props { paymentFormVM: PaymentFormVM }
 
@@ -32,7 +33,7 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
           inputProps={{
             min: 0,
             inputMode: "decimal",
-            pattern: "^[0-9]*.?[0-9]+$",
+            pattern: `^[0-9]*.?[0-9]+${AppVM.currency}`,
           }}
           label='Amount'
           value={paymentFormVM.Amount}
@@ -209,7 +210,7 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
                 inputProps={{
                   min: 0,
                   inputMode: "decimal",
-                  pattern: "^[0-9]*.?[0-9]*$",
+                  pattern: `^[0-9]*.?[0-9]*$${AppVM.currency}`,
                 }}
                 label={`${user?.firstName} ${user?.lastName}`}
                 InputLabelProps={{

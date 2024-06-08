@@ -150,7 +150,7 @@ const AssignmentItem = ({
         </ListItemAvatar>
         <ListItemText
           sx={{ textTransform: "capitalize" }}
-          primary={"$" + amount}
+          primary={AppVM.currency + amount}
           secondary={
             <>
               <Typography
@@ -217,7 +217,7 @@ const AssignmentItem = ({
               inputProps={{
                 min: 0,
                 inputMode: "decimal",
-                pattern: "^[0-9]*.?[0-9]+$",
+                pattern: `^[0-9]*.?[0-9]+${AppVM.currency}`,
               }}
               label='Amount'
               value={editAmount}

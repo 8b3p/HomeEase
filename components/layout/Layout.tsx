@@ -9,7 +9,7 @@ interface props {
 
 const Layout = ({ children }: props) => {
   return (
-    <Stack height="100%">
+    <Stack height="100%" maxWidth="1800px" marginX="auto">
       <Navbar />
       <Stack sx={{ overflowY: 'scroll' }} width="100%" height="100%">
         <Container sx={{ height: '-webkit-fill-available' }}>{children}</Container>

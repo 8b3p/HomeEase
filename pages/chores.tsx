@@ -104,7 +104,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
-  console.log(session?.user?.houseId)
   let [chores, choreAssignments, houseUsers] = await Promise.all([
     prisma.chore.findMany(),
     prisma.choreAssignment.findMany({

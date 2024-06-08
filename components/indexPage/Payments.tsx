@@ -4,10 +4,7 @@ import { Chore, ChoreAssignment, House, Payment, User } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useThemeVM } from "@/context/Contexts";
 import IndexPaymentItem from "@components/indexPage/PaymentItem";
-import { MarkAllPostBody } from "@/pages/api/houses/[houseId]/payments/markAll";
-import AppVM from "@/context/appVM";
 
 interface props {
   house: (House & {

@@ -94,6 +94,11 @@ const MyApp = (appProps: MyAppProps) => {
             >
               {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
               <CssBaseline />
+              {themeVM.themeType === "dark" ? (
+                <div id="background-image" />
+              ) : (
+                <div id="background-container" />
+              )}
               <Layout>
                 <Component {...pageProps} />
                 <Analytics />

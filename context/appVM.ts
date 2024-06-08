@@ -13,6 +13,7 @@ export interface HydrationData {
 }
 
 export default class AppVM {
+  public static currency = '₺';
   public isServer = typeof window === "undefined";
   public house: Partial<House & { users: User[] }> | null = null;
   public user: Session['user'] | null = null;

@@ -11,7 +11,7 @@ export default class ThemeVM {
     makeAutoObservable(this);
   }
 
-  // not working
+  // not working, UPDATE: i think it works? i dont remember but the website has theming so i think it works
   public hydrate = () => {
     if (this.isServer) return;
     this.themeType =
