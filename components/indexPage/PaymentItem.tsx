@@ -23,6 +23,17 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [payments, setPayments] = useState<Payment[] | undefined>(undefined);
   const { data: session } = useSession();
+
+  useEffect(() => {
+    // get user payments 
+    const fetchPayments = async () => {
+      const res = await fetch(`/api/users/${user.id}/payments?status=${Status.Pending}`, { headers: { contentType: "application/json", } });
+      const payments = (await res.json()).payments as Payment[];
+      setPayments(payments);
+    }
+    fetchPayments();
+  }, [user.id]);
+
   if (!session) return null;
 
   const handlePaymentsCheck = async (secondUserId: string) => {
@@ -44,16 +55,6 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    // get user payments 
-    const fetchPayments = async () => {
-      const res = await fetch(`/api/users/${user.id}/payments?status=${Status.Pending}`, { headers: { contentType: "application/json", } });
-      const payments = (await res.json()).payments as Payment[];
-      setPayments(payments);
-    }
-    fetchPayments();
-  }, [user.id]);
 
   return (
     <>
