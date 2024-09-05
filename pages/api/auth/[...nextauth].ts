@@ -49,12 +49,12 @@ export default NextAuth({
           throw new Error("Wrong email or password");
         } else {
           // Any object returned will be saved in `user` property of the JWT
-          let passwordVerified = verifyPassword({
+          let isPasswordCorrect = verifyPassword({
             password: credentials.password,
             hashedPassword: user.password,
             salt: user.salt,
           });
-          if (passwordVerified) {
+          if (isPasswordCorrect) {
             return getSafeUser(user) as User;
             // wrong password
           } else throw new Error("Wrong email or password");
@@ -86,7 +86,7 @@ export default NextAuth({
       let User = user as User;
       if (account?.type !== "credentials") return true;
       if (!User.emailVerified)
-        throw new Error("Email not verified. click to send verification link");
+        throw new Error("Email not verified.\n Please verify from the email sent to you, or click to send a new verification link");
       return true;
     },
     async session({ session, token, user }) {

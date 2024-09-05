@@ -16,10 +16,13 @@ const handler = async (
       const payments = await prisma.payment.findMany({
         where: {
           OR: [
-            { recipientId: session.user.id, payerId: userId, },
-            { payerId: session.user.id, recipientId: userId, },
+            { recipientId: session.user.id, payerId: userId },
+            { payerId: session.user.id, recipientId: userId },
           ],
           status: status,
+        },
+        orderBy: {
+          createdAt: "asc",
         },
       });
       return res.status(200).json({ payments });
