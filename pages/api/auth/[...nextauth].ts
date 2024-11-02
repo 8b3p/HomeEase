@@ -69,12 +69,6 @@ export default NextAuth({
         auth: {
           user: process.env.EMAIL_FROM,
           pass: process.env.EMAIL_PASSWORD,
-          // type: 'OAuth2',
-          // user: process.env.MAIL_USERNAME,
-          // pass: process.env.MAIL_PASSWORD,
-          // clientSecret: process.env.OAUTH_CLIENT_SECRET,
-          // clientId: process.env.OAUTH_CLIENTID,
-          // refreshToken: process.env.OAUTH_REFRESH_TOKEN
         },
       },
       from: process.env.EMAIL_FROM,

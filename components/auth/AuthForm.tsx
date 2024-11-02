@@ -7,23 +7,10 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
-import {
-  Button,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
+import { Button, CircularProgress, IconButton, InputAdornment, } from "@mui/material";
 
 interface props {
-  submit: <
-    T extends {
-      password: string;
-      email: string;
-      username?: { firstname: string; lastname: string };
-    }
-  >(
-    Args: T
-  ) => void;
+  submit: < T extends { password: string; email: string; username?: { firstname: string; lastname: string }; } >(Args: T) => void;
   resendAuthEmail?: (email: string) => void;
   loading?: boolean;
 }
@@ -288,19 +275,15 @@ const AuthForm = ({ submit, loading }: props) => {
                   ),
                 },
               }}
-              onKeyDown={e => {
-                if (e.key == "Enter") {
-                  submitHandler(e);
-                }
-              }}
+              onKeyDown={e => { if (e.key == "Enter") { submitHandler(e); } }}
               id='password'
-              onChange={e => {
-                setPasswordInput(e.target.value);
-              }}
-              onBlur={() => {
-                if (validate) validatePassword(passwordInput);
-              }}
+              onChange={e => { setPasswordInput(e.target.value); }}
+              onBlur={() => { if (validate) validatePassword(passwordInput); }}
             />
+            <Link href="/auth/forgotpassword" sx={{ textDecoration: "none", width: "100%" }}>
+              Forgot Password?
+            </Link>
+
           </div>
           <footer>
             {islogin ? (

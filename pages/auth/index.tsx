@@ -1,6 +1,5 @@
 import AuthForm from "@components/auth/AuthForm";
 import AppVM from "@context/appVM";
-import { useAppVM } from "@context/Contexts";
 import { onLogin, onRegister } from "@utils/apiService";
 import { Send } from "@mui/icons-material";
 import { Box, Grow } from "@mui/material";
