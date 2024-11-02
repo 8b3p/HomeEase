@@ -22,7 +22,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({ payments, users, sessio
   const [selectedUser, setSelectedUser] = useState<string | 'All'>('All');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [sortOption, setSortOption] = useState<string>('date-desc');
+  const [sortOption, setSortOption] = useState<string>('date-asc');
 
   // Filter payments based on search, status, user, and date range
   const filteredPayments = useMemo(() => {
