@@ -1,5 +1,5 @@
-import { useAppVM } from "@/context/Contexts";
-import { UserPutRequestBody } from "@/pages/api/users/[userId]";
+import { useAppVM } from "@context/Contexts";
+import { UserPutRequestBody } from "@pages/api/users/[userId]";
 import {
   Card,
   ListItem,
@@ -18,7 +18,7 @@ import UserName from "./UserName";
 import { useSession } from "next-auth/react";
 import { Box } from "@mui/material";
 import { CircularProgress } from "@mui/material";
-import AppVM from "@/context/appVM";
+import AppVM from "@context/appVM";
 
 interface props {
   session: Session;

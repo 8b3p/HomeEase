@@ -1,14 +1,18 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import Card from "@/components/UI/Card";
-import { styled } from '@mui/material/styles'
+import Card from "@components/UI/Card";
+import { styled } from "@mui/material/styles";
 import { Login, Visibility, VisibilityOff } from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
-import { LoadingButton } from "@mui/lab";
-import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 
 interface props {
   submit: <
@@ -31,7 +35,7 @@ export const StyledCard = styled(Card)(() => ({
   minHeight: "400px",
   maxWidth: "370px",
   maxHeight: "440px",
-}))
+}));
 
 export const StyledForm = styled("form")(() => ({
   alignSelf: "center",
@@ -65,14 +69,18 @@ export const StyledForm = styled("form")(() => ({
   "> footer > button": {
     marginBottom: "0.5rem",
   },
-}))
+}));
 
 const AuthForm = ({ submit, loading }: props) => {
   const [emailInput, setEmailInput] = React.useState<string | null>(null);
   const [passwordInput, setPasswordInput] = React.useState<string | null>(null);
-  const [firstnameInput, setFirstnameInput] = React.useState<string | null>(null);
+  const [firstnameInput, setFirstnameInput] = React.useState<string | null>(
+    null
+  );
   const [lastnameInput, setLastnameInput] = React.useState<string | null>(null);
-  const [firstnameError, setFirstnameError] = React.useState<string | null>(null);
+  const [firstnameError, setFirstnameError] = React.useState<string | null>(
+    null
+  );
   const [lastnameError, setLastnameError] = React.useState<string | null>(null);
   const [passwordError, setPasswordError] = React.useState<string | null>(null);
   const [emailError, setEmailError] = React.useState<string | null>(null);
@@ -205,10 +213,14 @@ const AuthForm = ({ submit, loading }: props) => {
   };
 
   return (
-    <Stack justifyContent="center" alignItems="center" sx={{ height: "100%", width: "100%" }}>
+    <Stack
+      justifyContent='center'
+      alignItems='center'
+      sx={{ height: "100%", width: "100%" }}
+    >
       <StyledCard>
         <StyledForm>
-          <Typography variant="h3">{islogin ? "Login" : "Signup"}</Typography>
+          <Typography variant='h3'>{islogin ? "Login" : "Signup"}</Typography>
           <div>
             {!islogin && (
               <>
@@ -258,24 +270,28 @@ const AuthForm = ({ submit, loading }: props) => {
               helperText={passwordError}
               label='Password'
               type={showPassword ? "text" : "password"}
-              onKeyDown={(e) => {
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={() => {
+                          setShowPassword(prev => !prev);
+                        }}
+                        onMouseDown={e => e.preventDefault()}
+                        edge='end'
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              onKeyDown={e => {
                 if (e.key == "Enter") {
                   submitHandler(e);
                 }
-              }}
-              InputProps={{
-                endAdornment: (
-                  < InputAdornment position="end" >
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => { setShowPassword(prev => !prev) }}
-                      onMouseDown={(e) => e.preventDefault()}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
               }}
               id='password'
               onChange={e => {
@@ -288,32 +304,36 @@ const AuthForm = ({ submit, loading }: props) => {
           </div>
           <footer>
             {islogin ? (
-              <LoadingButton
-                size="small"
+              <Button
+                size='small'
                 onClick={submitHandler}
                 //when enter is pressed, the button is clicked
                 endIcon={<Login />}
-                loading={loading}
-                loadingPosition="end"
-                variant="contained"
+                variant='contained'
                 sx={{ textTransform: "none" }}
               >
-                <span>Log In</span>
-              </LoadingButton>
+                {loading ? <CircularProgress size={24} /> : <span>Log In</span>}
+              </Button>
             ) : (
-              <LoadingButton
-                size="small"
+              <Button
+                size='small'
                 onClick={submitHandler}
                 endIcon={<Login />}
-                loading={loading}
-                loadingPosition="end"
-                variant="contained"
+                variant='contained'
                 sx={{ textTransform: "none" }}
               >
-                <span>Sign Up</span>
-              </LoadingButton>
+                {loading ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  <span>Sign Up</span>
+                )}
+              </Button>
             )}
-            <Link href='#' sx={{ textDecoration: "none" }} onClick={switchAuthModeHandler}>
+            <Link
+              href='#'
+              sx={{ textDecoration: "none" }}
+              onClick={switchAuthModeHandler}
+            >
               {islogin
                 ? "Dont have an account? Sign Up"
                 : "Already have an account? Login"}
@@ -321,7 +341,7 @@ const AuthForm = ({ submit, loading }: props) => {
           </footer>
         </StyledForm>
       </StyledCard>
-    </Stack >
+    </Stack>
   );
 };
 

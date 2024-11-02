@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { House, User } from "@prisma/client";
 

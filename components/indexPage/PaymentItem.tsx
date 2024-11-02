@@ -1,13 +1,24 @@
 import { Check, ArrowBackIosRounded } from "@mui/icons-material";
-import { Avatar, CircularProgress, Collapse, IconButton, List, ListItem, ListItemAvatar, ListItemText, Skeleton, Typography, } from "@mui/material";
+import {
+  Avatar,
+  CircularProgress,
+  Collapse,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { Payment, Status, User } from "@prisma/client";
 import { stringAvatar } from "@components/layout/Navbar/NavbarMenu";
 import { observer } from "mobx-react-lite";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useThemeVM } from "@/context/Contexts";
-import { MarkAllPostBody } from "@/pages/api/houses/[houseId]/payments/markAll";
-import AppVM from "@/context/appVM";
+import { useThemeVM } from "@context/Contexts";
+import { MarkAllPostBody } from "@pages/api/houses/[houseId]/payments/markAll";
+import AppVM from "@context/appVM";
 import { useEffect, useState } from "react";
 
 interface props {
@@ -25,12 +36,15 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    // get user payments 
+    // get user payments
     const fetchPayments = async () => {
-      const res = await fetch(`/api/users/${user.id}/payments?status=${Status.Pending}`, { headers: { contentType: "application/json", } });
+      const res = await fetch(
+        `/api/users/${user.id}/payments?status=${Status.Pending}`,
+        { headers: { contentType: "application/json" } }
+      );
       const payments = (await res.json()).payments as Payment[];
       setPayments(payments);
-    }
+    };
     fetchPayments();
   }, [user.id]);
 
@@ -58,7 +72,7 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
 
   return (
     <>
-      <ListItem alignItems="center" disablePadding key={user.id}>
+      <ListItem alignItems='center' disablePadding key={user.id}>
         <ListItemAvatar>
           <Avatar
             alt='Remy Sharp'
@@ -75,10 +89,14 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
               balance.amount === 0
                 ? ""
                 : balance.owe
-                  ? theme.palette.error.light
-                  : theme.palette.success.main,
+                ? theme.palette.error.light
+                : theme.palette.success.main,
           })}
-          primary={<Typography fontSize="1.2rem">{AppVM.currency + balance.amount}</Typography>}
+          primary={
+            <Typography fontSize='1.2rem'>
+              {AppVM.currency + balance.amount}
+            </Typography>
+          }
           secondary={
             <Typography
               sx={{ display: "inline", textTransform: "capitalize" }}
@@ -89,8 +107,8 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
               {balance.amount === 0
                 ? `${user.firstName} ${user.lastName} is all good`
                 : balance.owe
-                  ? `You owe ${user.firstName} ${user.lastName}`
-                  : `${user.firstName} ${user.lastName} owes you`}
+                ? `You owe ${user.firstName} ${user.lastName}`
+                : `${user.firstName} ${user.lastName} owes you`}
             </Typography>
           }
         />
@@ -116,48 +134,70 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
         >
           <ArrowBackIosRounded
             color='info'
-            sx={{ ...(expanded ? { transform: "rotate(90deg)" } : { transform: "rotate(-90deg)" }), transition: "transform 0.2s", color: "gray" }}
-            fontSize="small"
+            sx={{
+              ...(expanded
+                ? { transform: "rotate(90deg)" }
+                : { transform: "rotate(-90deg)" }),
+              transition: "transform 0.2s",
+              color: "gray",
+            }}
+            fontSize='small'
           />
         </IconButton>
-      </ListItem >
-      <Collapse in={expanded} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
-        <List component="div" disablePadding>
-          {payments && payments.length ? payments.map(payment => (
-            <ListItem key={payment.id} onDoubleClick={() => { router.replace(`/payments?d=${payment.createdAt.toString().split("T")[0]}`) }} sx={{ cursor: "pointer" }}>
-              <>
-                <ListItemText
-                  sx={theme => ({
-                    color: payment.payerId === session.user.id ?
-                      theme.palette.error.light :
-                      theme.palette.success.main,
-                  })}
-                  primary={AppVM.currency + payment.amount}
-                  secondary={
-                    <Typography
-                      sx={{ display: "inline", textTransform: "capitalize" }}
-                      component='span'
-                      variant='body2'
-                      color='text.secondary'
-                    >
-                      {payment.description}
-                    </Typography>
-                  }
-                />
-                <Typography
-                  sx={{ display: "inline", textTransform: "capitalize" }}
-                  component='span'
-                  variant='body2'
-                  color='text.secondary'
-                >
-                  {new Date(payment.createdAt).toLocaleDateString()}
-                </Typography>
-              </>
-            </ListItem>
-          )) : payments ? (
+      </ListItem>
+      <Collapse
+        in={expanded}
+        timeout='auto'
+        unmountOnExit
+        sx={{ width: "100%" }}
+      >
+        <List component='div' disablePadding>
+          {payments && payments.length ? (
+            payments.map(payment => (
+              <ListItem
+                key={payment.id}
+                onDoubleClick={() => {
+                  router.replace(
+                    `/payments?d=${payment.createdAt.toString().split("T")[0]}`
+                  );
+                }}
+                sx={{ cursor: "pointer" }}
+              >
+                <>
+                  <ListItemText
+                    sx={theme => ({
+                      color:
+                        payment.payerId === session.user.id
+                          ? theme.palette.error.light
+                          : theme.palette.success.main,
+                    })}
+                    primary={AppVM.currency + payment.amount}
+                    secondary={
+                      <Typography
+                        sx={{ display: "inline", textTransform: "capitalize" }}
+                        component='span'
+                        variant='body2'
+                        color='text.secondary'
+                      >
+                        {payment.description}
+                      </Typography>
+                    }
+                  />
+                  <Typography
+                    sx={{ display: "inline", textTransform: "capitalize" }}
+                    component='span'
+                    variant='body2'
+                    color='text.secondary'
+                  >
+                    {new Date(payment.createdAt).toLocaleDateString()}
+                  </Typography>
+                </>
+              </ListItem>
+            ))
+          ) : payments ? (
             // no payments
             <ListItem>
-              <ListItemText primary="No payments" />
+              <ListItemText primary='No payments' />
             </ListItem>
           ) : (
             // loading, show loading skeleton
@@ -166,25 +206,55 @@ const IndexPaymentItem = ({ user, balance, houseId }: props) => {
                 <ListItemText
                   sx={{ display: "flex", flexDirection: "column", gap: 1 }}
                   primary={
-                    <Skeleton variant="rectangular" height={20} width={80} sx={{ borderRadius: '5px' }} />
+                    <Skeleton
+                      variant='rectangular'
+                      height={20}
+                      width={80}
+                      sx={{ borderRadius: "5px" }}
+                    />
                   }
                   secondary={
-                    <Skeleton variant="rectangular" height={16} width={150} sx={{ borderRadius: '5px' }} />
+                    <Skeleton
+                      variant='rectangular'
+                      height={16}
+                      width={150}
+                      sx={{ borderRadius: "5px" }}
+                    />
                   }
                 />
-                <Skeleton variant="rectangular" height={16} width={100} sx={{ borderRadius: '5px' }} />
+                <Skeleton
+                  variant='rectangular'
+                  height={16}
+                  width={100}
+                  sx={{ borderRadius: "5px" }}
+                />
               </ListItem>
               <ListItem>
                 <ListItemText
                   sx={{ display: "flex", flexDirection: "column", gap: 1 }}
                   primary={
-                    <Skeleton variant="rectangular" height={20} width={80} sx={{ borderRadius: '5px' }} />
+                    <Skeleton
+                      variant='rectangular'
+                      height={20}
+                      width={80}
+                      sx={{ borderRadius: "5px" }}
+                    />
                   }
                   secondary={
-                    <Skeleton variant="rectangular" height={16} width={150} sx={{ borderRadius: '5px' }} />
+                    <Skeleton
+                      variant='rectangular'
+                      height={16}
+                      width={150}
+                      sx={{ borderRadius: "5px" }}
+                    />
                   }
                 />
-                <Skeleton variant="rectangular" height={16} width={100} sx={{ borderRadius: '5px' }} />
+                <Skeleton
+                  variant='rectangular'
+                  height={16}
+                  width={100}
+                  sx={{ borderRadius: "5px" }}
+                />
               </ListItem>
             </>
           )}

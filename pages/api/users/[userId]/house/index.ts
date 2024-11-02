@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/utils/PrismaClient";
-import { corsMW, authMW } from "@/utils/middleware";
+import prisma from "@utils/PrismaClient";
+import { corsMW, authMW } from "@utils/middleware";
 import { Session } from "next-auth";
 
 const handler = async (

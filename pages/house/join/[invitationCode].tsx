@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import prisma from "@/utils/PrismaClient";
+import prisma from "@utils/PrismaClient";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
-import { useAppVM } from "@/context/Contexts";
+import { useAppVM } from "@context/Contexts";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Button, LinearProgress } from "@mui/material";
 import { Stack } from "@mui/system";
-import AppVM from "@/context/appVM";
+import AppVM from "@context/appVM";
 
 interface props {
   house?: { id: string; name: string };

@@ -1,17 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/utils/PrismaClient";
-import { corsMW, authMW } from "@/utils/middleware";
+import prisma from "@utils/PrismaClient";
+import { corsMW, authMW } from "@utils/middleware";
 import { Session } from "next-auth";
-import { hashPassword } from "@/utils/passwordCrypt";
+import { hashPassword } from "@utils/passwordCrypt";
 
 export interface UserPutRequestBody {
   name?: {
-    firstname: string,
-    lastname: string
-  }
+    firstname: string;
+    lastname: string;
+  };
   password?: {
-    oldPassword?: string,
-    newPassword: string
+    oldPassword?: string;
+    newPassword: string;
   };
 }
 
@@ -39,9 +39,11 @@ const handler = async (
     }
   } else if (req.method === "PUT" || req.method === "PATCH") {
     const userId = req.query.userId as string;
-    if (userId !== session.user.id) return res.status(401).json({ message: "Unauthorized" });
+    if (userId !== session.user.id)
+      return res.status(401).json({ message: "Unauthorized" });
     const { name, password } = req.body as UserPutRequestBody;
-    if (!name && !password) return res.status(400).json({ message: "Bad Request" });
+    if (!name && !password)
+      return res.status(400).json({ message: "Bad Request" });
     try {
       /*
        let oldHashedPassword, newHashedPassword, newSalt;
@@ -56,9 +58,13 @@ const handler = async (
 
       let newHashedPassword, newSalt;
       if (password) {
-        const { hashedPassword: a, salt: b } = hashPassword(password.newPassword); newHashedPassword = a; newSalt = b
+        const { hashedPassword: a, salt: b } = hashPassword(
+          password.newPassword
+        );
+        newHashedPassword = a;
+        newSalt = b;
       }
-      
+
       const user = await prisma.user.update({
         where: {
           id: session.user.id,
@@ -67,7 +73,7 @@ const handler = async (
           firstName: name?.firstname,
           lastName: name?.lastname,
           password: newHashedPassword,
-          salt: newSalt
+          salt: newSalt,
         },
         select: {
           id: true,
@@ -75,8 +81,8 @@ const handler = async (
           lastName: true,
           houseId: true,
           email: true,
-        }
-      })
+        },
+      });
       return res.status(200).json({ user });
     } catch (error) {
       console.error(error);

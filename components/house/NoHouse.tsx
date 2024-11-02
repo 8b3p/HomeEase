@@ -1,7 +1,8 @@
-import { useAppVM } from "@/context/Contexts";
+import { useAppVM } from "@context/Contexts";
 import { Add, Check } from "@mui/icons-material";
 import {
   Box,
+  Button,
   CircularProgress,
   Stack,
   Tab,
@@ -10,11 +11,10 @@ import {
   Typography,
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { ElementType, useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
-import LoadingButton from "@mui/lab/LoadingButton";
-import AppVM from "@/context/appVM";
+import AppVM from "@context/appVM";
 
 interface props {
   title?: boolean;
@@ -130,21 +130,23 @@ const NoHouse = ({ title }: props) => {
 
   return (
     <Stack
-      height={title ? "100%" : "fit-content"}
       alignItems='center'
       justifyContent='start'
       paddingBottom={4}
-      paddingTop={isSmallScreen ? 0 : 4}
       gap={4}
+      paddingTop={isSmallScreen ? 0 : 4}
+      height={title ? "100%" : "fit-content"}
     >
       {title && (
         <Typography variant={isSmallScreen ? "h5" : "h4"}>
-          You are not part of a house
+          {" "}
+          You are not part of a house{" "}
         </Typography>
       )}
       {loading ? (
         <Box sx={{ paddingTop: "3rem" }}>
-          <CircularProgress />
+          {" "}
+          <CircularProgress />{" "}
         </Box>
       ) : (
         <Stack>
@@ -168,7 +170,7 @@ const NoHouse = ({ title }: props) => {
                 error={inputError ? true : false}
                 helperText={inputError}
                 label='House Name'
-                inputProps={{ maxLength: 20, minLength: 3 }}
+                slotProps={{ htmlInput: { maxLength: 20, minLength: 3 } }}
                 type='text'
                 id='houseName'
                 onChange={e => {
@@ -178,15 +180,14 @@ const NoHouse = ({ title }: props) => {
                   if (inputError) validateHouseName(newName);
                 }}
               />
-              <LoadingButton
-                loading={creating}
+              <Button
                 variant='contained'
                 onClick={() => {
                   createHouse();
                 }}
               >
-                <Add />
-              </LoadingButton>
+                {creating ? <CircularProgress size={24} /> : <Add />}
+              </Button>
             </Stack>
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
@@ -196,12 +197,12 @@ const NoHouse = ({ title }: props) => {
               alignItems={isSmallScreen ? "stretch" : ""}
             >
               <TextField
-                error={codeInputError ? true : false}
-                helperText={codeInputError}
                 label='Invitation Code'
-                inputProps={{ maxLength: 6, minLength: 6 }}
                 type='text'
                 id='houseName'
+                helperText={codeInputError}
+                error={codeInputError ? true : false}
+                slotProps={{ htmlInput: { maxLength: 6, minLength: 6 } }}
                 onChange={e => {
                   setHouseCode(e.target.value);
                 }}
@@ -209,8 +210,7 @@ const NoHouse = ({ title }: props) => {
                   if (codeInputError) validateInvitationCode(houseCode);
                 }}
               />
-              <LoadingButton
-                loading={creating}
+              <Button
                 variant='contained'
                 onClick={() => {
                   if (validateInvitationCode(houseCode)) {
@@ -218,8 +218,8 @@ const NoHouse = ({ title }: props) => {
                   }
                 }}
               >
-                <Check />
-              </LoadingButton>
+                {creating ? <CircularProgress size={24} /> : <Check />}
+              </Button>
             </Stack>
           </TabPanel>
         </Stack>

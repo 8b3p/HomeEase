@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { House, User } from "@prisma/client";
 
@@ -29,9 +29,9 @@ const handler = async (
             firstName: true,
             lastName: true,
             email: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
     res.status(200).json({ choreAssignments });
   } else if (req.method === "POST") {
@@ -64,9 +64,9 @@ const handler = async (
             firstName: true,
             lastName: true,
             email: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
     res.status(200).json({ choreAssignment });
   } else {

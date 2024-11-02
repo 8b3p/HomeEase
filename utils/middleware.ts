@@ -1,7 +1,7 @@
 import Cors from "cors";
 import { NextApiResponse, NextApiRequest } from "next";
 import { Session } from "next-auth";
-import prisma from "@/utils/PrismaClient";
+import prisma from "@utils/PrismaClient";
 import { getSession } from "next-auth/react";
 import isValidObjectId from "./isValidObjectId";
 import { safeUser } from "./safeUser";
@@ -27,7 +27,9 @@ export function corsMW(handler: any) {
 // middleware to check if user is authenticated
 export function authMW(handler: any) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const session = await getSession({ req: { method: 'GET', headers: req.headers } });
+    const session = await getSession({
+      req: { method: "GET", headers: req.headers },
+    });
     if (!session) {
       return res.status(401).json({ message: "Not a authorized" });
     }
@@ -60,7 +62,7 @@ export function isPartOfHouse(handler: any) {
             email: true,
           },
         },
-      }
+      },
     });
     if (house === null)
       return res.status(404).json({ message: "House not found" });

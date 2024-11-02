@@ -15,15 +15,20 @@ import {
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { observer } from "mobx-react-lite";
-import PaymentFormVM from "@/context/PaymentFormVM";
-import AppVM from "@/context/appVM";
+import PaymentFormVM from "@context/PaymentFormVM";
+import AppVM from "@context/appVM";
 
-interface props { paymentFormVM: PaymentFormVM }
+interface props {
+  paymentFormVM: PaymentFormVM;
+}
 
 const PaymentInputs = ({ paymentFormVM }: props) => {
   const router = useRouter();
   const { data: session } = useSession();
-  if (!session) { router.push('/'); return null; }
+  if (!session) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <>
@@ -53,7 +58,6 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
         onChange={e => {
           paymentFormVM.Description = e.target.value;
           paymentFormVM.DescriptionError = "";
-
         }}
         error={paymentFormVM.DescriptionError !== ""}
         helperText={paymentFormVM.DescriptionError}
@@ -88,14 +92,23 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
                 key={selected}
                 label={
                   <Typography sx={{ textTransform: "capitalize" }}>
-                    {paymentFormVM.Users.find(user => user.id === selected)?.firstName} {paymentFormVM.Users.find(user => user.id === selected)?.lastName}
+                    {
+                      paymentFormVM.Users.find(user => user.id === selected)
+                        ?.firstName
+                    }{" "}
+                    {
+                      paymentFormVM.Users.find(user => user.id === selected)
+                        ?.lastName
+                    }
                   </Typography>
                 }
               />
             </Box>
           )}
           onChange={e => {
-            const { target: { value }, } = e;
+            const {
+              target: { value },
+            } = e;
             paymentFormVM.RecipientId = value;
             paymentFormVM.RecipientIdError = "";
           }}
@@ -103,8 +116,16 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
         >
           {paymentFormVM.Users.map(user => {
             return (
-              <MenuItem key={user.id} value={user.id} sx={{ textTransform: "capitalize" }} >
-                <Stack direction='row' justifyContent='space-between' width='100%' >
+              <MenuItem
+                key={user.id}
+                value={user.id}
+                sx={{ textTransform: "capitalize" }}
+              >
+                <Stack
+                  direction='row'
+                  justifyContent='space-between'
+                  width='100%'
+                >
                   <Typography>
                     {user.firstName} {user.lastName}
                   </Typography>
@@ -113,7 +134,11 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
             );
           })}
         </Select>
-        {paymentFormVM.RecipientIdError !== "" && (<FormHelperText error>{paymentFormVM.RecipientIdError}</FormHelperText>)}
+        {paymentFormVM.RecipientIdError !== "" && (
+          <FormHelperText error>
+            {paymentFormVM.RecipientIdError}
+          </FormHelperText>
+        )}
       </FormControl>
       <FormControl error={paymentFormVM.PayersIdError !== ""}>
         <InputLabel required id='payers-select-id'>
@@ -128,7 +153,9 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
           renderValue={selected => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map(value => {
-                const user = paymentFormVM.Users.find(user => user.id === value);
+                const user = paymentFormVM.Users.find(
+                  user => user.id === value
+                );
                 return (
                   <Chip
                     key={value}
@@ -146,13 +173,20 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
             const {
               target: { value },
             } = e;
-            paymentFormVM.PayersId = (typeof value === "string" ? value.split(",") : value);
+            paymentFormVM.PayersId =
+              typeof value === "string" ? value.split(",") : value;
             const payerIds =
               typeof value === "string" ? value.split(",") : value;
             if (paymentFormVM.IsSeparate) {
               paymentFormVM.CustomAmounts = payerIds.reduce((acc, payerId) => {
-                if (paymentFormVM.CustomAmounts[payerId] && paymentFormVM.CustomAmounts[payerId] > 0) {
-                  return { ...acc, [payerId]: paymentFormVM.CustomAmounts[payerId] };
+                if (
+                  paymentFormVM.CustomAmounts[payerId] &&
+                  paymentFormVM.CustomAmounts[payerId] > 0
+                ) {
+                  return {
+                    ...acc,
+                    [payerId]: paymentFormVM.CustomAmounts[payerId],
+                  };
                 } else {
                   return { ...acc, [payerId]: 0 };
                 }
@@ -164,33 +198,61 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
         >
           {paymentFormVM.Users.map(user => {
             return (
-              <MenuItem key={user.id} value={user.id} sx={{ textTransform: "capitalize" }}>
-                <Stack direction='row' justifyContent='space-between' width='100%'>
+              <MenuItem
+                key={user.id}
+                value={user.id}
+                sx={{ textTransform: "capitalize" }}
+              >
+                <Stack
+                  direction='row'
+                  justifyContent='space-between'
+                  width='100%'
+                >
                   <Typography>
                     {user.firstName} {user.lastName}
                   </Typography>
-                  {paymentFormVM.PayersId.indexOf(user.id!) > -1 && !paymentFormVM.IsSeparate ? (
-                    <Typography>{((paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toFixed(2)}</Typography>
+                  {paymentFormVM.PayersId.indexOf(user.id!) > -1 &&
+                  !paymentFormVM.IsSeparate ? (
+                    <Typography>
+                      {(
+                        (paymentFormVM.Amount || 0) /
+                        paymentFormVM.PayersId.length
+                      ).toFixed(2)}
+                    </Typography>
                   ) : (
-                    <Typography>{paymentFormVM.CustomAmounts[user.id!]}</Typography>
+                    <Typography>
+                      {paymentFormVM.CustomAmounts[user.id!]}
+                    </Typography>
                   )}
                 </Stack>
               </MenuItem>
             );
           })}
         </Select>
-        {paymentFormVM.PayersIdError !== "" && (<FormHelperText error>{paymentFormVM.PayersIdError}</FormHelperText>)}
+        {paymentFormVM.PayersIdError !== "" && (
+          <FormHelperText error>{paymentFormVM.PayersIdError}</FormHelperText>
+        )}
       </FormControl>
       <FormControlLabel
         control={
           <Switch
             checked={paymentFormVM.IsSeparate}
             onChange={e => {
-              if (!e.target.checked) { paymentFormVM.CustomAmounts = {}; } else {
-                paymentFormVM.CustomAmounts = paymentFormVM.PayersId.reduce((acc, payerId) => ({
-                  ...acc,
-                  [payerId]: parseInt(((paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toString()),
-                }), {})
+              if (!e.target.checked) {
+                paymentFormVM.CustomAmounts = {};
+              } else {
+                paymentFormVM.CustomAmounts = paymentFormVM.PayersId.reduce(
+                  (acc, payerId) => ({
+                    ...acc,
+                    [payerId]: parseInt(
+                      (
+                        (paymentFormVM.Amount || 0) /
+                        paymentFormVM.PayersId.length
+                      ).toString()
+                    ),
+                  }),
+                  {}
+                );
               }
               paymentFormVM.IsSeparate = e.target.checked;
             }}
@@ -222,8 +284,14 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
                   const {
                     target: { value },
                   } = e;
-                  paymentFormVM.CustomAmounts = { ...paymentFormVM.CustomAmounts, [payerId]: parseFloat(value || "0"), }
-                  paymentFormVM.CustomAmountsError = { ...paymentFormVM.CustomAmountsError, [payerId]: "", }
+                  paymentFormVM.CustomAmounts = {
+                    ...paymentFormVM.CustomAmounts,
+                    [payerId]: parseFloat(value || "0"),
+                  };
+                  paymentFormVM.CustomAmountsError = {
+                    ...paymentFormVM.CustomAmountsError,
+                    [payerId]: "",
+                  };
                 }}
                 error={
                   paymentFormVM.CustomAmountsError[payerId] !== undefined &&
@@ -238,8 +306,10 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
             Total:{" "}
             {Object.values(paymentFormVM.CustomAmounts).length
               ? Object.keys(paymentFormVM.CustomAmounts).reduce((acc, key) => {
-                if (key === paymentFormVM.RecipientId) return acc; return acc += paymentFormVM.CustomAmounts[key]
-              }, 0) : 0}
+                  if (key === paymentFormVM.RecipientId) return acc;
+                  return (acc += paymentFormVM.CustomAmounts[key]);
+                }, 0)
+              : 0}
           </Typography>
         </Stack>
       )}
@@ -247,4 +317,4 @@ const PaymentInputs = ({ paymentFormVM }: props) => {
   );
 };
 
-export default observer(PaymentInputs)
+export default observer(PaymentInputs);

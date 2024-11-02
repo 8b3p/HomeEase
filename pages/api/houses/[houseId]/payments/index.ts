@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { House, Status, User } from "@prisma/client";
-import isValidObjectId from "@/utils/isValidObjectId";
+import isValidObjectId from "@utils/isValidObjectId";
 
 export interface PaymentPostBody {
   amount: number;
@@ -25,8 +25,8 @@ const handler = async (
       where: {
         OR: [
           { payerId: session?.user?.id },
-          { recipientId: session?.user?.id }
-        ]
+          { recipientId: session?.user?.id },
+        ],
       },
       include: {
         Payer: {
@@ -34,16 +34,16 @@ const handler = async (
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
         Recipient: {
           select: {
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
       },
     });
@@ -54,26 +54,34 @@ const handler = async (
       if (!isValidObjectId(payerId) || !isValidObjectId(recipientId))
         return res.status(400).json({ message: "Invalid user id" });
       if (payerId === recipientId)
-        return res.status(400).json({ message: "Payer and recipient cannot be the same" });
+        return res
+          .status(400)
+          .json({ message: "Payer and recipient cannot be the same" });
       if (isNaN(amount))
         return res.status(400).json({ message: "Amount must be a number" });
       if (amount <= 0)
-        return res.status(400).json({ message: "Amount must be greater than 0" });
-    })
+        return res
+          .status(400)
+          .json({ message: "Amount must be greater than 0" });
+    });
     const batchCreate = await prisma.payment.createMany({
-      data: bodies.map(({ payerId, recipientId, amount, createdAt, description }) => {
-        return {
-          houseId: house.id,
-          amount: parseFloat(amount.toFixed(2)),
-          status: Status.Pending,
-          payerId: payerId,
-          recipientId: recipientId,
-          createdAt: createdAt,
-          description: description
+      data: bodies.map(
+        ({ payerId, recipientId, amount, createdAt, description }) => {
+          return {
+            houseId: house.id,
+            amount: parseFloat(amount.toFixed(2)),
+            status: Status.Pending,
+            payerId: payerId,
+            recipientId: recipientId,
+            createdAt: createdAt,
+            description: description,
+          };
         }
-      })
-    })
-    res.status(200).json({ ...batchCreate, message: "Payments created successfully" });
+      ),
+    });
+    res
+      .status(200)
+      .json({ ...batchCreate, message: "Payments created successfully" });
   } else {
     res.status(405).json({ message: "Method not allowed" });
   }

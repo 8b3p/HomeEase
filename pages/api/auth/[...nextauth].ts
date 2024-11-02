@@ -3,8 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import prisma from "utils/PrismaClient";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { verifyPassword } from "@/utils/passwordCrypt";
-import { getSafeUser } from "@/utils/safeUser";
+import { verifyPassword } from "@utils/passwordCrypt";
+import { getSafeUser } from "@utils/safeUser";
 import { User } from "@prisma/client";
 
 export default NextAuth({
@@ -13,10 +13,10 @@ export default NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: '/auth',
-    signOut: '/auth',
-    verifyRequest: '/auth', // (used for check email message)
-    newUser: '/auth' // New users will be directed here on first sign in (leave the property out if not of interest)
+    signIn: "/auth",
+    signOut: "/auth",
+    verifyRequest: "/auth", // (used for check email message)
+    newUser: "/auth", // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   debug: true,
   providers: [
@@ -58,14 +58,13 @@ export default NextAuth({
             return getSafeUser(user) as User;
             // wrong password
           } else throw new Error("Wrong email or password");
-          ;
         }
       },
     }),
     EmailProvider({
       server: {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
+        service: "gmail",
+        host: "smtp.gmail.com",
         secure: false,
         auth: {
           user: process.env.EMAIL_FROM,
@@ -76,7 +75,7 @@ export default NextAuth({
           // clientSecret: process.env.OAUTH_CLIENT_SECRET,
           // clientId: process.env.OAUTH_CLIENTID,
           // refreshToken: process.env.OAUTH_REFRESH_TOKEN
-        }
+        },
       },
       from: process.env.EMAIL_FROM,
     }),
@@ -86,23 +85,29 @@ export default NextAuth({
       let User = user as User;
       if (account?.type !== "credentials") return true;
       if (!User.emailVerified)
-        throw new Error("Email not verified.\n Please verify from the email sent to you, or click to send a new verification link");
+        throw new Error(
+          "Email not verified.\n Please verify from the email sent to you, or click to send a new verification link"
+        );
       return true;
     },
     async session({ session, token, user }) {
       const userWithHouse = await prisma.user.findUnique({
-        where: { id: <string>token.id, },
-        include: { House: true, },
+        where: { id: <string>token.id },
+        include: { House: true },
       });
       if (session.user && token.id) {
-        const capFN = userWithHouse!.firstName[0].toUpperCase() + userWithHouse?.firstName.slice(1);
-        const capLN = userWithHouse!.lastName[0].toUpperCase() + userWithHouse?.lastName.slice(1);
+        const capFN =
+          userWithHouse!.firstName[0].toUpperCase() +
+          userWithHouse?.firstName.slice(1);
+        const capLN =
+          userWithHouse!.lastName[0].toUpperCase() +
+          userWithHouse?.lastName.slice(1);
         session.user = {
           ...user,
           email: userWithHouse?.email,
           name: `${capFN} ${capLN}`,
           id: <string>token.id,
-          houseId: userWithHouse?.houseId || undefined
+          houseId: userWithHouse?.houseId || undefined,
         };
       }
       return session;

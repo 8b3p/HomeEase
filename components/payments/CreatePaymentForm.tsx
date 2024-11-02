@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
-import { Stack, Typography, Button, Drawer, CircularProgress, useMediaQuery, IconButton, } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Button,
+  Drawer,
+  CircularProgress,
+  useMediaQuery,
+  IconButton,
+} from "@mui/material";
 import { Status, User } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { Add } from "@mui/icons-material";
-import { PaymentPostBody } from "@/pages/api/houses/[houseId]/payments";
-import AppVM from "@/context/appVM";
+import { PaymentPostBody } from "@pages/api/houses/[houseId]/payments";
+import AppVM from "@context/appVM";
 import PaymentInputs from "./PaymentInputs";
-import { useAppVM } from "@/context/Contexts";
-import PaymentFormVM from "@/context/PaymentFormVM";
+import { useAppVM } from "@context/Contexts";
+import PaymentFormVM from "@context/PaymentFormVM";
 import { Session } from "next-auth";
 
 interface props {
   users: Partial<User>[];
   houseId: string;
-  defaultDate: Date;
   isIcon?: boolean;
   session: Session;
   variant?: "text" | "outlined" | "contained";
@@ -23,21 +30,24 @@ interface props {
 const CreatePaymentForm = ({
   users,
   houseId,
-  defaultDate,
   isIcon,
   session,
   variant = "outlined",
 }: props) => {
   const appVM = useAppVM();
   const router = useRouter();
-  const [paymentFormVM, setPaymentFormVM] = useState<PaymentFormVM | null>(null);
+  const [paymentFormVM, setPaymentFormVM] = useState<PaymentFormVM | null>(
+    null
+  );
   const isMobile = useMediaQuery("(max-width: 600px)");
   const [isAssignPanelOpen, setAssignPanelOpen] = useState(false);
 
   useEffect(() => {
     if (isAssignPanelOpen) return;
-    setPaymentFormVM(appVM.newPaymentForm(users, houseId, defaultDate, session.user))
-  }, [isAssignPanelOpen, defaultDate])
+    setPaymentFormVM(
+      appVM.newPaymentForm(users, houseId, new Date(Date.now()), session.user)
+    );
+  }, [isAssignPanelOpen, appVM, users, houseId, session.user]);
 
   if (!paymentFormVM) return null;
 
@@ -67,14 +77,22 @@ const CreatePaymentForm = ({
       paymentFormVM.DescriptionError = "";
     }
     if (paymentFormVM.IsSeparate) {
-      Object.entries(paymentFormVM.CustomAmounts).forEach(([userId, amount]) => {
-        if (amount <= 0) {
-          paymentFormVM.CustomAmountsError = { ...paymentFormVM.CustomAmountsError, [userId]: "Amount must be greater than 0", };
-          isValid = false;
-        } else {
-          paymentFormVM.CustomAmountsError = { ...paymentFormVM.CustomAmountsError, [userId]: "" };
+      Object.entries(paymentFormVM.CustomAmounts).forEach(
+        ([userId, amount]) => {
+          if (amount <= 0) {
+            paymentFormVM.CustomAmountsError = {
+              ...paymentFormVM.CustomAmountsError,
+              [userId]: "Amount must be greater than 0",
+            };
+            isValid = false;
+          } else {
+            paymentFormVM.CustomAmountsError = {
+              ...paymentFormVM.CustomAmountsError,
+              [userId]: "",
+            };
+          }
         }
-      });
+      );
     } else {
       if (paymentFormVM.Amount <= 0) {
         paymentFormVM.AmountError = "Amount must be greater than 0";
@@ -96,16 +114,24 @@ const CreatePaymentForm = ({
     if (!validateInputs()) return;
     // Perform payment creation logic here
     paymentFormVM.IsLoading = true;
-    const bodies: PaymentPostBody[] = paymentFormVM.PayersId
-      .filter(id => id !== paymentFormVM.RecipientId)
-      .map(payerId => ({
-        amount: parseFloat((paymentFormVM.IsSeparate ? paymentFormVM.CustomAmounts[payerId] : (paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length).toFixed(2)),
+    const bodies: PaymentPostBody[] = paymentFormVM.PayersId.filter(
+      id => id !== paymentFormVM.RecipientId
+    ).map(
+      payerId =>
+      ({
+        amount: parseFloat(
+          (paymentFormVM.IsSeparate
+            ? paymentFormVM.CustomAmounts[payerId]
+            : (paymentFormVM.Amount || 0) / paymentFormVM.PayersId.length
+          ).toFixed(2)
+        ),
         payerId,
         description: paymentFormVM.Description,
         status: Status.Pending,
         recipientId: paymentFormVM.RecipientId,
         createdAt: new Date(paymentFormVM.PaymentDate),
-      } as PaymentPostBody));
+      } as PaymentPostBody)
+    );
     const res = await fetch(`/api/houses/${houseId}/payments`, {
       method: "POST",
       headers: {
@@ -140,9 +166,21 @@ const CreatePaymentForm = ({
       )}
       {/* Create Payment Panel */}
       <Drawer anchor='right' open={isAssignPanelOpen}>
-        <Stack justifyContent='space-between' alignItems='stretch' width={375} maxWidth='100vw' padding={3} height='100%'>
+        <Stack
+          justifyContent='space-between'
+          alignItems='stretch'
+          width={375}
+          maxWidth='100vw'
+          padding={3}
+          height='100%'
+        >
           {paymentFormVM.IsLoading ? (
-            <Stack width='100%' height='100%' justifyContent='center' alignItems='center' >
+            <Stack
+              width='100%'
+              height='100%'
+              justifyContent='center'
+              alignItems='center'
+            >
               <CircularProgress />
             </Stack>
           ) : (
@@ -152,16 +190,26 @@ const CreatePaymentForm = ({
             </Stack>
           )}
           <Stack direction='row' spacing={1}>
-            <Button variant='contained' onClick={handleCreatePayment} fullWidth disabled={paymentFormVM.IsLoading}>
+            <Button
+              variant='contained'
+              onClick={handleCreatePayment}
+              fullWidth
+              disabled={paymentFormVM.IsLoading}
+            >
               Submit
             </Button>
-            <Button variant='outlined' onClick={toggleAssignPanel} fullWidth disabled={paymentFormVM.IsLoading}>
+            <Button
+              variant='outlined'
+              onClick={toggleAssignPanel}
+              fullWidth
+              disabled={paymentFormVM.IsLoading}
+            >
               Cancel
             </Button>
           </Stack>
         </Stack>
-      </Drawer >
-    </Stack >
+      </Drawer>
+    </Stack>
   );
 };
 

@@ -1,272 +1,118 @@
-import { useAppVM } from "@/context/Contexts";
-import AppVM from "@/context/appVM";
-import { PaymentIdPutBody } from "@/pages/api/houses/[houseId]/payments/[paymentId]";
-import { Check, Close, Edit } from "@mui/icons-material";
-import {
-  Avatar,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import AppVM from "@context/appVM";
+import { PaymentIdPutBody } from "@pages/api/houses/[houseId]/payments/[paymentId]";
+import { Stack, useTheme, } from "@mui/material";
 import { Status, User } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import PaymentDetails from "./PaymentDetails";
+import PaymentActions from "./PaymentActions";
+import EditPaymentDialog from "./EditPaymentDialog";
 
-interface ItemProps {
-  amount: number;
-  description: string;
-  user: Partial<User>;
-  paymentId: string;
-  redirectPath: string;
-  type: "OutgoingPending" | "IncomingPending" | "Complete" | "Cancelled";
-  session: Session;
+interface props {
+  amount: number; description: string; user: Partial<User>; paymentId: string; redirectPath: string;
+  direction: "Outgoing" | "Incoming"; status: Status; date: Date; isLast: boolean; session: Session;
 }
 
-const AssignmentItem = ({
-  amount,
-  user,
-  paymentId,
-  type,
-  session,
-  description,
-  redirectPath,
-}: ItemProps) => {
+const PaymentItem = ({ amount, description, user, paymentId, direction, status, date, isLast, session, redirectPath, }: props) => {
   const router = useRouter();
-  const appVM = useAppVM();
-  const [editAmount, setAmount] = useState<number>(amount);
-  const [amountError, setAmountError] = useState("");
-  const [editDescription, setDescription] = useState(description);
-  const [descriptionError, setDescriptionError] = useState("");
-  const [typeState, setTypeState] = useState(type);
+  const theme = useTheme();
   const [editOpen, setEditOpen] = useState(false);
 
-  const toggleDialog = () => {
-    setAmount(amount);
-    setDescription(description);
-    setEditOpen(prev => !prev);
+  const toggleDialog = () => { setEditOpen((prev) => !prev); };
+
+  const handleEditSave = async (newAmount: number, newDescription: string) => {
+    const validateInputs = (): boolean => {
+      let isValid = true;
+      if (newDescription.trim() === "") {
+        AppVM.showAlert("Description must be entered", "error");
+        isValid = false;
+      }
+      if (newAmount <= 0) {
+        AppVM.showAlert("Amount must be greater than 0", "error");
+        isValid = false;
+      }
+      return isValid;
+    };
+    if (!validateInputs()) return;
+    const body: PaymentIdPutBody = { amount: newAmount, description: newDescription };
+    try {
+      const res = await fetch(`/api/houses/${session.user.houseId}/payments/${paymentId}`,
+        { method: "PUT", headers: { "Content-Type": "application/json", }, body: JSON.stringify(body), });
+      const data = await res.json();
+      if (!res.ok) {
+        AppVM.showAlert(data.message, "error");
+      } else {
+        AppVM.showAlert("Payment Updated", "success");
+      }
+    } catch (e: any) {
+      AppVM.showAlert(e.message, "error");
+    }
+    router.push(redirectPath);
+    setEditOpen(false);
   };
 
-  const validateInputs = (): boolean => {
-    let isValid = true;
-    if (editDescription === "") {
-      setDescriptionError("Description must be entered");
-      isValid = false;
-    } else {
-      setDescriptionError("");
-    }
-
-    if (editAmount <= 0) {
-      setAmountError("Amount must be greater than 0");
-      isValid = false;
-    } else {
-      setAmountError("");
-    }
-    return isValid;
-  };
-
-  const updatePayment = async (
-    id: string,
-    status: Status,
-    amount?: number,
-    description?: string
-  ) => {
-    if (status === Status.Completed) setTypeState("Complete");
-    if (status === Status.Cancelled) setTypeState("Cancelled");
-    if (status === Status.Pending) {
-      const body: PaymentIdPutBody = { description, amount };
-      try {
-        // Make a POST request to the API endpoint to create the chore
-        const res = await fetch(
-          `/api/houses/${session.user.houseId}/payments/${id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          }
-        );
-        const data = await res.json();
-        if (!res.ok) {
-          AppVM.showAlert(data.message, "error");
-        }
-        AppVM.showAlert("Payment Updated", "success");
-        // Reset the form fields and close the create panel
-      } catch (e: any) {
-        AppVM.showAlert(e.message, "error");
+  const handleApprove = async () => {
+    const body: PaymentIdPutBody = { status: Status.Completed };
+    try {
+      const res = await fetch(`/api/houses/${session.user.houseId}/payments/${paymentId}`,
+        { method: "PUT", headers: { "Content-Type": "application/json", }, body: JSON.stringify(body), });
+      const data = await res.json();
+      if (!res.ok) {
+        AppVM.showAlert(data.message, "error");
+      } else {
+        AppVM.showAlert("Payment Approved", "success");
       }
-    } else {
-      const body: PaymentIdPutBody = { status };
-      try {
-        // Make a POST request to the API endpoint to create the chore
-        const res = await fetch(
-          `/api/houses/${session.user.houseId}/payments/${id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          }
-        );
-        const data = await res.json();
-        if (!res.ok) {
-          AppVM.showAlert(data.message, "error");
-        }
-        AppVM.showAlert("Payment Updated", "success");
-        // Reset the form fields and close the create panel
-      } catch (e: any) {
-        AppVM.showAlert(e.message, "error");
-      }
+    } catch (e: any) {
+      AppVM.showAlert(e.message, "error");
     }
     router.push(redirectPath);
   };
 
+  const handleCancel = async () => {
+    const body: PaymentIdPutBody = { status: Status.Cancelled };
+    try {
+      const res = await fetch(`/api/houses/${session.user.houseId}/payments/${paymentId}`,
+        { method: "PUT", headers: { "Content-Type": "application/json", }, body: JSON.stringify(body), });
+      const data = await res.json();
+      if (!res.ok) {
+        AppVM.showAlert(data.message, "error");
+      } else {
+        AppVM.showAlert("Payment Cancelled", "success");
+      }
+    } catch (e: any) {
+      AppVM.showAlert(e.message, "error");
+    }
+    router.push(redirectPath);
+  };
+
+  if (!user || !amount || !description || !date || !status) return null;
+
   return (
-    <Stack
-      direction='row'
-      alignItems='center'
-      justifyContent='space-between'
-      minHeight='3rem'
-      spacing={2}
-    >
-      <ListItem alignItems='flex-start' disablePadding>
-        <ListItemAvatar>
-          <Avatar alt='Remy Sharp'>
-            {`${user.firstName![0].toUpperCase()}${user.lastName![0].toUpperCase()}`}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          sx={{ textTransform: "capitalize" }}
-          primary={AppVM.currency + amount}
-          secondary={
-            <>
-              <Typography
-                sx={{ display: "inline", textTransform: "capitalize" }}
-                component='span'
-                variant='body2'
-                color='text.primary'
-              >
-                {user.firstName + " " + user.lastName}
-              </Typography>
-              {" — " + description}
-            </>
-          }
+    <Stack direction="row" alignItems="center" justifyContent="space-between" minHeight="4rem" spacing={2}
+      sx={{ borderBottom: !isLast ? `1px solid ${theme.palette.divider}` : "", paddingY: 1, }} >
+      {/* Payment Details */}
+      <PaymentDetails amount={amount} description={description} user={user} date={date} />
+
+      {/* Action Buttons or Status Text */}
+      <PaymentActions direction={direction} status={status} onApprove={handleApprove} onCancel={handleCancel} onEdit={toggleDialog}
+        statusText={status === Status.Completed || status === Status.Cancelled ? status : ""} />
+
+      {/* Edit Payment Dialog for Incoming Pending Payments */}
+      {status === Status.Pending && (
+        <EditPaymentDialog
+          open={editOpen}
+          onClose={toggleDialog}
+          onSave={handleEditSave}
+          initialAmount={amount}
+          initialDescription={description}
+          userName={`${user.firstName} ${user.lastName}`}
         />
-      </ListItem>
-      {typeState === "OutgoingPending" ? (
-        <Stack direction='row'>
-          <IconButton
-            onClick={() => updatePayment(paymentId, Status.Completed)}
-          >
-            <Check color='success' fontSize='small' />
-          </IconButton>
-          <IconButton
-            onClick={() => updatePayment(paymentId, Status.Cancelled)}
-          >
-            <Close color='error' fontSize='small' />
-          </IconButton>
-        </Stack>
-      ) : typeState === "Complete" ? (
-        <Typography color={theme => theme.palette.success.main}>
-          Completed
-        </Typography>
-      ) : typeState === "Cancelled" ? (
-        <Typography color={theme => theme.palette.error.main}>
-          Cancelled
-        </Typography>
-      ) : (
-        typeState === "IncomingPending" && (
-          <Stack direction='row'>
-            <IconButton
-              onClick={() => {
-                toggleDialog();
-              }}
-            >
-              <Edit color='info' fontSize='small' />
-            </IconButton>
-          </Stack>
-        )
       )}
-      <Dialog
-        open={editOpen}
-        onClose={() => {
-          toggleDialog();
-        }}
-      >
-        <DialogTitle>Edit Payment</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {`${user.firstName} ${user.lastName}`}
-          </DialogContentText>
-          <Stack spacing={2} marginTop={2}>
-            <TextField
-              required
-              inputProps={{
-                min: 0,
-                inputMode: "decimal",
-                pattern: `^[0-9]*.?[0-9]+${AppVM.currency}`,
-              }}
-              label='Amount'
-              value={editAmount}
-              onChange={e => {
-                setAmount(parseFloat(e.target.value || "0"));
-                amountError && setAmountError("");
-              }}
-              error={amountError !== ""}
-              helperText={amountError}
-              fullWidth
-            />
-            <TextField
-              required
-              label='Description'
-              value={editDescription}
-              onChange={e => {
-                setDescription(e.target.value);
-                descriptionError && setDescriptionError("");
-              }}
-              error={descriptionError !== ""}
-              helperText={descriptionError}
-              fullWidth
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              toggleDialog();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              updatePayment(
-                paymentId,
-                Status.Pending,
-                editAmount,
-                editDescription
-              );
-            }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Stack>
   );
 };
 
-export default observer(AssignmentItem);
+export default observer(PaymentItem);
+

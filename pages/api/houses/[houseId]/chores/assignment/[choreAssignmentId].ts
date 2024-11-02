@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { Status, House, User } from "@prisma/client";
-import isValidObjectId from "@/utils/isValidObjectId";
+import isValidObjectId from "@utils/isValidObjectId";
 
 export interface ChoreAssignmentIdPutBody {
   status?: Status;
@@ -29,10 +29,10 @@ const handler = async (
           id: true,
           firstName: true,
           lastName: true,
-          email: true
-        }
-      }
-    }
+          email: true,
+        },
+      },
+    },
   });
   if (!choreAssignment)
     return res.status(404).json({ message: "choreAssignment not found" });
@@ -75,10 +75,10 @@ const handler = async (
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
-      }
+      },
     });
     return res.status(200).json({ choreAssignment: updatedChore });
   } else {

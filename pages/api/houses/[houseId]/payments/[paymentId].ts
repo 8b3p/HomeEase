@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { Status, House, User } from "@prisma/client";
-import isValidObjectId from "@/utils/isValidObjectId";
+import isValidObjectId from "@utils/isValidObjectId";
 
 export interface PaymentIdPutBody {
   amount?: number;

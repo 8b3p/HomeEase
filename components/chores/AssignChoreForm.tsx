@@ -15,13 +15,13 @@ import {
   IconButton,
 } from "@mui/material";
 import { Chore, User } from "@prisma/client";
-import { ChoreAssignPostBody } from "@/pages/api/houses/[houseId]/chores/assignment";
-import { useAppVM } from "@/context/Contexts";
+import { ChoreAssignPostBody } from "@pages/api/houses/[houseId]/chores/assignment";
+import { useAppVM } from "@context/Contexts";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { Add } from "@mui/icons-material";
-import CreateChoreForm from "@/components/chores/CreateChoreForm";
-import AppVM from "@/context/appVM";
+import CreateChoreForm from "@components/chores/CreateChoreForm";
+import AppVM from "@context/appVM";
 
 interface props {
   users: Partial<User>[];

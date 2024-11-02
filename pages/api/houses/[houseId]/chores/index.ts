@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { ChoreType, House, User } from "@prisma/client";
 
@@ -18,7 +18,9 @@ const handler = async (
 ) => {
   if (req.method === "GET") {
     let chores = await prisma.chore.findMany();
-    chores = chores.filter(chore => chore.owner === null || chore.owner === session?.user?.houseId)
+    chores = chores.filter(
+      chore => chore.owner === null || chore.owner === session?.user?.houseId
+    );
     res.status(200).json({ chores });
   } else if (req.method === "POST") {
     const { title, description, type } = req.body;

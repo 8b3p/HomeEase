@@ -1,13 +1,11 @@
 import { Grow, Stack, Typography } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import prisma from "@/utils/PrismaClient";
+import prisma from "@utils/PrismaClient";
 import { Chore, ChoreAssignment, User } from "@prisma/client";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
-import ChoreOptions from "@/components/DateOptions";
-import ChoresList from "@/components/chores/choresList/ChoresList";
-import AssignChoreForm from "@/components/chores/AssignChoreForm";
+import ChoresList from "@components/chores/choresList/ChoresList";
 
 interface Props {
   chores: Chore[];
@@ -19,7 +17,11 @@ interface Props {
 
 const groupByDay = (chores: ChoreAssignment[]) => {
   const grouped = chores.reduce((acc, chore) => {
-    const dateString = new Date(chore.dueDate).toLocaleDateString(undefined, { day: "numeric", month: 'long', year: 'numeric' });
+    const dateString = new Date(chore.dueDate).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
     if (!acc[dateString]) {
       acc[dateString] = [];
     }
@@ -27,15 +29,23 @@ const groupByDay = (chores: ChoreAssignment[]) => {
     return acc;
   }, {} as { [key: string]: ChoreAssignment[] });
   return grouped;
-}
+};
 
-const Chores = ({ chores, choreAssignments, users, session, initDate }: Props) => {
-  const [byDay, setByDay] = useState<{ [key: string]: ChoreAssignment[] } | undefined>();
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(initDate))
+const Chores = ({
+  chores,
+  choreAssignments,
+  users,
+  session,
+  initDate,
+}: Props) => {
+  const [byDay, setByDay] = useState<
+    { [key: string]: ChoreAssignment[] } | undefined
+  >();
+  const [selectedDate] = useState<Date>(new Date(initDate));
 
   useEffect(() => {
-    setByDay(groupByDay(choreAssignments))
-  }, [choreAssignments])
+    setByDay(groupByDay(choreAssignments));
+  }, [choreAssignments]);
 
   return (
     <Grow in={true}>
@@ -43,55 +53,65 @@ const Chores = ({ chores, choreAssignments, users, session, initDate }: Props) =
         justifyContent='start'
         alignItems='center'
         height='100%'
-        padding="2rem 0"
-        margin="auto"
+        padding='2rem 0'
+        margin='auto'
         width='95%'
         gap={4}
       >
-        <ChoreOptions
-          byDay={byDay}
-          setSelected={setSelectedDate}
-          selected={selectedDate}
-          session={session}
-          addButton={
-            <AssignChoreForm
-              variant="outlined"
-              houseId={session.user.houseId ?? ""}
-              defaultDate={selectedDate}
-              chores={chores ?? []}
-              users={users ?? []}
-            />
-          }
-        />
-        {byDay && (
-          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })] &&
-          byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })].length > 0) ? (
+        {byDay &&
+        byDay[
+          selectedDate.toLocaleString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        ] &&
+        byDay[
+          selectedDate.toLocaleString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        ].length > 0 ? (
           <ChoresList
             chores={chores}
-            choreAssignments={byDay[selectedDate.toLocaleString(undefined, { day: "numeric", month: "long", year: "numeric" })]}
+            choreAssignments={
+              byDay[
+                selectedDate.toLocaleString(undefined, {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              ]
+            }
             users={users}
             session={session}
           />
         ) : (
-          <Stack height="100%" width="100%" justifyContent="center" alignItems="center" >
-            <Typography variant="h6">No Chores on this day</Typography>
+          <Stack
+            height='100%'
+            width='100%'
+            justifyContent='center'
+            alignItems='center'
+          >
+            <Typography variant='h6'>No Chores on this day</Typography>
           </Stack>
         )}
-      </Stack >
+      </Stack>
     </Grow>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getSession(ctx);
-  const initDate = JSON.parse(JSON.stringify(ctx.query.d ? new Date(ctx.query.d as string) : new Date()));
+  const initDate = JSON.parse(
+    JSON.stringify(ctx.query.d ? new Date(ctx.query.d as string) : new Date())
+  );
   if (!session) {
     return {
       props: {},
       redirect: {
-        destination: `/auth?redirectUrl=${encodeURIComponent(
-          ctx.resolvedUrl
-        )}`,
+        destination: `/auth?redirectUrl=${encodeURIComponent(ctx.resolvedUrl)}`,
       },
     };
   }
@@ -121,7 +141,9 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       },
     }),
   ]);
-  chores = chores.filter(chore => chore.owner === null || chore.owner === session?.user?.houseId)
+  chores = chores.filter(
+    chore => chore.owner === null || chore.owner === session?.user?.houseId
+  );
   const serializableChore = chores.map(chore => {
     return {
       ...chore,
@@ -143,7 +165,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
       choreAssignments: serializableChoreAssignment,
       users: houseUsers,
       session: session,
-      initDate
+      initDate,
     },
   };
 };

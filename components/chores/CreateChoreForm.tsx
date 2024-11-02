@@ -13,11 +13,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { ChoreType } from "@prisma/client";
-import { useAppVM } from "@/context/Contexts";
-import { ChorePostBody } from "@/pages/api/houses/[houseId]/chores";
+import { useAppVM } from "@context/Contexts";
+import { ChorePostBody } from "@pages/api/houses/[houseId]/chores";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import AppVM from "@/context/appVM";
+import AppVM from "@context/appVM";
 
 interface props {
   houseId: string;

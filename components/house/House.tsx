@@ -1,6 +1,5 @@
-import { useAppVM } from "@/context/Contexts";
+import { useAppVM } from "@context/Contexts";
 import { ContentCopy } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import {
   Button,
   Card,
@@ -19,8 +18,8 @@ import HouseUser from "./HouseUser";
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";
-import Grid from "@mui/material/Unstable_Grid2";
-import AppVM from "@/context/appVM";
+import { Grid2 } from "@mui/material";
+import AppVM from "@context/appVM";
 
 interface props {
   baseUrl: string;
@@ -169,8 +168,8 @@ const House = ({ baseUrl, session }: props) => {
                 <ContentCopy color='primary' />
               </IconButton>
             </Stack>
-            <Grid container columns={21} spacing={1} width='100%'>
-              <Grid xs={10}>
+            <Grid2 container columns={21} spacing={1} width='100%'>
+              <Grid2>
                 <Stack
                   justifyContent='center'
                   alignItems='center'
@@ -181,27 +180,27 @@ const House = ({ baseUrl, session }: props) => {
                     {linkButtonContent}
                   </Button>
                 </Stack>
-              </Grid>
-              <Grid xs={1}>
+              </Grid2>
+              <Grid2>
                 <Divider orientation='vertical' />
-              </Grid>
-              <Grid xs={10}>
+              </Grid2>
+              <Grid2>
                 <Stack
                   justifyContent='center'
                   alignItems='center'
                   height='100%'
                   width='100%'
                 >
-                  <LoadingButton
+                  <Button
                     color='error'
-                    loading={leaving}
                     onClick={leaveHouseHandler}
+                    disabled={leaving}
                   >
-                    Leave House
-                  </LoadingButton>
+                    {leaving ? <CircularProgress size={24} /> : "Leave House"}
+                  </Button>
                 </Stack>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
             <Divider flexItem />
             <Typography variant='h4'>Members</Typography>
             {appVM.house?.users?.map(user => (

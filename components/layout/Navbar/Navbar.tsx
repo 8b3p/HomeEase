@@ -30,7 +30,7 @@ const Navbar = () => {
           HomeEase
         </Typography>
         <Stack direction='row'>
-          <NavbarMenu isMobile={true} />
+          <NavbarMenu />
         </Stack>
       </Stack>
     );
@@ -77,7 +77,7 @@ const Navbar = () => {
       </Grid>
       <Grid item xs={4} minHeight="4rem">
         <Stack justifyContent='center' alignItems='end' spacing={2} minHeight="4rem">
-          <NavbarMenu isMobile={false} />
+          <NavbarMenu />
         </Stack>
       </Grid>
     </Grid>

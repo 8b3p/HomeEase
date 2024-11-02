@@ -1,5 +1,5 @@
 import { ArrowDropDown, ArrowDropUp, InfoOutlined } from "@mui/icons-material";
-import { Divider, Grid, Paper, Stack, Tooltip, Typography, Button, useMediaQuery, Theme } from "@mui/material";
+import { Divider, Grid, Paper, Stack, Tooltip, Typography, Button, useMediaQuery, Theme, useTheme } from "@mui/material";
 import { Chore, ChoreAssignment, House, Payment, User } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { useSession } from "next-auth/react";
@@ -8,9 +8,7 @@ import IndexPaymentItem from "@components/indexPage/PaymentItem";
 
 interface props {
   house: (House & {
-    choreAssignments: (ChoreAssignment & {
-      Chore: Chore;
-    })[];
+    choreAssignments: (ChoreAssignment & { Chore: Chore; })[];
     users: User[];
     payments: Payment[];
   });
@@ -19,22 +17,17 @@ interface props {
 
 const IndexPayments = ({ house, balances }: props) => {
   const router = useRouter();
-  const isExtraSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const theme = useTheme();
+  const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { data: session } = useSession();
   if (!session) return null;
 
   return (
     <Stack justifyContent="center" alignItems="center" spacing={1}>
-      <Typography variant="h4" textAlign="center" color={theme => theme.palette.secondary.main}>
+      <Typography variant="h4" textAlign="center" color={theme.palette.secondary.main}>
         Payments
       </Typography>
-      <Paper
-        sx={(theme) => ({
-          minWidth: "100%",
-          boxShadow: theme.shadows[5],
-          borderRadius: theme.shape.borderRadius,
-        })}
-      >
+      <Paper sx={{ minWidth: "100%", boxShadow: theme.shadows[5], borderRadius: theme.shape.borderRadius, }} >
         <Stack justifyContent="center" alignItems="start" spacing={2} padding={2} width="100%">
           <Stack justifyContent="center" alignItems="start" width="100%" spacing={1}>
             <Grid container spacing={1} width="100%">
@@ -48,10 +41,10 @@ const IndexPayments = ({ house, balances }: props) => {
               </Grid>
               <Grid item md={7} xs={12}>
                 <Stack direction="row" justifyContent={isExtraSmallScreen ? "" : "end"} alignItems="center" spacing={1}>
-                  <Typography variant="h6" textAlign="center" color={theme => theme.palette.success.main}>
+                  <Typography variant="h6" textAlign="center" color={theme.palette.success.main}>
                     ${house.payments.filter(payment => payment.recipientId === session.user.id).reduce((a, b) => a + b.amount, 0).toFixed(2)}<ArrowDropUp color="success" />
                   </Typography>
-                  <Typography variant="h6" textAlign="center" color={theme => theme.palette.error.light}>
+                  <Typography variant="h6" textAlign="center" color={theme.palette.error.light}>
                     ${house.payments.filter(payment => payment.payerId === session.user.id).reduce((a, b) => a + b.amount, 0).toFixed(2)}<ArrowDropDown color="error" />
                   </Typography>
                 </Stack>

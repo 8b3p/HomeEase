@@ -1,5 +1,12 @@
-import { UserPutRequestBody } from "@/pages/api/users/[userId]";
-import { Button, CircularProgress, Drawer, Stack, TextField, Typography } from "@mui/material";
+import { UserPutRequestBody } from "@pages/api/users/[userId]";
+import {
+  Button,
+  CircularProgress,
+  Drawer,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useState } from "react";
@@ -34,10 +41,10 @@ const Password = ({ session, updateUser }: props) => {
       setPasswordError("Password must contain at least one number");
       isValid = false;
     } else if (!value.match(/[A-Z]/)) {
-      setPasswordError("Password must contain at least one uppercase letter")
+      setPasswordError("Password must contain at least one uppercase letter");
       isValid = false;
     } else if (!value.match(/[a-z]/)) {
-      setPasswordError("Password must contain at least one lowercase letter")
+      setPasswordError("Password must contain at least one lowercase letter");
       isValid = false;
     } else {
       setPasswordError("");
@@ -45,7 +52,9 @@ const Password = ({ session, updateUser }: props) => {
     return isValid;
   };
 
-  const validateRepeatPassword = (value: string | null | undefined): boolean => {
+  const validateRepeatPassword = (
+    value: string | null | undefined
+  ): boolean => {
     let isValid = true;
     if (!value) {
       setRepeatPasswordError("Required");
@@ -60,72 +69,109 @@ const Password = ({ session, updateUser }: props) => {
       setRepeatPasswordError("");
     }
     return isValid;
-  }
+  };
 
   const submitHandler = async () => {
     if (changingPassword) {
-      setLoading(true)
+      setLoading(true);
       // const oldPasswordIsValid = validatePassword(oldPassword, "old");
       const newPasswordIsValid = validatePassword(password);
       const repeatPasswordIsValid = validateRepeatPassword(repeatPassword);
       if (!newPasswordIsValid || !repeatPasswordIsValid) {
-        setLoading(false)
+        setLoading(false);
         return;
       }
-      await updateUser({ password: { newPassword: password! } })
-      setLoading(false)
+      await updateUser({ password: { newPassword: password! } });
+      setLoading(false);
     } else {
       setChangingPassword(true);
     }
-  }
+  };
 
   const closeHandler = () => {
     setChangingPassword(false);
-    setPassword('');
-    setRepeatPassword('');
-    setPasswordError('')
-    setRepeatPasswordError('')
-  }
+    setPassword("");
+    setRepeatPassword("");
+    setPasswordError("");
+    setRepeatPasswordError("");
+  };
 
   return (
     <>
-      <Drawer anchor="right" open={changingPassword} >
-        <Stack justifyContent="space-between" alignItems="stretch" width={375} maxWidth="100vw" padding={3} height="100%">
+      <Drawer anchor='right' open={changingPassword}>
+        <Stack
+          justifyContent='space-between'
+          alignItems='stretch'
+          width={375}
+          maxWidth='100vw'
+          padding={3}
+          height='100%'
+        >
           {loading ? (
-            <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
+            <Stack
+              width='100%'
+              height='100%'
+              justifyContent='center'
+              alignItems='center'
+            >
               <CircularProgress />
-            </Stack>) : (
+            </Stack>
+          ) : (
             <Stack spacing={2}>
-              <Typography variant="h5">Change Password</Typography>
+              <Typography variant='h5'>Change Password</Typography>
               <TextField
-                type="password"
-                label="New Password"
-                variant="outlined"
+                type='password'
+                label='New Password'
+                variant='outlined'
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); passwordError && validatePassword(e.target.value); }}
-                onBlur={(e) => { validatePassword(e.target.value); }}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  passwordError && validatePassword(e.target.value);
+                }}
+                onBlur={e => {
+                  validatePassword(e.target.value);
+                }}
                 error={passwordError ? true : false}
                 helperText={passwordError}
               />
               <TextField
-                type="password"
-                label="Repeat Password"
-                variant="outlined"
+                type='password'
+                label='Repeat Password'
+                variant='outlined'
                 value={repeatPassword}
-                onChange={(e) => { setRepeatPassword(e.target.value); repeatPasswordError && validateRepeatPassword(e.target.value); }}
-                onBlur={(e) => { validateRepeatPassword(e.target.value) }}
+                onChange={e => {
+                  setRepeatPassword(e.target.value);
+                  repeatPasswordError && validateRepeatPassword(e.target.value);
+                }}
+                onBlur={e => {
+                  validateRepeatPassword(e.target.value);
+                }}
                 error={repeatPasswordError ? true : false}
                 helperText={repeatPasswordError}
               />
             </Stack>
           )}
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={submitHandler} disabled={loading}>Submit</Button>
-            <Button variant="outlined" onClick={closeHandler} disabled={loading}>Cancel</Button>
+          <Stack direction='row' spacing={1}>
+            <Button
+              variant='contained'
+              onClick={submitHandler}
+              disabled={loading}
+            >
+              Submit
+            </Button>
+            <Button
+              variant='outlined'
+              onClick={closeHandler}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
           </Stack>
         </Stack>
-      </Drawer >
-      <Button variant="text" onClick={() => setChangingPassword(true)}>Change Passwrod</Button>
+      </Drawer>
+      <Button variant='text' onClick={() => setChangingPassword(true)}>
+        Change Passwrod
+      </Button>
     </>
   );
 };

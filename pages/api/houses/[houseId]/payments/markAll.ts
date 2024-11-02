@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
-import prisma from "@/utils/PrismaClient";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
+import prisma from "@utils/PrismaClient";
 import { Session } from "next-auth";
 import { House, Status, User } from "@prisma/client";
-import isValidObjectId from "@/utils/isValidObjectId";
+import isValidObjectId from "@utils/isValidObjectId";
 
 export interface MarkAllPostBody {
   status?: Status;
@@ -18,14 +18,19 @@ const handler = async (
   house: House & { users: User[] }
 ) => {
   if (req.method === "POST") {
-    const { firstUserId, secondUserId, status = Status.Completed } = await JSON.parse(req.body) as MarkAllPostBody;
+    const {
+      firstUserId,
+      secondUserId,
+      status = Status.Completed,
+    } = (await JSON.parse(req.body)) as MarkAllPostBody;
     if (!isValidObjectId(firstUserId) || !isValidObjectId(secondUserId))
       return res.status(400).json({ message: "Invalid user id" });
-    if (
-      session.user.id !== firstUserId &&
-      session.user.id !== secondUserId
-    )
-      return res.status(403).json({ message: "Only payers and recipients can edit their payments" });
+    if (session.user.id !== firstUserId && session.user.id !== secondUserId)
+      return res
+        .status(403)
+        .json({
+          message: "Only payers and recipients can edit their payments",
+        });
     // update all payments that include these two users, and set status to the status provided
     const update = await prisma.payment.updateMany({
       where: {

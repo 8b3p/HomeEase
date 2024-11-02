@@ -1,106 +1,97 @@
-import { IconButton, Paper, Stack, Typography, useMediaQuery } from "@mui/material";
-import { Status } from "@prisma/client";
-import { Session } from "next-auth";
-import { ArrowRight, ArrowLeft, Circle } from "@mui/icons-material";
-import Grid from "@mui/material/Unstable_Grid2";
-import styled from "@mui/styled-engine";
-import { useState } from "react";
+// components/PaymentOptions.tsx
 
-interface props {
-  byDay: { [key: string]: { status: Status; userId: string }[] } | undefined;
-  setSelected: (arg: Date) => void;
-  selected: Date;
+import React, { useState, useMemo } from 'react';
+import { Stack } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Payment, Status, User } from '@prisma/client';
+import { Session } from 'next-auth';
+import PaymentFilters from './payments/PaymentFilters';
+import PaymentsList from './payments/paymentsList/PaymentsList';
+
+interface PaymentOptionsProps {
+  payments: Payment[];
+  users: User[];
   session: Session;
   addButton?: JSX.Element;
 }
 
-const daysInterval = 5;
+const PaymentOptions: React.FC<PaymentOptionsProps> = ({ payments, users, session, addButton }) => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All');
+  const [selectedUser, setSelectedUser] = useState<string | 'All'>('All');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [sortOption, setSortOption] = useState<string>('date-desc');
 
-const Item = styled(Paper)(({ theme }: any) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  position: "relative",
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: theme.shadows[0],
-  textAlign: 'center',
-  height: '100%',
-}));
+  // Filter payments based on search, status, user, and date range
+  const filteredPayments = useMemo(() => {
+    return payments.filter((payment) => {
+      const matchesSearch = payment.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'All' || payment.status === statusFilter;
+      const matchesUser = selectedUser === 'All' ||
+        (payment.payerId === selectedUser) ||
+        (payment.recipientId === selectedUser);
+      const matchesStartDate = startDate ? new Date(payment.createdAt) >= startDate : true;
+      const matchesEndDate = endDate ? new Date(payment.createdAt) <= endDate : true;
 
-const DateOptions = ({ byDay, selected, setSelected, session, addButton }: props) => {
-  const currentDate = selected
-  const start = new Date(currentDate); // Create a new date object for the start date
-  start.setDate(currentDate.getDate() - 1); // Set the start date to yesterday
-  const [startDate, setStartDate] = useState<Date>(start)
-  const isMobile = useMediaQuery('(max-width: 600px)')
+      return matchesSearch && matchesStatus && matchesUser && matchesStartDate && matchesEndDate;
+    });
+  }, [payments, searchTerm, statusFilter, selectedUser, startDate, endDate]);
 
-  const handleDayJump = (day: number) => {
-    const msPerDay = 1000 * 60 * 60 * 24;
-    const date = new Date();
-    date.setTime(startDate.getTime() + (day * msPerDay))
-    setSelected(date)
-    setStartDate(date)
-  }
+  // Sort the filtered payments based on sortOption
+  const sortedPayments = useMemo(() => {
+    const sorted = [...filteredPayments];
+    switch (sortOption) {
+      case 'date-desc':
+        sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case 'date-asc':
+        sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        break;
+      case 'amount-desc':
+        sorted.sort((a, b) => b.amount - a.amount);
+        break;
+      case 'amount-asc':
+        sorted.sort((a, b) => a.amount - b.amount);
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  }, [filteredPayments, sortOption]);
+
   return (
-    <Stack
-      justifyContent='start'
-      alignItems='center'
-      width='100%'
-    >
-      <Paper
-        sx={(theme) => ({
-          width: "100%",
-          boxShadow: theme.shadows[5],
-          padding: "0.5rem",
-          borderRadius: theme.shape.borderRadius,
-        })}
-      >
-        <Grid container columns={daysInterval} height="3rem" width="100%">
-          <Grid xs={daysInterval - 1}>
-            <Stack alignItems="center" height="100%" direction="row">
-              <IconButton onClick={() => handleDayJump(-daysInterval)}><ArrowLeft /></IconButton>
-              <IconButton onClick={() => handleDayJump(daysInterval)}><ArrowRight /></IconButton>
-              <Stack justifyContent="center" alignItems="center">
-                {selected.toLocaleString('default', { weekday: 'short' })}, {selected.toLocaleString('default', { month: 'long' })} {selected.getDate()}
-              </Stack>
-            </Stack>
-          </Grid>
-          <Grid xs={1} alignItems="center">
-            <Stack justifyContent="center" alignItems="center" height="100%">
-              {addButton}
-            </Stack>
-          </Grid>
-        </Grid>
-        <Grid container columns={daysInterval} height="3rem" width="100%">
-          {new Array(daysInterval).fill(0).map((_, i) => {
-            const date = new Date();
-            const msPerDay = 1000 * 60 * 60 * 24;
-            date.setTime(startDate.getTime() + (i * msPerDay))
-            const dateString = date.toLocaleString(undefined, { day: "numeric", month: 'long', year: 'numeric' });
-            const day = date.getDate();
-            const dayOfWeek = date.toLocaleString('default', { weekday: 'short' });
-            return (
-              <Grid xs={1} key={i}>
-                <Item onClick={() => { setSelected(date) }} sx={selected.getDate() === date.getDate() ? { color: 'primary.main', cursor: 'pointer' } : { cursor: "pointer" }}>
-                  <Typography variant='h6' sx={{ cursor: "pointer" }}>{isMobile ? '' : dayOfWeek} {day}</Typography>
-                  {byDay && byDay[dateString] && byDay[dateString].length > 0 ?
-                    <Circle
-                      sx={{
-                        position: 'absolute',
-                        fontSize: '6px',
-                        top: '80%'
-                      }}
-                      color={byDay[dateString].filter(day => day.status === "Pending").find(day => day.userId === session.user?.id) ? "info" : "disabled"}
-                    /> : ''}
-                </Item>
-              </Grid>
-            )
-          })}
-        </Grid>
-      </Paper>
-    </Stack >
-  )
-}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Stack spacing={4} width="100%" maxWidth="1200px" margin="auto" padding={2}>
+        {/* Filters */}
+        <PaymentFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+          addButton={addButton}
+          users={users}
+        />
 
-export default DateOptions;
+        {/* Payments List */}
+        <PaymentsList
+          payments={sortedPayments}
+          users={users}
+          session={session}
+        />
+      </Stack>
+    </LocalizationProvider>
+  );
+};
+
+export default PaymentOptions;
+

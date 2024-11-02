@@ -5,23 +5,23 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../utils/createEmotionCache";
-import lightTheme from "@/styles/theme/lightTheme";
+import lightTheme from "@styles/theme/lightTheme";
 import {
   AppContextProvider,
   initAppVM,
   ThemeContextProvider,
   useInitThemeVM,
-} from "@/context/Contexts";
+} from "@context/Contexts";
 import { observer } from "mobx-react-lite";
-import darkTheme from "@/styles/theme/darkTheme";
-import Layout from "@/components/layout/Layout";
+import darkTheme from "@styles/theme/darkTheme";
+import Layout from "@components/layout/Layout";
 import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/react";
 import { House } from "@prisma/client";
 import { useEffect, useState } from "react";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import "@/styles/globals.css";
+import "@styles/globals.css";
 import { useRouter } from "next/router";
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -95,9 +95,9 @@ const MyApp = (appProps: MyAppProps) => {
               {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
               <CssBaseline />
               {themeVM.themeType === "dark" ? (
-                <div id="background-image" />
+                <div id='background-image' />
               ) : (
-                <div id="background-container" />
+                <div id='background-container' />
               )}
               <Layout>
                 <Component {...pageProps} />

@@ -1,22 +1,14 @@
-import { useAppVM, useThemeVM } from "@/context/Contexts";
-import { ChoreAssignmentIdPutBody } from "@/pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]";
+import { useThemeVM } from "@context/Contexts";
+import { ChoreAssignmentIdPutBody } from "@pages/api/houses/[houseId]/chores/assignment/[choreAssignmentId]";
 import { Check, Close } from "@mui/icons-material";
-import {
-  Avatar,
-  IconButton,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Stack, Typography, useTheme, } from "@mui/material";
 import { Chore, Status } from "@prisma/client";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
 import { stringAvatar } from "@components/layout/Navbar/NavbarMenu";
 import React from "react";
-import AppVM from "@/context/appVM";
+import AppVM from "@context/appVM";
 
 interface ItemProps {
   chore?: Chore;
@@ -57,6 +49,7 @@ const AssignmentItem = ({
 }: ItemProps) => {
   const router = useRouter();
   const themeVM = useThemeVM();
+  const theme = useTheme();
   const [itemState, setItemState] = React.useState(item);
 
   const markChore = async (id: string, status: Status) => {
@@ -137,16 +130,16 @@ const AssignmentItem = ({
           </IconButton>
         </Stack>
       ) : itemState === "MineComplete" || itemState === "OtherComplete" ? (
-        <Typography color={theme => theme.palette.success.main}>
+        <Typography color={theme.palette.success.main}>
           Completed
         </Typography>
       ) : itemState === "Cancelled" ? (
-        <Typography color={theme => theme.palette.error.main}>
+        <Typography color={theme.palette.error.main}>
           Cancelled
         </Typography>
       ) : (
         itemState === "OtherPending" && (
-          <Typography color={theme => theme.palette.info.main}>
+          <Typography color={theme.palette.info.main}>
             Pending
           </Typography>
         )

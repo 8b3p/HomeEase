@@ -1,6 +1,16 @@
-import { UserPutRequestBody } from "@/pages/api/users/[userId]";
+import { UserPutRequestBody } from "@pages/api/users/[userId]";
 import { Edit } from "@mui/icons-material";
-import { Button, CircularProgress, Drawer, IconButton, Stack, TextField, Theme, Typography, useMediaQuery } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Drawer,
+  IconButton,
+  Stack,
+  TextField,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
@@ -21,7 +31,7 @@ const UserName = ({ session, updateUser }: props) => {
   useEffect(() => {
     setLastName(session?.user.name?.split(" ")[1]);
     setFirstName(session?.user.name?.split(" ")[0]);
-  }, [session])
+  }, [session]);
 
   const validateUsername = (
     value: string | null | undefined,
@@ -50,77 +60,117 @@ const UserName = ({ session, updateUser }: props) => {
       isValid = false;
       // no capital letters
     } else {
-      whichName === "firstname"
-        ? setFirstNameError('')
-        : setLastNameError('');
+      whichName === "firstname" ? setFirstNameError("") : setLastNameError("");
     }
     return isValid;
   };
 
   const submitHandler = async () => {
     if (changingName) {
-      setLoading(true)
-      const firstnameValidation = validateUsername(firstName!, "firstname")
-      const lastnameValidation = validateUsername(lastName!, "lastname")
+      setLoading(true);
+      const firstnameValidation = validateUsername(firstName!, "firstname");
+      const lastnameValidation = validateUsername(lastName!, "lastname");
       if (!firstnameValidation || !lastnameValidation) {
-        setLoading(false)
+        setLoading(false);
         return;
       }
-      await updateUser({ name: { firstname: firstName?.toLowerCase()!, lastname: lastName?.toLowerCase()! } })
-      setLoading(false)
+      await updateUser({
+        name: {
+          firstname: firstName?.toLowerCase()!,
+          lastname: lastName?.toLowerCase()!,
+        },
+      });
+      setLoading(false);
     } else {
-      setChangingName(true)
+      setChangingName(true);
     }
-  }
+  };
 
   const closeHandler = () => {
     setChangingName(false);
-    setFirstName(session?.user.name?.split(' ')[0]);
-    setLastName(session?.user.name?.split(' ')[1]);
-    setLastNameError('')
-    setFirstNameError('')
-  }
+    setFirstName(session?.user.name?.split(" ")[0]);
+    setLastName(session?.user.name?.split(" ")[1]);
+    setLastNameError("");
+    setFirstNameError("");
+  };
 
   return (
     <Stack>
-      <Drawer anchor="right" open={changingName} >
-        <Stack justifyContent="space-between" alignItems="stretch" width={375} maxWidth="100vw" padding={3} height="100%">
+      <Drawer anchor='right' open={changingName}>
+        <Stack
+          justifyContent='space-between'
+          alignItems='stretch'
+          width={375}
+          maxWidth='100vw'
+          padding={3}
+          height='100%'
+        >
           {loading ? (
-            <Stack width="100%" height="100%" justifyContent="center" alignItems="center" >
+            <Stack
+              width='100%'
+              height='100%'
+              justifyContent='center'
+              alignItems='center'
+            >
               <CircularProgress />
-            </Stack>) : (
+            </Stack>
+          ) : (
             <Stack spacing={2}>
-              <Typography variant="h5">Update Name</Typography>
+              <Typography variant='h5'>Update Name</Typography>
               <TextField
-                label="First Name"
-                variant="outlined"
+                label='First Name'
+                variant='outlined'
                 value={firstName}
-                onChange={(e) => { setFirstName(e.target.value); firstNameError && validateUsername(e.target.value, "firstname"); }}
-                onBlur={(e) => { validateUsername(e.target.value, "firstname") }}
+                onChange={e => {
+                  setFirstName(e.target.value);
+                  firstNameError &&
+                    validateUsername(e.target.value, "firstname");
+                }}
+                onBlur={e => {
+                  validateUsername(e.target.value, "firstname");
+                }}
                 error={firstNameError ? true : false}
                 helperText={firstNameError}
               />
               <TextField
-                label="Last Name"
-                variant="outlined"
+                label='Last Name'
+                variant='outlined'
                 value={lastName}
-                onChange={(e) => { setLastName(e.target.value); lastNameError && validateUsername(e.target.value, "lastname"); }}
-                onBlur={(e) => { validateUsername(e.target.value, "lastname") }}
+                onChange={e => {
+                  setLastName(e.target.value);
+                  lastNameError && validateUsername(e.target.value, "lastname");
+                }}
+                onBlur={e => {
+                  validateUsername(e.target.value, "lastname");
+                }}
                 error={lastNameError ? true : false}
                 helperText={lastNameError}
               />
             </Stack>
           )}
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={submitHandler} disabled={loading}>Submit</Button>
-            <Button variant="outlined" onClick={closeHandler} disabled={loading}>Cancel</Button>
+          <Stack direction='row' spacing={1}>
+            <Button
+              variant='contained'
+              onClick={submitHandler}
+              disabled={loading}
+            >
+              Submit
+            </Button>
+            <Button
+              variant='outlined'
+              onClick={closeHandler}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
           </Stack>
         </Stack>
-      </Drawer >
-      <IconButton color="primary" onClick={() => setChangingName(true)}><Edit fontSize="small" /></IconButton>
-    </Stack >
+      </Drawer>
+      <IconButton color='primary' onClick={() => setChangingName(true)}>
+        <Edit fontSize='small' />
+      </IconButton>
+    </Stack>
   );
 };
 
 export default observer(UserName);
-

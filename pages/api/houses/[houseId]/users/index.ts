@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import { authMW, corsMW, isPartOfHouse } from "@/utils/middleware";
+import { authMW, corsMW, isPartOfHouse } from "@utils/middleware";
 import { House, User } from "@prisma/client";
 import { Session } from "next-auth";
 

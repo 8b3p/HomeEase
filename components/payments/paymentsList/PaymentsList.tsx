@@ -1,179 +1,107 @@
-import { Divider, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Divider, Stack, Typography, useMediaQuery, useTheme, } from "@mui/material";
 import { Payment, User } from "@prisma/client";
 import { Session } from "next-auth";
 import { useMemo } from "react";
-import DashText from "@/components/UI/DashText";
-import PaymentItem from "@/components/payments/paymentsList/PaymentItem";
+import DashText from "@components/UI/DashText";
+import PaymentItem from "./PaymentItem";
+import AppVM from "@context/appVM";
 
-interface props {
-  payments: Payment[]
-  users: Partial<User>[];
-  session: Session;
-}
+interface Props { payments: Payment[]; users: User[]; session: Session; }
 
-const PaymentsList = ({ payments, users, session }: props) => {
+const PaymentsList = ({ payments, users, session }: Props) => {
+  const isTablet = useMediaQuery("(max-width: 960px)");
+  const theme = useTheme();
+
+  // Separate payments into outgoing and incoming
   const outgoing = useMemo(() => {
-    return (payments.length > 0 ? payments.filter(payment => payment.payerId === session.user?.id) : [])
-  }, [payments, session.user?.id])
-  const incoming = useMemo(() => {
-    return (payments.length > 0 ? payments.filter(payment => payment.recipientId === session.user?.id) : [])
-  }, [payments, session.user?.id])
-  const isMobile = useMediaQuery('(max-width: 600px)')
+    return payments.filter(payment => payment.payerId === session.user?.id);
+  }, [payments, session.user?.id]);
 
+  const incoming = useMemo(() => {
+    return payments.filter(payment => payment.recipientId === session.user?.id);
+  }, [payments, session.user?.id]);
+
+  // Calculate total amounts (optional)
+  const outgoingTotal = outgoing.reduce(
+    (acc, payment) => acc + payment.amount,
+    0
+  );
+  const incomingTotal = incoming.reduce(
+    (acc, payment) => acc + payment.amount,
+    0
+  );
 
   return (
-    <Stack
-      justifyContent='center'
-      alignItems='start'
-      width='100%'
-      spacing={2}
-    >
-      <Stack
-        width='100%'
-        spacing={1}
-        paddingBottom="2rem"
-      >
-        <DashText title={"Outgoing " + payments.filter(payment => payment.status === "Pending").reduce((acc, payment) => (payment.payerId === session.user.id ? acc += payment.amount : acc), 0)} maxWidth={1000} />
-        <Stack
-          width="100%"
-          direction={isMobile ? "column" : "row"}
-          sx={theme => ({
-            boxShadow: theme.shadows[3],
-            borderRadius: theme.shape.borderRadius
-          })}
-        >
-          <Stack width={isMobile ? "100%" : "50%"} padding={2}>
-            {outgoing.filter(p => p.status === "Pending").length === 0 ? (
-              <Stack height="100%" width="100%" justifyContent="center" alignItems="center"><Typography variant="h6">No Pending Payments</Typography></Stack>
+    <Stack justifyContent='center' alignItems='start' width='100%' spacing={4}>
+      <Stack width='100%' spacing={4} paddingBottom='2rem' direction={isTablet ? "column" : "row"} >
+        {/* Outgoing Payments */}
+        <Stack width={isTablet ? "100%" : "50%"} spacing={2}>
+          <DashText title={`Outgoing ${AppVM.currency}${outgoingTotal}`} />
+          <Stack padding={2} sx={{ boxShadow: theme.shadows[3], borderRadius: theme.shape.borderRadius, backgroundColor: theme.palette.background.paper, }} >
+            {outgoing.length === 0 ? (
+              <Stack height='100%' width='100%' justifyContent='center' alignItems='center' >
+                {" "}
+                <Typography variant='h6'>No Outgoing Payments</Typography>{" "}
+              </Stack>
             ) : (
-              outgoing.filter(p => p.status === "Pending").map((payment) => {
+              outgoing.map(payment => {
+                const recipient = users.find(user => user.id === payment.recipientId);
                 return (
                   <PaymentItem
                     key={payment.id}
                     paymentId={payment.id}
                     amount={payment.amount}
                     description={payment.description}
-                    user={users.find(user => user.id === payment.recipientId)!}
+                    direction='Outgoing'
+                    status={payment.status}
+                    isLast={outgoing.indexOf(payment) === outgoing.length - 1}
+                    user={recipient!}
+                    date={payment.createdAt}
                     session={session}
-                    redirectPath="/payments"
-                    type="OutgoingPending"
+                    redirectPath='/payments'
                   />
                 );
               })
             )}
           </Stack>
-          <Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />
-          <Stack width={isMobile ? "100%" : "50%"} padding={2}>
-            {outgoing.filter(p => (p.status === "Completed" || p.status === "Cancelled")).length === 0 ? (
-              <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Completed Payments</Typography></Stack>
+        </Stack>
+
+        {/* Divider between columns on larger screens */}
+        {!isTablet && <Divider orientation='vertical' flexItem />}
+
+        {/* Incoming Payments */}
+        <Stack width={isTablet ? "100%" : "50%"} spacing={2}>
+          <DashText title={`Incoming ${AppVM.currency}${incomingTotal}`} />
+          <Stack padding={2} sx={{ boxShadow: theme.shadows[3], borderRadius: theme.shape.borderRadius, backgroundColor: theme.palette.background.paper, }} >
+            {incoming.length === 0 ? (
+              <Stack height='100%' width='100%' justifyContent='center' alignItems='center' >
+                <Typography variant='h6'>No Incoming Payments</Typography>
+              </Stack>
             ) : (
-              <>
-                {outgoing.filter(p => p.status === "Completed").map((payment) => (
-                  <PaymentItem
-                    redirectPath="/payments"
-                    key={payment.id}
-                    paymentId={payment.id}
-                    amount={payment.amount}
-                    description={payment.description}
-                    user={users.find(user => user.id === payment.recipientId)!}
-                    session={session}
-                    type="Complete"
-                  />
-                ))}
-                {outgoing.filter(p => p.status === "Cancelled").map((payment) => {
-                  return (
-                    <PaymentItem
-                      redirectPath="/payments"
-                      key={payment.id}
-                      paymentId={payment.id}
-                      amount={payment.amount}
-                      description={payment.description}
-                      user={users.find(user => user.id === payment.recipientId)!}
-                      session={session}
-                      type="Cancelled"
-                    />
-                  )
-                })}
-              </>
-            )}
-          </Stack>
-        </Stack >
-      </Stack >
-      <Stack
-        width='100%'
-        spacing={1}
-        paddingBottom="2rem"
-      >
-        <DashText title={"Incoming " + payments.reduce((acc, payment) => (payment.recipientId === session.user.id ? acc += payment.amount : acc), 0)} maxWidth={1000} />
-        <Stack
-          width="100%"
-          direction={isMobile ? "column" : "row"}
-          sx={theme => ({
-            boxShadow: theme.shadows[3],
-            borderRadius: theme.shape.borderRadius
-          })}
-        >
-          <Stack width={isMobile ? "100%" : "50%"} padding={2}>
-            {incoming.filter(p => p.status === "Pending").length === 0 ? (
-              <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Pending Payments</Typography></Stack>
-            ) : (
-              incoming.filter(p => p.status === "Pending").map((payment) => {
+              incoming.map(payment => {
+                const payer = users.find(user => user.id === payment.payerId);
                 return (
                   <PaymentItem
-                    redirectPath="/payments"
                     key={payment.id}
                     paymentId={payment.id}
                     amount={payment.amount}
                     description={payment.description}
-                    user={users.find(user => user.id === payment.payerId)!}
+                    direction='Incoming'
+                    status={payment.status}
+                    isLast={incoming.indexOf(payment) === incoming.length - 1}
+                    date={payment.createdAt}
+                    user={payer!}
                     session={session}
-                    type="IncomingPending"
+                    redirectPath='/payments'
                   />
-                )
+                );
               })
             )}
           </Stack>
-          <Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />
-          <Stack width={isMobile ? "100%" : "50%"} padding={2}>
-            {incoming.filter(p => p.status === "Completed").length === 0 ? (
-              <Stack height="100%" width="100%" justifyContent="center" alignItems="center" ><Typography variant="h6">No Completed Payments</Typography></Stack>
-            ) : (
-              <>
-                {incoming.filter(p => p.status === "Completed").map((payment) => {
-                  return (
-                    <PaymentItem
-                      redirectPath="/payments"
-                      key={payment.id}
-                      paymentId={payment.id}
-                      amount={payment.amount}
-                      description={payment.description}
-                      user={users.find(user => user.id === payment.payerId)!}
-                      session={session}
-                      type="Complete"
-                    />
-                  )
-                })}
-                {incoming.filter(p => p.status === "Cancelled").map((payment) => {
-                  return (
-                    <PaymentItem
-                      redirectPath="/payments"
-                      key={payment.id}
-                      paymentId={payment.id}
-                      amount={payment.amount}
-                      description={payment.description}
-                      user={users.find(user => user.id === payment.payerId)!}
-                      session={session}
-                      type="Cancelled"
-                    />
-                  )
-                })}
-              </>
-            )}
-          </Stack >
-        </Stack >
-      </Stack >
-    </Stack >
-  )
-}
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+};
 
 export default PaymentsList;
